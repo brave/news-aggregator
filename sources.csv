@@ -1,5 +1,6 @@
 Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative Instance ID,Destination Domains
 brave.com,https://brave.com/blog/index.xml,Brave Blog,Brave,Enabled,1.00,,article,,brave.com
+pcdn.brave.software,https://pcdn.brave.software/nft_rss.xml,Brave NFT,Brave,Disabled,1.00,,product,,digitaleyes.market;makersplace.com;rarible.com;niftygateway.com
 cnn.com,https://rss.cnn.com/rss/cnn_topstories.rss,CNN,Top News,Enabled,7.04,,article,,www.cnn.com
 nytimes.com,https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml,The New York Times,Top News,Enabled,5.74,On,article,,www.nytimes.com
 bbc.co.uk,https://feeds.bbci.co.uk/news/rss.xml?edition=int,BBC,Top News,Enabled,3.22,,article,,www.bbc.co.uk
