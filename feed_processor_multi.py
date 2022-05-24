@@ -38,14 +38,17 @@ im_proc = image_processor_sandboxed.ImageProcessor(config.PRIV_S3_BUCKET)
 unshortener = unshortenit.UnshortenIt(default_timeout=5)
 
 logging.basicConfig(level=config.LOG_LEVEL)
-logging.getLogger("urllib3").setLevel(logging.ERROR)  # too many unactionable warnings
-logging.getLogger("metadata_parser").setLevel(logging.CRITICAL)  # hide NotParsableFetchError messages
+logging.getLogger("urllib3").setLevel(
+    logging.ERROR)  # too many unactionable warnings
+logging.getLogger("metadata_parser").setLevel(
+    logging.CRITICAL)  # hide NotParsableFetchError messages
 
 logging.info("Using %s processes for parallel tasks.", config.CONCURRENCY)
 
 
 def get_with_max_size(url, max_bytes):
-    response = requests.get(url, headers={'User-Agent': USER_AGENT}, stream=True, timeout=10, allow_redirects=False)
+    response = requests.get(url, headers={
+                            'User-Agent': USER_AGENT}, stream=True, timeout=10, allow_redirects=False)
     response.raise_for_status()
 
     if response.status_code != 200:  # raise for status is not working with 3xx error
@@ -70,9 +73,10 @@ def process_image(item):
             cache_fn = im_proc.cache_image(item['img'])
         except Exception as e:
             cache_fn = None
-            logging.error("im_proc.cache_image failed [%s]: %s -- %s", e.__class__.__name__, item['img'], e)
+            logging.error(
+                "im_proc.cache_image failed [%s]: %s -- %s", e.__class__.__name__, item['img'], e)
         if cache_fn:
-            item['img'] = "%s/brave-today/cache/%s" % (config.PCDN_URL_BASE, cache_fn)
+            item['img'] = f'{config.PCDN_URL_BASE}/brave-today/cache/{cache_fn}'
             item['padded_img'] = item['img'] + ".pad"
         else:
             item['img'] = ""
@@ -95,11 +99,12 @@ def download_feed(feed):
             data = get_with_max_size(feed_url, max_feed_size)
         except ReadTimeout:
             return None
-        except HTTPError as e:
+        except HTTPError:
             logging.error("Failed to get feed: %s", feed_url)
             return None
         except Exception as e:
-            logging.error("Failed to get [%s]: %s -- %s", e.__class__.__name__, feed_url, e)
+            logging.error("Failed to get [%s]: %s -- %s",
+                          e.__class__.__name__, feed_url, e)
             return None
     try:
         feed_cache = feedparser.parse(data)
@@ -107,7 +112,8 @@ def download_feed(feed):
         if report['size_after_get'] == 0:
             return None  # workaround error serialization issue
     except Exception as e:
-        logging.error("Feed failed to parse [%s]: %s -- %s", e.__class__.__name__, feed, e)
+        logging.error(
+            "Feed failed to parse [%s]: %s -- %s", e.__class__.__name__, feed, e)
         return None
     # bypass serialization issues
     feed_cache = dict(feed_cache)
@@ -154,7 +160,8 @@ def fixup_item(item, my_feed):
     except (requests.exceptions.ConnectionError, ConnectTimeout, InvalidURL, ReadTimeout, SSLError, TooManyRedirects):
         return None  # skip (unshortener failed)
     except Exception as e:
-        logging.error("unshortener failed [%s]: %s -- %s", e.__class__.__name__, item['link'], e)
+        logging.error(
+            "unshortener failed [%s]: %s -- %s", e.__class__.__name__, item['link'], e)
         return None  # skip (unshortener failed)
 
     # image determination
@@ -165,7 +172,8 @@ def fixup_item(item, my_feed):
     elif 'summary' in item and BS(item['summary'], features="html.parser").find_all('img'):
         result = BS(item['summary'], features="html.parser").find_all('img')
         if 'src' in result[0]:
-            out_item['img'] = BS(item['summary'], features="html.parser").find_all('img')[0]['src']
+            out_item['img'] = BS(item['summary'], features="html.parser").find_all('img')[
+                0]['src']
         else:
             out_item['img'] = ""
     elif 'urlToImage' in item:
@@ -174,9 +182,11 @@ def fixup_item(item, my_feed):
         out_item['img'] = item['image']
     elif 'content' in item and item['content'] and item['content'][0]['type'] == 'text/html' and BS(
             item['content'][0]['value'], features="html.parser").find_all('img'):
-        r = BS(item['content'][0]['value'], features="html.parser").find_all('img')[0]
+        r = BS(item['content'][0]['value'],
+               features="html.parser").find_all('img')[0]
         if 'img' in r:
-            out_item['img'] = BS(item['content'][0]['value'], features="html.parser").find_all('img')[0]['src']
+            out_item['img'] = BS(item['content'][0]['value'],
+                                 features="html.parser").find_all('img')[0]['src']
         else:
             out_item['img'] = ""
     else:
@@ -189,7 +199,8 @@ def fixup_item(item, my_feed):
 
     # add some fields
     if 'description' in item and item['description']:
-        out_item['description'] = BS(item['description'], features="html.parser").get_text()
+        out_item['description'] = BS(
+            item['description'], features="html.parser").get_text()
     else:
         out_item['description'] = ""
     out_item['content_type'] = my_feed['content_type']
@@ -220,7 +231,8 @@ def check_images_in_item(item, feeds):
             else:
                 url = item['img']
         except Exception as e:
-            logging.error("Can't parse image [%s]: %s -- %s", e.__class__.__name__, item['img'], e)
+            logging.error(
+                "Can't parse image [%s]: %s -- %s", e.__class__.__name__, item['img'], e)
             item['img'] = ""
         try:
             result = scrape_session.head(url, allow_redirects=True)
@@ -251,7 +263,8 @@ def check_images_in_item(item, feeds):
 
 
 expire_after = timedelta(hours=2)
-scrape_session = requests_cache.core.CachedSession(expire_after=expire_after, backend='memory', timeout=5)
+scrape_session = requests_cache.core.CachedSession(
+    expire_after=expire_after, backend='memory', timeout=5)
 scrape_session.cache.remove_old_entries(datetime.utcnow() - expire_after)
 scrape_session.headers.update({'User-Agent': USER_AGENT})
 
@@ -290,7 +303,8 @@ class FeedProcessor():
                     continue
                 self.report['feed_stats'][result['key']] = result['report']
                 feed_cache[result['key']] = result['feed_cache']
-                self.feeds[my_feeds[result['key']]['publisher_id']] = my_feeds[result['key']]
+                self.feeds[my_feeds[result['key']]
+                           ['publisher_id']] = my_feeds[result['key']]
         return feed_cache
 
     def get_rss(self, my_feeds):
@@ -299,7 +313,9 @@ class FeedProcessor():
         self.report['feed_stats'] = {}
         feed_cache = self.download_feeds(my_feeds)
 
-        logging.info("Fixing up and extracting the data for the items in %s feeds...", len(feed_cache))
+        logging.info(
+            "Fixing up and extracting the data for the items in %s feeds...", len(feed_cache))
+       # pylint:disable=consider-using-dict-items
         for key in feed_cache:
             with multiprocessing.Pool(config.CONCURRENCY) as pool:
                 for out_item in pool.imap(partial(fixup_item, my_feed=my_feeds[key]),
@@ -313,7 +329,8 @@ class FeedProcessor():
         out_entries = []
         variety_by_source = {}
         for entry in entries:
-            seconds_ago = (datetime.utcnow() - dateparser.parse(entry['publish_time'])).total_seconds()
+            seconds_ago = (
+                datetime.utcnow() - dateparser.parse(entry['publish_time'])).total_seconds()
             recency = math.log(seconds_ago)
             if entry['publisher_id'] in variety_by_source:
                 last_variety = variety_by_source[entry['publisher_id']]
@@ -329,7 +346,8 @@ class FeedProcessor():
     def aggregate_rss(self, feeds):
         entries = []
         entries += self.get_rss(feeds)
-        sorted_entries = sorted(entries, key=lambda entry: entry["publish_time"])
+        sorted_entries = sorted(
+            entries, key=lambda entry: entry["publish_time"])
         sorted_entries.reverse()  # for most recent entries first
         filtered_entries = self.fixup_entries(sorted_entries)
         filtered_entries = self.scrub_html(filtered_entries)
@@ -350,14 +368,18 @@ class FeedProcessor():
             if item['content_type'] != 'product':
                 if item['publish_time'] > now_utc or item['publish_time'] < (now_utc - timedelta(days=60)):
                     if item['content_type'] != 'product':
-                        continue  # skip (newer than now() or older than 1 month)
+                        # skip (newer than now() or older than 1 month)
+                        continue
             if encoded_url in url_dedupe:
                 continue  # skip
-            item['publish_time'] = item['publish_time'].strftime('%Y-%m-%d %H:%M:%S')
+            item['publish_time'] = item['publish_time'].strftime(
+                '%Y-%m-%d %H:%M:%S')
             if 'date_live_from' in item:
-                item['date_live_from'] = item['date_live_from'].strftime('%Y-%m-%d %H:%M:%S')
+                item['date_live_from'] = item['date_live_from'].strftime(
+                    '%Y-%m-%d %H:%M:%S')
             if 'date_live_to' in item:
-                item['date_live_to'] = item['date_live_to'].strftime('%Y-%m-%d %H:%M:%S')
+                item['date_live_to'] = item['date_live_to'].strftime(
+                    '%Y-%m-%d %H:%M:%S')
             item['title'] = html.unescape(item['title'])
             item['url'] = encoded_url
             item['url_hash'] = url_hash
@@ -373,13 +395,14 @@ class FeedProcessor():
             for key in item:
                 if item[key]:
                     item[key] = bleach.clean(item[key], strip=True)
-                    item[key] = item[key].replace('&amp;', '&')  # workaround limitation in bleach
+                    # workaround limitation in bleach
+                    item[key] = item[key].replace('&amp;', '&')
             out.append(item)
         return out
 
     def aggregate(self, feeds, out_fn):
         self.feeds = feeds
-        with open(out_fn, 'w') as f:
+        with open(out_fn, 'w', encoding="utf-8") as f:
             f.write(json.dumps(self.aggregate_rss(feeds)))
 
     def aggregate_shards(self, feeds):
@@ -389,8 +412,9 @@ class FeedProcessor():
                 by_category[item['category']] = [item]
             else:
                 by_category[item['category']].append(item)
+                # pylint:disable=consider-using-dict-items
         for key in by_category:
-            with open("feed/category/%s.json" % (key), 'w') as f:
+            with open(f'feed/category/{key}.json', 'w', encoding="utf-8") as f:
                 f.write(json.dumps(by_category[key]))
 
 
@@ -401,17 +425,17 @@ if __name__ == '__main__':
         category = sys.argv[1]
     else:
         category = 'feed'
-    with open("%s.json" % (category)) as f:
+    with open(f'{category}.json', encoding="utf-8") as f:
         feeds = json.loads(f.read())
-        fp.aggregate(feeds, "feed/%s.json-tmp" % (category))
-        shutil.copyfile("feed/%s.json-tmp" % (category), "feed/%s.json" % (category))
+        fp.aggregate(feeds, f'feed/{category}.json-tmp')
+        shutil.copyfile(f'feed/{category}.json-tmp', f'feed/{category}.json')
         if not config.NO_UPLOAD:
-            upload_file("feed/%s.json" % (category), config.PUB_S3_BUCKET,
-                        "brave-today/%s%s.json" % (category, config.SOURCES_FILE.strip("sources")))
+            upload_file(f'feed/{category}{config.PUB_S3_BUCKET}.json',
+                        f'brave-today/{category}{config.SOURCES_FILE.strip("sources")}.json')
             # Temporarily upload also with incorrect filename as a stopgap for
             # https://github.com/brave/brave-browser/issues/20114
             # Can be removed once fixed in the brave-core client for all Desktop users.
-            upload_file("feed/%s.json" % (category), config.PUB_S3_BUCKET,
-                        "brave-today/%s%sjson" % (category, config.SOURCES_FILE.strip("sources")))
-    with open("report.json", 'w') as f:
+            upload_file(f'feed/{category}.json', config.PUB_S3_BUCKET,
+                        f'brave-today/{category}{config.SOURCES_FILE.strip("sources")}.json')
+    with open("report.json", 'w', encoding="utf-8") as f:
         f.write(json.dumps(fp.report))
