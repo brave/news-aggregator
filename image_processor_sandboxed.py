@@ -3,10 +3,12 @@ import logging
 import os
 import pathlib
 import sys
+import tempfile
 from io import BytesIO
 
 import boto3
 import botocore
+import cv2
 import requests
 from wasmer import engine, Store, Module, Instance
 from wasmer_compiler_cranelift import Compiler
@@ -40,6 +42,28 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path):
             output_pointer = instance.exports.resize_and_pad(
                 input_pointer, image_length, width, height, size)
         except RuntimeError:
+
+            with tempfile.NamedTemporaryFile() as temp:
+                temp.write(image_bytes)
+
+                video_stream = cv2.VideoCapture(temp.name)
+                image = video_stream.read()
+
+                name = 'feed/image_from_video' + '.jpg'
+                cv2.imwrite(name, image)
+
+                with open(name, "rb") as image:
+
+                    image_bytes = image.read()
+                    image_length = len(image_bytes)
+                    input_pointer = instance.exports.allocate(image_length)
+                    memory = instance.exports.memory.uint8_view(input_pointer)
+                    memory[0:image_length] = image_bytes
+
+                    output_pointer = instance.exports.resize_and_pad(
+                        input_pointer, image_length, width, height, size)
+
+        except Exception:
             logging.warning("resize_and_pad() hit a RuntimeError (length=%s, width=%s, height=%s, size=%s): %s.failed",
                             image_length, width, height, size, cache_path)
             with open(f'{cache_path}.failed', 'wb+', encoding="utf-8") as out_image:
