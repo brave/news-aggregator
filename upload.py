@@ -19,13 +19,13 @@ def upload_file(file_name, bucket, object_name=None):
     try:
         if bucket == config.PUB_S3_BUCKET:
             s3_client.upload_file(file_name, bucket, object_name, ExtraArgs={
-                'GrantRead': 'id=%s' % config.BRAVE_TODAY_CLOUDFRONT_CANONICAL_ID,
-                'GrantFullControl': 'id=%s' % config.BRAVE_TODAY_CANONICAL_ID
+                'GrantRead': f'id={config.BRAVE_TODAY_CLOUDFRONT_CANONICAL_ID}',
+                'GrantFullControl': f'id={config.BRAVE_TODAY_CANONICAL_ID}'
             })
         elif bucket == config.PRIV_S3_BUCKET:
             s3_client.upload_file(file_name, bucket, object_name, ExtraArgs={
-                'GrantRead': 'id=%s' % config.PRIVATE_CDN_CANONICAL_ID,
-                'GrantFullControl': 'id=%s' % config.PRIVATE_CDN_CLOUDFRONT_CANONICAL_ID
+                'GrantRead': f'id={config.PRIVATE_CDN_CANONICAL_ID}',
+                'GrantFullControl': f'id={config.PRIVATE_CDN_CLOUDFRONT_CANONICAL_ID}'
             })
         else:
             raise InvalidS3Bucket("Attempted to upload to unknown S3 bucket.")

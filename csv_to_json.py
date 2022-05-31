@@ -9,13 +9,13 @@ import bleach
 import config
 from upload import upload_file
 
-in_path = "{}.csv".format(config.SOURCES_FILE)
+in_path = f'{config.SOURCES_FILE}.csv'
 out_path = sys.argv[1]
 
 count = 0
 by_url = {}
 sources_data = {}
-with open(in_path, 'r') as f:
+with open(in_path, 'r', encoding="utf-8") as f:
     for row in csv.reader(f):
         row = [bleach.clean(x, strip=True) for x in row]
         if count < 1:
@@ -62,17 +62,22 @@ with open(in_path, 'r') as f:
                                                                               'site_url': row[0],
                                                                               'feed_url': row[1],
                                                                               'score': float(row[5] or 0)}
-with open(out_path, 'w') as f:
+with open(out_path, 'w', encoding="utf-8") as f:
     f.write(json.dumps(by_url))
 
-sources_data_as_list = [dict(sources_data[x], publisher_id=x) for x in sources_data]
+sources_data_as_list = [dict(sources_data[x], publisher_id=x)
+                        # pylint:disable=consider-using-dict-items
+                        for x in sources_data]
 
-sources_data_as_list = sorted(sources_data_as_list, key=lambda x: x['publisher_name'])
-with open("sources.json", 'w') as f:
+sources_data_as_list = sorted(
+    sources_data_as_list, key=lambda x: x['publisher_name'])
+with open("sources.json", 'w', encoding="utf-8") as f:
     f.write(json.dumps(sources_data_as_list))
 if not config.NO_UPLOAD:
-    upload_file("sources.json", config.PUB_S3_BUCKET, "{}.json".format(config.SOURCES_FILE))
+    upload_file("sources.json", config.PUB_S3_BUCKET,
+                f'{config.SOURCES_FILE}.json')
     # Temporarily upload also with incorrect filename as a stopgap for
     # https://github.com/brave/brave-browser/issues/20114
     # Can be removed once fixed in the brave-core client for all Desktop users.
-    upload_file("sources.json", config.PUB_S3_BUCKET, "{}json".format(config.SOURCES_FILE))
+    upload_file("sources.json", config.PUB_S3_BUCKET,
+                f'{config.SOURCES_FILE}json')

@@ -9,7 +9,8 @@ def check_report(report):
         get_size = report['feed_stats'][feed]['size_after_get']
         insert_size = report['feed_stats'][feed]['size_after_insert']
         if insert_size > get_size:
-            logging.error("Logic error: we inserted %s posts but only downloaded %s.", insert_size, get_size)
+            logging.error(
+                "Logic error: we inserted %s posts but only downloaded %s.", insert_size, get_size)
             success = False
 
         if get_size == 0:
@@ -23,6 +24,6 @@ def check_report(report):
     return success
 
 
-with open("report.json") as f:
+with open("report.json", encoding="utf-8") as f:
     if not check_report(json.loads(f.read())):
         sys.exit(1)
