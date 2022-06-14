@@ -1,7 +1,7 @@
 beautifulsoup4==4.9.3
 bleach==3.3.0
 boto3==1.18.7
-botocore==1.21.7
+botocore==1.27.9
 dateparser==1.1.0
 feedparser==6.0.2
 html2text==2020.1.16
