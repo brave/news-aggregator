@@ -1,0 +1,85 @@
+Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative ID,Destination Domains,Channels,Rank
+elpais.com,http://www.elpais.com/rss/feed.html?feedId=17046,EL PAÍS,Top News,Enabled,,,article,,elpais.com,Top Sources;Top News,1
+as.com,https://as.com/rss/diarioas/portada.xml,Diario AS,Sports,Enabled,,,article,,as.com,Top Sources;Sports,2
+xataka.com,http://feeds.weblogssl.com/xataka2,Xataka,Technology,Enabled,,,article,,www.xataka.com,Top Sources;Technology,3
+elmundo.es,http://rss.elmundo.es/rss/descarga.htm?data2=9,El Mundo,Top News,Enabled,,,article,,www.elmundo.es,Top Sources;Top News,4
+elespanol.com,http://www.elespanol.com/rss/,El Español,Top News,Enabled,,,article,,www.elespanol.com,Top Sources;Top News,5
+lavanguardia.com,https://www.lavanguardia.com/rss/home.xml,La Vanguardia,Top News,Enabled,,,article,,www.lavanguardia.com,Top Sources;Top News,6
+elconfidencial.com,http://rss.elconfidencial.com/,El Confidencial,Top News,Enabled,,,article,,www.elconfidencial.com;www.alimente.elconfidencial.com,Top Sources;Top News,7
+20minutos.es,http://www.20minutos.es/rss/,20 Minutos,Top News,Enabled,,,article,,www.20minutos.es,Top Sources;Top News,8
+eleconomista.es,http://www.eleconomista.es/rss/rss-flash-del-mercado.php,el Economista,Business,Enabled,,,article,,eleconomista.es,Top Sources;Business,9
+abc.es,http://www.abc.es/rss/feeds/abc_ultima.xml,ABC,Top News,Enabled,,,article,,www.abc.es,Top Sources;Top News,10
+marca.com,https://www.marca.com/rss/googlenews/portada.xml,Marca,Sports,Enabled,,,article,,www.marca.com,Top Sources;Sports,11
+adslzone.net,http://feeds.feedburner.com/adslzone,ADSLZone,Technology,Enabled,,,article,,www.adslzone.net,Top Sources;Technology,12
+rtve.es,http://www.rtve.es/rss/temas_noticias.xml,RTVE,Top News,Enabled,,,article,,www.rtve.es,Top Sources;Top News,13
+mundodeportivo.com,http://www.elmundodeportivo.es/web/rss/titulares.rss,Portada,Sports,Enabled,,,article,,mundodeportivo.com,Top Sources;Sports,14
+elperiodico.com,http://www.elperiodico.com/es/rss/rss_portada.xml,El Periódico,Top News,Enabled,,,article,,www.elperiodico.com,Top Sources;Top News,15
+sport.es,http://www.sport.es/es/rss/last_news/rss.xml,Últimas Noticias,Sports,Enabled,,,article,,sport.es,Top Sources;Sports,16
+expansion.com,http://app2.expansion.com/servicios/rss/ultimasNoticias.rss,Expansion,Top News,Enabled,,,article,,expansion.com,Top Sources;Top News,17
+eldiario.es,http://www.eldiario.es/rss/,El Diario,Top News,Enabled,,,article,,www.eldiario.es,Top Sources;Top News,18
+aemet.es,https://www.aemet.es/es/rss/es/noticias.rss,Aemet,Weather,Enabled,,,article,,www.aemet.es,Top Sources;Weather,19
+europapress.es,http://www.europapress.es/rss/rss.aspx?ch=94,Europa Press,Top News,Enabled,,,article,,www.europapress.es,Top Sources;Top News,20
+xatakandroid.com,http://www.xatakandroid.com/index.xml,Xataka Android,Technology,Disabled,,,article,,www.xatakandroid.com,Technology,21
+espinof.com,http://feeds.weblogssl.com/espinof,Espinof,Entertainment,Disabled,,,article,,www.espinof.com,Entertainment,22
+computerhoy.com,https://www.computerhoy.com/rss_all/all/rss.xml,ComputerHoy,Technology,Disabled,,,article,,computerhoy.com,Technology,23
+theguardian.com,https://www.theguardian.com/international/rss,The Guardian,World News,Disabled,,,article,,www.theguardian.com,World News,24
+fotogramas.es,https://www.fotogramas.es/rss/all.xml/,Fotogramas,Entertainment,Disabled,,,article,,www.fotogramas.es,Entertainment,25
+xatakamovil.com,https://www.xatakamovil.com/index.xml,Xataka Móvil,Technology,Disabled,,,article,,www.xatakamovil.com,Technology,26
+okdiario.com,https://okdiario.com/feed,OKdiario,Top News,Disabled,,,article,,okdiario.com,Top News,27
+hola.com,http://www.hola.com/rss.xml,Hola.com,Fashion,Disabled,,,article,,www.hola.com,Fashion,28
+andro4all.com,http://feeds.feedburner.com/Andro4allcom,Andro4all,Technology,Disabled,,,article,,andro4all.com,Technology,29
+vidaextra.com,http://feeds.weblogssl.com/vidaextra,Vida Extra,Technology,Disabled,,,article,,www.vidaextra.com,Technology,30
+lasexta.com,http://www.lasexta.com/rss/60000003.xml,La Sexta,Top News,Disabled,,,article,,www.lasexta.com,Top News,31
+decine21.com,https://decine21.com/magazine?format=feed,Decine21,Entertainment,Disabled,,,article,,decine21.com,Entertainment,32
+investing.com,https://www.investing.com/rss/feed.xml,Investing.com,Business,Disabled,,,article,,investing.com,Business,33
+wikihow.com,https://www.wikihow.com/feed.rss,Wikihow,Culture,Disabled,,,article,,www.wikihow.com,Culture,34
+elcorreo.com,https://www.elcorreo.com/rss/2.0/portada,El Correo,Top News,Disabled,,,article,,athletic.elcorreo.com;www.elcorreo.com,Top News,35
+redeszone.net,https://feeds.feedburner.com/redeszone/redes,Redes Zone,Technology,Disabled,,,article,,www.redeszone.net,Technology,36
+profesionalreview.com,https://www.profesionalreview.com/feed/,Profesional Review,Technology,Disabled,,,article,,www.profesionalreview.com,Technology,37
+tiempo.com,https://www.tiempo.com/feed/,El tiempo,Weather,Disabled,,,article,,www.tiempo.com,Weather,38
+hobbyconsolas.com,https://www.hobbyconsolas.com/rss,Hobby Consolas,Entertainment,Disabled,,,article,,www.hobbyconsolas.com,Entertainment,39
+genbeta.com,https://www.genbeta.com/index.xml,Genbeta,Technology,Disabled,,,article,,www.genbeta.com,Technology,40
+antena3.com,https://www.antena3.com/rss/347795.xml,Antena 3,Top News,Disabled,,,article,,www.antena3.com,Top News,41
+ecartelera.com,https://www.ecartelera.com/rss/feed.xml,eCartelera,Entertainment,Disabled,,,article,,www.ecartelera.com,Entertainment,42
+nytimes.com,https://rss.nytimes.com/services/xml/rss/nyt/World.xml,The New York Times,World News,Disabled,,,article,,www.nytimes.com,World News,43
+heraldo.es,https://www.heraldo.es/rss,Heraldo,Top News,Disabled,,,article,,www.heraldo.es,Top News,44
+diezminutos.es,https://www.diezminutos.es/rss/all,Diez Minutos,Entertainment,Disabled,,,article,,www.diezminutos.es,Entertainment,45
+alohacriticon.com,https://www.alohacriticon.com/feed,AlohaCriticon,Entertainment,Disabled,,,article,,www.alohacriticon.com,Entertainment,46
+transfermarkt.es,https://www.transfermarkt.es/rss/news,Transfermarkt,Sports,Disabled,,,article,,www.transfermarkt.es,Sports,47
+nationalgeographic.com.es,https://www.nationalgeographic.com.es/feeds/rss,National Geographic,Culture,Disabled,,,article,,www.nationalgeographic.com.es,Culture,48
+libertaddigital.com,https://www.libertaddigital.com/rss.xml,Libertad Digital,Top News,Disabled,,,article,,www.libremercado.com;www.libertaddigital.com,Top News,49
+definicion.de,https://definicion.de/feed/,Definicion,Top News,Disabled,,,article,,definicion.de,Top News,50
+motor.es,https://www.motor.es/feed/,Motor.es,Cars,Disabled,,,article,,www.motor.es,Cars,51
+esquire.com,https://www.esquire.com/es/rss/all/,Esquire,Culture,Disabled,,,article,,www.esquire.com,Culture,52
+hardzone.es,https://hardzone.es/feed/,HardZone,Technology,Disabled,,,article,,hardzone.es,Technology,53
+businessinsider.es,https://www.businessinsider.es/rss,BusinessInsider,Business,Disabled,,,article,,www.businessinsider.es,Business,54
+digitaltrends.com,https://es.digitaltrends.com/feed/,DigitalTrends,Technology,Disabled,,,article,,es.digitaltrends.com,Technology,55
+cnn.com,http://rss.cnn.com/rss/edition_europe.rss,CNN,World News,Disabled,,,article,,cnn.com,World News,56
+diariodesevilla.es,https://www.diariodesevilla.es/rss/,Diario de Sevilla,Top News,Disabled,,,article,,www.diariodesevilla.es,Top News,57
+lasprovincias.es,https://www.lasprovincias.es/rss/2.0/portada,Las Provincias,Top News,Disabled,,,article,,www.lasprovincias.es,Top News,58
+elcomercio.pe,https://www.elcomercio.es/rss/2.0/portada,El Comercio,Top News,Disabled,,,article,,www.elcomercio.es,Top News,59
+autobild.es,https://www.autobild.es/rss,Auto Bild España,Cars,Disabled,,,article,,www.autobild.es,Cars,60
+telecinco.es,https://www.telecinco.es/rss.xml,Telecino,Entertainment,Disabled,,,article,,www.telecinco.es,Entertainment,61
+formulatv.com,https://www.formulatv.com/xml/formulatv.xml,FormulaTV,Entertainment,Disabled,,,article,,www.formulatv.com,Entertainment,62
+infobae.com,https://www.infobae.com/feeds/rss/,Infobae,Top News,Disabled,,,article,,www.infobae.com,Top News,63
+muycomputer.com,https://www.muycomputer.com/feed/,MuyComputer,Technology,Disabled,,,article,,www.muycomputer.com,Technology,64
+lainformacion.com,https://www.lainformacion.com/rss/,La Informacion,Top News,Disabled,,,article,,www.lainformacion.com,Top News,65
+hipertextual.com,https://hipertextual.com/feed,Hipertextual,Technology,Disabled,,,article,,hipertextual.com,Technology,66
+ondacero.es,https://www.ondacero.es/rss/8145.xml,Onda Cero,Top News,Disabled,,,article,,www.ondacero.es,Top News,67
+cope.es,https://www.cope.es/api/es/news/rss.xml,Cope,Top News,Disabled,,,article,,www.cope.es,Top News,68
+compuhoy.com,https://www.compuhoy.com/feed/,CompuHoy,Technology,Disabled,,,article,,www.compuhoy.com,Technology,69
+publico.es,https://www.publico.es/rss,Público,Top News,Disabled,,,article,,www.publico.es;eldiariocantabria.publico.es;periodicoclm.publico.es;www.nortes.me,Top News,70
+elotrolado.net,https://www.elotrolado.net/feed/,El Otro Lado,Gaming,Disabled,,,article,,www.elotrolado.net,Gaming,71
+diariosur.es,https://www.diariosur.es/rss/2.0/portada,Sur,Top News,Disabled,,,article,,www.diariosur.es;malagaenfuturo.diariosur.es,Top News,72
+ideal.es,https://www.ideal.es/rss/2.0/portada,Ideal,Top News,Disabled,,,article,,www.ideal.es,Top News,73
+huffingtonpost.es,https://www.huffingtonpost.es/rss/index.xml,El HuffPost,Top News,Disabled,,,article,,www.huffingtonpost.es,Top News,74
+lne.es,https://www.lne.es/rss/,La Nueva España,Top News,Disabled,,,article,,www.lne.es,Top News,75
+muyinteresante.es,https://www.muyinteresante.es/rss,MuyInteresante.es,Culture,Disabled,,,article,,www.muyinteresante.es,Culture,76
+elle.com,https://www.elle.com/es/rss/all.xml/,Elle,Fashion,Disabled,,,article,,www.elle.com,Fashion,77
+psicologiaymente.com,https://psicologiaymente.com/feeds/blog/rss,Psicología y Mente,Health,Disabled,,,article,,psicologiaymente.com,Health,78
+diariovasco.com,https://www.diariovasco.com/rss/2.0/portada,Diario Vasco,Top News,Disabled,,,article,,clasica-san-sebastian.diariovasco.com;www.diariovasco.com,Top News,79
+dailymail.co.uk,https://www.dailymail.co.uk/news/spain/index.rss,DailyMail Spain,World News,Disabled,,,article,,www.dailymail.co.uk,World News,80
+levante-emv.com,https://www.levante-emv.com/rss/,Levante-EMV,Top News,Disabled,,,article,,levante-emv.com,Top News,81
+motorpasion.com,https://www.motorpasion.com/index.xml,Motorpasión,Sports,Disabled,,,article,,motorpasion.com,Sports,82
+investopedia.com,https://www.investopedia.com/feeds/google-news,Investopedia,Business,Disabled,,,article,,investopedia.com,Business,83
+applesfera.com,https://www.applesfera.com/index.xml,Applesfera,Technology,Disabled,,,article,,applesfera.com,Technology,84

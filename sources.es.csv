@@ -1,0 +1,418 @@
+Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative ID,Destination Domains
+cnnespanol.cnn.com,https://cnnespanol.cnn.com/feed/,CNN Español,Top News,Enabled,3.31,,article,,cnnespanol.cnn.com
+bbc.co.uk/spanish/,https://feeds.bbci.co.uk/mundo/rss.xml,BBC Mundo,Top News,Enabled,2.45,,article,,www.bbc.com
+elmundo.es,https://e00-elmundo.uecdn.es/rss/portada.xml,El Mundo,Top News,Enabled,1.93,,article,,www.elmundo.es
+nytimes.com/es/,https://rss.nytimes.com/services/xml/rss/nyt/es.xml,The New York Times en Español,Top News,Enabled,1.82,,article,,www.nytimes.com
+elpais.com,https://ep01.epimg.net/rss/tags/ultimas_noticias.xml,EL PAÍS,Top News,Enabled,1.53,,article,,elviajero.elpais.com
+20minutos.es,https://www.20minutos.es/rss/,20 Minutos,Top News,Enabled,1.45,,article,,www.20minutos.es
+meneame.net,https://www.meneame.net/rss2.php,Menéame,Top News,Enabled,0.93,,article,,www.meneame.net
+eldiario.es,https://www.eldiario.es/rss/,El Diario,Top News,Enabled,0.86,,article,,www.eldiario.es
+actualidad.rt.com,https://actualidad.rt.com/feeds/all.rss,RT en Español,Top News,Enabled,0.69,,article,,actualidad.rt.com
+expansion.com,https://e00-expansion.uecdn.es/rss/portada.xml,Expansion,Top News,Enabled,0.62,,article,,expansion.com
+expansion.com,https://e00-expansion.uecdn.es/rss/portada.xml,Expansion,Top News,Enabled,0.62,,article,,www.expansion.com
+publico.es,https://www.publico.es/estaticos/rss,Público,Top News,Enabled,0.27,,article,,publico.es
+abc.es,https://www.abc.es/rss/feeds/abc_ultima.xml,ABC,Top News,Enabled,0.24,,article,,www.abc.es
+lanacion.com.ar,https://www.lanacion.com.ar/arcio/rss/,La Nacion,Top News,Enabled,0.15,,article,,www.lanacion.com.ar
+dw.com/spanish/,https://rss.dw.com/syndication/feeds/RSS_sp_Feedly_News.10727-mrss.xml,DW Español,Top News,Enabled,0.04,,article,,www.dw.com
+huffingtonpost.es,https://chaski.huffpost.com/us/auto/topic/spain,El HuffPost,Top News,Enabled,0.04,,article,,huffingtonpost.es
+aristeguinoticias.com,https://feeds.feedburner.com/AristeguiNoticias,Aristegui Noticias,Top News,Enabled,0,,article,,aristeguinoticias.com
+lavanguardia.com,https://www.lavanguardia.com/rss/home.xml,La Vanguardia,Top News,Enabled,-0.03,,article,,lavanguardia.com
+infobae.com,https://www.infobae.com/argentina-rss.xml,Infobae,Top News,Enabled,-0.05,,article,,www.infobae.com
+reforma.com,https://www.reforma.com/rss/portada.xml,Reforma,Top News,Enabled,-0.07,,article,,www.reforma.com
+elconfidencialdigital.com,https://www.elconfidencialdigital.com/rss?seccion=el_confidencial_digital,Confidencial Digital,Top News,Enabled,-0.08,,article,,www.elconfidencialdigital.com
+jornada.unam.mx,https://www.jornada.com.mx/rss/edicion.xml,La Jornada,Top News,Disabled,-0.1,,article,,www.jornada.com.mx
+animalpolitico.com,https://www.animalpolitico.com/feed/,Animal Político,Top News,Disabled,-0.13,,article,,www.animalpolitico.com
+rtve.es,https://api2.rtve.es/rss/temas_noticias.xml,RTVE,Top News,Disabled,-0.14,,article,,www.rtve.es
+elperiodico.com,https://www.elperiodico.com/es/rss/rss_portada.xml,El Periódico,Top News,Disabled,-0.18,,article,,www.elperiodico.com
+europapress.es,https://www.europapress.es/rss/rss.aspx?ch=94,Europa Press,Top News,Disabled,-0.19,,article,,www.europapress.es
+infolibre.es,https://www.infolibre.es/rss,InfoLibre,Top News,Disabled,-0.21,,article,,infolibre.es
+eltiempo.com,https://www.eltiempo.com/rss/colombia.xml,El Tiempo,Top News,Disabled,-0.21,,article,,www.eltiempo.com
+elespanol.com,https://www.elespanol.com/rss/,El Español,Top News,Disabled,-0.22,,article,,www.elespanol.com
+clarin.com,https://www.clarin.com/rss/lo-ultimo/,Clarin,Top News,Disabled,-0.23,,article,,www.clarin.com
+eluniversal.com.mx,https://www.eluniversal.com.mx/rss.xml,El Universal,Top News,Disabled,-0.23,,article,,www.eluniversal.com.mx
+libertaddigital.com,https://www.libertaddigital.com/espana/rss.xml,Libertad Digital,Top News,Disabled,-0.23,,article,,tv.libertaddigital.com;www.libertaddigital.com
+elmostrador.cl,https://www.elmostrador.cl/feed/,El Mostrador,Top News,Disabled,-0.25,,article,,www.elmostrador.cl
+theclinic.cl,https://feeds.feedburner.com/The_Clinic,The Clinic,Top News,Disabled,-0.28,,article,,www.theclinic.cl
+ciperchile.cl,https://www.ciperchile.cl/feed/,CIPER Chile,Top News,Disabled,-0.29,,article,,www.ciperchile.cl
+sinembargo.mx,https://www.sinembargo.mx/feed,Sin Embargo,Top News,Disabled,-0.29,,article,,sinembargo.mx
+larazon.es,https://www.larazon.es/RSS-portlet/feed/la-razon/espana,La Razón,Top News,Disabled,-0.3,,article,,larazon.es
+excelsior.com.mx,https://www.excelsior.com.mx/rss/rss.php,Excélsior,Top News,Disabled,-0.3,,article,,excelsior.com.mx
+efe.com,https://www.efe.com/efe/espana/1/rss,Agencia EFE,Top News,Disabled,-0.31,,article,,www.efe.com
+lamarea.com,https://www.lamarea.com/feed/,lamarea.com,Top News,Disabled,-0.31,,article,,www.lamarea.com
+lavozdegalicia.es,https://www.lavozdegalicia.es/portada/index.xml,La Voz de Galicia,Top News,Disabled,-0.32,,article,,lavozdegalicia.es
+cooperativa.cl,https://feeds.cooperativa.cl/ultimominuto,Cooperativa.cl,Top News,Disabled,-0.33,,article,,www.cooperativa.cl
+perfil.com,https://www.perfil.com/feed,Perfil,Top News,Disabled,-0.35,,article,,perfil.com
+intereconomia.com,https://intereconomia.com/feed/,Radio Intereconomía,Top News,Disabled,-0.35,,article,,intereconomia.com
+pagina12.com.ar,https://www.pagina12.com.ar/rss/portada,Página12,Top News,Disabled,-0.37,,article,,www.pagina12.com.ar
+ctxt.es,https://ctxt.es/es/?tpl=87,Ctxt,Top News,Disabled,-0.38,,article,,ctxt.es
+elcolombiano.com,https://www.elcolombiano.com/rss/inicio.xml,El Colombiano,Top News,Disabled,-0.39,,article,,www.elcolombiano.com
+indablog.es,https://www.indablog.es/feed/,Ok Diario,Top News,Disabled,-0.39,,article,,okdiario.com
+elconfidencial.com,https://rss.elconfidencial.com/,El Confidencial,Top News,Disabled,-0.39,,article,,www.elconfidencial.com
+heraldo.es,https://www.heraldo.es/rss/,Heraldo,Top News,Disabled,-0.4,,article,,www.heraldo.es
+eluniverso.com,https://www.eluniverso.com/rss/portada.xml,El Universo,Top News,Disabled,-0.41,,article,,eluniverso.com
+el-nacional.com,https://www.elnacional.com/rss/,EL NACIONAL,Top News,Disabled,-0.41,,article,,www.elnacional.com
+radiobiobio.cl,https://www.radiobiobio.cl/feed/,BioBioChile,Top News,Disabled,-0.44,,article,,radiobiobio.cl
+vozpopuli.com,https://www.vozpopuli.com/feed,Vozpópuli,Top News,Disabled,-0.44,,article,,www.vozpopuli.com
+elciudadano.cl,https://www.elciudadano.cl/feed/,El Ciudadano,Top News,Disabled,-0.44,,article,,elciudadano.cl
+eldinamo.cl,https://www.eldinamo.cl/rss/feed.xml,El Dínamo,Top News,Disabled,-0.45,,article,,eldinamo.cl
+cadenaser.com,https://cadenaser.com/rss/ser/portada.xml,Cadena SER,Top News,Disabled,-0.46,,article,,cadenaser.com
+periodistadigital.com,https://feeds.feedburner.com/PDPortada,Periodista Digital,Top News,Disabled,-0.46,,article,,www.periodistadigital.com
+maldita.es,https://maldita.es/feed,Maldita,Top News,Disabled,-0.47,,article,,maldita.es
+elplural.com,https://www.elplural.com/uploads/feeds/feed_elplural_es.xml,El Plural,Top News,Disabled,-0.47,,article,,www.elplural.com
+antena3.com,https://feeds.feedburner.com/Noticias-Spain-antena3,Antena 3,Top News,Disabled,-0.47,,article,,www.antena3.com
+elindependiente.com,https://www.elindependiente.com/feed/,El Independiente,Top News,Disabled,-0.48,,article,,www.elindependiente.com
+diarioinformacion.com,https://www.informacion.es/rss/,Información,Top News,Disabled,-0.48,,article,,www.informacion.es
+diariovasco.com,https://www.diariovasco.com/rss/2.0/portada,Diario Vasco,Top News,Disabled,-0.48,,article,,real-sociedad.diariovasco.com;www.diariovasco.com
+lasexta.com,https://www.lasexta.com/rss/351410.xml,La Sexta,Top News,Disabled,-0.49,,article,,www.lasexta.com
+laopiniondemurcia.es,https://www.laopiniondemurcia.es/rss,La Opinión de Murcia,Top News,Disabled,-0.49,,article,,laopiniondemurcia.es
+elsaltodiario.com,https://www.elsaltodiario.com/general/feed,El Salto,Top News,Disabled,-0.5,,article,,www.elsaltodiario.com
+newtral.es,https://www.newtral.es/feed/,Newtral,Top News,Disabled,-0.5,,article,,www.newtral.es
+elblogsalmon.com,http://feeds.weblogssl.com/elblogsalmon2,El Blog Salmón,Business,Enabled,4.48,,article,,www.elblogsalmon.com
+expansion.com,https://e00-expansion.uecdn.es/rss/economia.xml,Expansion,Business,Enabled,3.44,,article,,expansion.com
+expansion.com,https://e00-expansion.uecdn.es/rss/economia.xml,Expansion,Business,Enabled,3.44,,article,,www.expansion.com
+cincodias.elpais.com,https://cincodias.elpais.com/rss/cincodias/portada.xml,EL PAÍS - Cinco Días,Business,Enabled,2.55,,article,,cincodias.elpais.com
+eleconomista.es,https://www.eleconomista.es/rss/rss-flash-del-mercado.php,el Economista,Business,Enabled,1.94,,article,,eleconomista.es
+pymesyautonomos.com,https://feeds.weblogssl.com/pymesyautonomos,Pymes y Autonomos,Business,Enabled,1.93,,article,,www.pymesyautonomos.com
+nadaesgratis.es,https://nadaesgratis.es/feed,Nada es Gratis,Business,Enabled,1.41,,article,,nadaesgratis.es
+elmundo.es,https://estaticos.elmundo.es/elmundo/rss/economia.xml,El Mundo - Economía,Business,Enabled,1.08,,article,,www.elmundo.es
+abc.es,https://www.abc.es/rss/feeds/abc_Economia.xml,ABC - Economía,Business,Enabled,0.65,,article,,www.abc.es
+lavanguardia.com/economia,https://www.lavanguardia.com/rss/home.xml,Economía,Business,Enabled,0.61,,article,,lavanguardia.com
+ambito.com,https://www.ambito.com/rss/home.xml,Ambito - Adaptativo - Portada,Business,Disabled,0.08,,article,,ambito.com
+cronista.com,https://www.cronista.com/files/rss/news.xml,El Cronista Comercial - RSS - Ultimas Noticias,Business,Disabled,-0.01,,article,,www.cronista.com
+df.cl,https://www.df.cl/noticias/site/list/port/rss.xml,Diario Financiero Online,Business,Disabled,-0.07,,article,,df.cl
+estrategiasdeinversion.com,https://www.estrategiasdeinversion.com/rss/rssnoticias.xml?canal=21&perPage=10,Estrategias de Inversión,Business,Disabled,-0.1,,article,,www.estrategiasdeinversion.com
+pequenocerdocapitalista.com,https://www.pequenocerdocapitalista.com/,Pequeño Cerdo Capitalista,Business,Disabled,-0.12,,article,,pequenocerdocapitalista.com
+europapress.es/economia/,https://www.europapress.es/rss/rss.aspx?ch=136,Europa Press - Economía Finanzas,Business,Disabled,-0.13,,article,,www.europapress.es
+bolsamania.com,https://www.bolsamania.com/rss/generarRss2.php,Bolsamania.com,Business,Disabled,-0.17,,article,,www.bolsamania.com
+euribor.com.es,https://www.euribor.com.es/,Euribor,Business,Disabled,-0.24,,article,,euribor.com.es
+eleconomista.com.mx,https://www.eleconomista.com.mx/rss/ultimas-noticias,El Economista,Business,Disabled,-0.29,,article,,www.eleconomista.com.mx
+attac.es,https://www.attac.es/,ATTAC España,Business,Disabled,-0.31,,article,,attac.es
+ennaranja.com,https://www.ennaranja.com/index.xml,"En Naranja, ING",Business,Disabled,-0.33,,article,,ennaranja.com
+novatostradingclub.com,https://www.novatostradingclub.com/,Novatos Trading Club,Business,Disabled,-0.34,,article,,novatostradingclub.com
+elperiodico.com,https://www.elperiodico.com/es/rss/economia/rss.xml,El Periódico - economia,Business,Disabled,-0.37,,article,,www.elperiodico.com
+libremercado.com,https://rss.libertaddigital.com/libertaddigital/economia,Libertad Digital: Libre Mercado,Business,Disabled,-0.46,,article,,esradio.libertaddigital.com;www.libremercado.com
+iprofesional.com,https://feeds.feedburner.com/iprofesional-economia,iProfesional.com - La economía de la Argentina y del mundo con las últimas novedades. - Economía,Business,Disabled,-0.46,,article,,www.iprofesional.com
+rankia.com,https://feeds.feedburner.com/InversionEspeculacionYCosasMias,"INVERSIÓN, ESPECULACIÓN... y cosas mías",Business,Disabled,-0.48,,article,,www.rankia.com
+finanzasparatodos.es,https://www.finanzasparatodos.es/es/rss.xml,Finanzas para todos,Business,Disabled,-0.55,,article,,finanzasparatodos.es
+autoblog.com,https://es.autoblog.com/rss.xml,Autoblog,Cars,Enabled,8.63,,article,,autoblog.com
+motorpasion.com,http://feeds.weblogssl.com/motorpasion,Motorpasión,Cars,Enabled,5.79,,article,,www.motorpasion.com
+marca.com,https://estaticos.marca.com/rss/motor.xml,Marca - Motor,Cars,Enabled,4.96,,article,,www.marca.com
+as.com/rss/motor/portada-resumen-f00.xml,https://as.com/rss/motor/portada-resumen-f00.xml,Diario AS,Cars,Disabled,4.29,,article,,as.com;motor.elpais.com
+diariomotor.com,https://feeds.feedburner.com/diariomotor,Diariomotor,Cars,Disabled,1.85,,article,,www.diariomotor.com
+f1aldia.com,https://feeds.noxvo.com/f1aldia/,F1 al día,Cars,Disabled,1.09,,article,,www.f1aldia.com
+antevenio.com,https://www.tecnocoches.com/wp-rss2.php,Antevenio,Cars,Disabled,0.61,,article,,antevenio.com
+coches.net/noticias/,https://coches.net/noticias/rss/,Coches.net,Cars,Disabled,0.42,,article,,www.coches.net
+8000vueltas.com,https://feeds.feedburner.com/8000vueltas,8000vueltas.com,Cars,Disabled,-0.01,,article,,8000vueltas.com
+autobild.es,https://www.autobild.es/rss,Auto Bild España,Cars,Disabled,-0.03,,article,,www.autobild.es
+actualidadmotor.com,https://feeds.feedburner.com/ActualidadMotor,Actualidad Motor,Cars,Disabled,-0.04,,article,,www.actualidadmotor.com
+20minutos.es,https://www.20minutos.es/rss/motor/,20MINUTOS.ES,Cars,Disabled,-0.11,,article,,www.20minutos.es
+caranddriver.com/es/,https://www.caranddriver.com/es/rss/all.xml/,Car and Driver,Cars,Disabled,-0.17,,article,,www.caranddriver.com
+forococheselectricos.com,https://feeds.feedburner.com/ForoCochesElectricos,forococheselectricos,Cars,Disabled,-0.3,,article,,forococheselectricos.com
+motogp.com/es/noticias/rss,https://www.motogp.com/es/noticias/rss,MotoGP,Cars,Disabled,-0.32,,article,,www.motogp.com
+parabrisas.perfil.com,https://parabrisas.perfil.com/,Parabrisas,Cars,Disabled,-0.34,,article,,parabrisas.perfil.com
+es.investing.com,https://es.investing.com/rss/news.rss,Investing.com Español,Crypto,Enabled,11.92,,article,,es.investing.com
+criptonoticias.com,https://criptonoticias.com/feed/,CriptoNoticias,Crypto,Enabled,4.13,,article,,www.criptonoticias.com
+elbitcoin.org,https://feeds.feedburner.com/elbitcoin,Bitcoin en Español,Crypto,Disabled,2.14,,article,,elbitcoin.org
+diariobitcoin.com,https://www.diariobitcoin.com/feed/,DiarioBitcoin,Crypto,Disabled,1.78,,article,,www.diariobitcoin.com
+es.cointelegraph.com,https://cointelegraph.es/rss,Noticias en Cointelegraph.com,Crypto,Disabled,1.33,,article,,es.cointelegraph.com
+criptotendencia.com,https://criptotendencia.com/feed/,CRIPTO TENDENCIA,Crypto,Disabled,0.82,,article,,criptotendencia.com
+tecnologia.press,https://www.tecnologia.press/feed/,Tecnologia.press,Crypto,Disabled,-0.3,,article,,www.tecnologia.press
+infocoin.net,https://infocoin.net/feed/,InfoCoin,Crypto,Disabled,-0.33,,article,,infocoin.net
+blog.bitso.com,https://blog.bitso.com/feed,Bitso - Medium,Crypto,Disabled,-0.35,,article,,blog.bitso.com
+elpais.com/rss/cultura/portada.xml,http://ep01.epimg.net/rss/cultura/portada.xml,EL PAÍS - Cultura,Culture,Enabled,7,,article,,elpais.com
+yorokobu.es,https://www.yorokobu.es/feed/,Yorokobu,Culture,Disabled,4.75,,article,,yorokobu.es
+jotdown.es,https://www.jotdown.es/feed/,Jot Down Cultural Magazine,Culture,Disabled,2.95,,article,,www.jotdown.es
+elmundo.es,https://rss.elmundo.es/rss/descarga.htm?data2=6,El Mundo - Cultura,Culture,Disabled,2.75,,article,,www.elmundo.es
+historiasdelahistoria.com,https://historiasdelahistoria.com/feed/,Historias de la Historia,Culture,Disabled,2.6,,article,,historiasdelahistoria.com
+historiasdelahistoria.com,https://historiasdelahistoria.com/feed/,Historias de la Historia,Culture,Disabled,2.6,,article,,historiasdelahistoria.com
+clarin.com/cultura/,https://www.clarin.com/rss/cultura/,Clarin.com - Cultura,Culture,Disabled,2.05,,article,,www.clarin.com
+clarin.com/revista-enie/,https://www.clarin.com/rss/revista-enie/,Clarin.com - Revista Ñ,Culture,Disabled,1.96,,article,,www.clarin.com
+lavanguardia.com/cultura,https://www.lavanguardia.com/mvc/feed/rss/cultura,La Vanguardia - Cultura,Culture,Disabled,1.46,,article,,lavanguardia.com
+curistoria.com,https://curistoria.blogspot.com/feeds/posts/default,Curistoria,Culture,Disabled,1.39,,article,,curistoria.com
+vice.com/es,https://www.vice.com/es/rss,VICE ES,Culture,Disabled,1.28,,article,,vice.com
+abc.es,https://www.abc.es/rss/feeds/abc_Cultura.xml,ABC - Cultura,Culture,Disabled,1.15,,article,,www.abc.es
+blogs.20minutos.es/yaestaellistoquetodolosabe,https://www.yaestaellisto.com/feed/,Ya está el listo que todo lo sabe,Culture,Disabled,0.81,,article,,blogs.20minutos.es
+elespanol.com/cultura/,https://www.elespanol.com/rss/cultura/,El Español - Miradas,Culture,Disabled,0.75,,article,,www.elespanol.com
+culturacolectiva.com,https://www.culturacolectiva.com/rss/,Cultura Colectiva,Culture,Disabled,0.56,,article,,culturacolectiva.com
+rtve.es,https://www.rtve.es/rss/temas_cultura.xml,RTVE - Cultura,Culture,Disabled,0.56,,article,,www.rtve.es
+elconfidencial.com/cultura/,https://rss.elconfidencial.com/cultura/,El Confidencial - Cultura,Culture,Disabled,0.34,,article,,www.elconfidencial.com
+lecturalia.com/blog,https://www.lecturalia.com/blog/feed/atom/,Lecturalia,Culture,Disabled,0.33,,article,,www.lecturalia.com
+pagina12.com.ar,https://www.pagina12.com.ar/diario/rss/radar.xml,Radar | Página12,Culture,Disabled,0.26,,article,,www.pagina12.com.ar
+20minutos.es,https://www.20minutos.es/rss/artes/,20MINUTOS.ES - Artes,Culture,Disabled,0,,article,,www.20minutos.es
+eldiario.es,https://www.eldiario.es/rss/cultura/,ElDiario.es,Culture,Disabled,-0.06,,article,,www.eldiario.es
+upsocl.com,https://www.upsocl.com/feed/,Upsocl,Culture,Disabled,-0.1,,article,,www.upsocl.com
+culturizando.com,https://feeds.feedburner.com/Culturizando,culturizando.com,Culture,Disabled,-0.13,,article,,culturizando.com
+buzzfeed.com,https://www.buzzfeed.com/espanol.xml,BuzzFeed,Entertainment,Enabled,14.36,,article,,www.buzzfeed.com
+verne.elpais.com/rss/verne/portada_mexico.xml,https://ep01.epimg.net/rss/verne/portada_mexico.xml,Portada de Verne Mexico @ EL PAÍS,Entertainment,Enabled,5.11,,article,,verne.elpais.com
+wtf.microsiervos.com,https://wtf.microsiervos.com/index.xml,WTF? Microsiervos,Entertainment,Enabled,3.96,,article,,wtf.microsiervos.com
+cuantarazon.com,https://feeds2.feedburner.com/cuantarazon,Cuanta razón,Entertainment,Enabled,3.91,,article,,www.cuantarazon.com
+vistoenlasredes.com,https://feeds2.feedburner.com/VistoEnFacebook,Visto en las Redes,Entertainment,Enabled,3.01,,article,,www.vistoenlasredes.com
+finofilipino.org,https://feeds.feedburner.com/finofilipino/cdiM,FinoFilipino,Entertainment,Enabled,2.54,,article,,finofilipino.org
+cuantocabron.com,https://feeds2.feedburner.com/cuantocabron,Cuánto Cabrón,Entertainment,Enabled,2.25,,article,,www.cuantocabron.com
+cuantocabron.com,https://feeds2.feedburner.com/cuantocabron,Cuánto Cabrón,Entertainment,Enabled,2.25,,article,,www.cuantocabron.com
+todojuegos.com,https://feeds.feedburner.com/TodoJuegos,Todo Juegos,Entertainment,Disabled,2.23,,article,,www.todojuegos.com
+sopitas.com,https://www.sopitas.com/site/feed/,Sopitas.com,Entertainment,Disabled,1.72,,article,,sopitas.com
+ascodevida.com,https://feeds2.feedburner.com/ascodevida,Asco de vida,Entertainment,Disabled,1.41,,article,,www.ascodevida.com
+vice.com/es?locale=es_mx,https://www.vice.com/es_mx/rss,VICE MX,Entertainment,Disabled,1.22,,article,,vice.com
+intercambiosvirtuales.org,https://www.intercambiosvirtuales.org/feed,IntercambiosVirtuales,Entertainment,Disabled,1.2,,article,,www.intercambiosvirtuales.org
+upsocl.com,https://www.upsocl.com/feed/,Upsocl,Entertainment,Disabled,1.04,,article,,www.upsocl.com
+abc.es,https://ocio.facilisimo.com/include/services/rss.cfm,Entretenimiento facilisimo,Entertainment,Disabled,0.96,,article,,entretenimiento.facilisimo.com
+espinof.com,https://feeds.weblogssl.com/blogdecine,Espinof,Entertainment,Disabled,0.9,,article,,www.espinof.com
+fancueva.com,https://feeds.feedburner.com/fancueva,Fancueva,Entertainment,Disabled,0.57,,article,,www.fancueva.com
+nopuedocreer.com,https://www.nopuedocreer.com/quelohayaninventado/feed/,No Puedo Creer,Entertainment,Disabled,0.55,,article,,nopuedocreer.com
+nopuedocreer.com,https://www.nopuedocreer.com/quelohayaninventado/feed/,No Puedo Creer,Entertainment,Disabled,0.55,,article,,nopuedocreer.com
+vayagif.com,https://feeds2.feedburner.com/vayagif,Vaya GIF,Entertainment,Disabled,0.42,,article,,www.vayagif.com
+yofuiaegb.com,https://www.yofuiaegb.com/feed/,Yo fui a EGB,Entertainment,Disabled,0.28,,article,,yofuiaegb.com
+marcianosmx.com,https://marcianos.com.mx/feed/,Marcianos,Entertainment,Disabled,0.1,,article,,marcianosmx.com
+gran-angular.net,https://feeds.feedburner.com/GranAngular,Gran Angular,Entertainment,Disabled,-0.05,,article,,gran-angular.net
+segnorasque.com,https://feeds.feedburner.com/SegnorasQue,Señorasque.com,Entertainment,Disabled,-0.02,,article,,www.segnorasque.com
+webalia.com,https://webalia.com/rss.php,Webalia.com,Entertainment,Disabled,-0.13,,article,,webalia.com
+lifeboxset.com,https://www.lifeboxset.com/feed/,LifeBoxset,Entertainment,Disabled,-0.14,,article,,www.lifeboxset.com
+genial.guru/rss/,https://genial.guru/rss/,Genial,Entertainment,Disabled,-0.26,,article,,genial.guru
+codigoespagueti.com,https://codigoespagueti.com/feed/,Código Espagueti,Entertainment,Disabled,-0.34,,article,,codigoespagueti.com
+algarabia.com,https://algarabia.com/feed/,Algarabía,Entertainment,Disabled,-0.36,,article,,algarabia.com
+teniaquedecirlo.com,https://feeds2.feedburner.com/teniaquedecirlo,Tenía que decirlo,Entertainment,Disabled,-0.36,,article,,www.teniaquedecirlo.com
+welele.es,https://welele.es/rss,Welele,Entertainment,Disabled,-0.37,,article,,welele.es
+eldeforma.com,https://eldeforma.com/feed/,El Deforma,Entertainment,Disabled,-0.37,,article,,eldeforma.com
+tresubresdobles.com,https://tresubresdobles.com/rss,Tres Ubres Dobles,Entertainment,Disabled,-0.39,,article,,tresubresdobles.com
+notengotele.com,https://feeds2.feedburner.com/notengotele,No tengo tele,Entertainment,Disabled,-0.41,,article,,www.notengotele.com
+de10.com.mx,https://de10.com.mx/rss/rss_de10.xml,De10,Entertainment,Disabled,-0.54,,article,,de10.com.mx
+dogguie.net,https://www.dogguie.com/feed/,Link alternatif Rakuten365,Entertainment,Disabled,-0.54,,article,,dogguie.net
+hola.com,https://www.hola.com/rss.xml,Hola.com,Fashion,Enabled,9.61,,article,,www.hola.com
+trendencias.com,https://www.trendencias.com/atom.xml,Trendencias,Fashion,Enabled,6.72,,article,,www.trendencias.com
+smoda.elpais.com,https://smoda.elpais.com/feed/rss/,S Moda EL PAÍS,Fashion,Enabled,4.9,,article,,smoda.elpais.com
+elpais.com/rss/elpais/icon.xml,https://ep01.epimg.net/rss/elpais/icon.xml,Revista ICON,Fashion,Enabled,4.69,,article,,elpais.com
+trendenciashombre.com,https://www.mensencia.com/index.xml,Trendencias Hombre,Fashion,Enabled,2.87,,article,,www.trendenciashombre.com
+devilwearszara.vogue.es,https://devilwearszara.vogue.es/feed/,Devil wears Zara,Fashion,Disabled,2.06,,article,,devilwearszara.vogue.es
+elrincondemoda.com,https://www.elrincondemoda.com/feed/,El Rincón de Moda,Fashion,Disabled,1.83,,article,,elrincondemoda.com
+atrendylifestyle.com,https://www.atrendylifestyle.com/feeds/posts/default,BLOG DE MODA Y LIFESTYLE,Fashion,Disabled,1.68,,article,,www.atrendylifestyle.com
+muymolon.com,https://muymolon.com/feed/,muymolon,Fashion,Disabled,1.49,,article,,muymolon.com
+elle.com/es/,https://www.elle.es/rss/feed/site,ELLE,Fashion,Disabled,1.05,,article,,www.elle.com
+hombresconestilo.com,https://www.tenerclase.com/feed,Hombres con Estilo,Fashion,Disabled,0.97,,article,,hombresconestilo.com
+compradiccion.com,https://feeds.weblogssl.com/compradiccion,Compradicción,Fashion,Disabled,0.74,,article,,www.compradiccion.com
+nosotras.com,https://www.nosotras.com/rss.asp,Nosotras,Fashion,Disabled,0.38,,article,,nosotras.com
+collagevintage.com,https://feeds.feedburner.com/collagevintage/azcQ,Collage Vintage,Fashion,Disabled,0.04,,article,,collagevintage.com
+blog.es.privalia.com,https://blog.es.privalia.com/feed/,Privalia Blog,Fashion,Disabled,-0.01,,article,,blog.es.privalia.com
+stellawantstodie.net,https://www.stellawantstodie.net/feeds/posts/default,stellawantstodie,Fashion,Disabled,-0.35,,article,,stellawantstodie.net
+rayasycuadros.net,https://www.rayasycuadros.net/feeds/posts/default,Rayas y Cuadros,Fashion,Disabled,-0.42,,article,,rayasycuadros.net
+neo2.com,https://www.neo2.es/blog/feed/,Neo2 Magazine,Fashion,Disabled,-0.42,,article,,neo2.com
+modaes.es,https://www.modaes.es/rss.xml,Modaes (España),Fashion,Disabled,-0.43,,article,,www.modaes.com
+aubreyandme.com,https://www.aubreyandme.com/feeds/posts/default,Aubrey and Me,Fashion,Disabled,-0.5,,article,,aubreyandme.com
+telva.com,https://estaticos.telva.com/rss/moda.xml,Moda // telva,Fashion,Disabled,-0.51,,article,,www.telva.com
+blogmodahombre.com,https://www.ropademodahombres.com/feeds/posts/default,Blog Moda Hombre,Fashion,Disabled,-0.52,,article,,blogmodahombre.com
+eleganciadospuntocero.com,https://www.eleganciadospuntocero.com/feed/,Elegancia 2.0,Fashion,Disabled,-0.52,,article,,eleganciadospuntocero.com
+glamour.es,https://www.glamour.es/home.xml,Glamour Feed,Fashion,Disabled,-0.53,,article,,glamour.es
+mujerhoy.com,https://www.hoymujer.com/feeds/rss-ultimas-noticias-portada.xml,Mujer Hoy,Fashion,Disabled,-0.53,,article,,mujerhoy.com
+myshowroomblog.es,https://www.myshowroomblog.com/feeds/posts/default,My Showroom,Fashion,Disabled,-0.54,,article,,myshowroomblog.es
+elcomidista.elpais.com/rss/elcomidista/portada.xml,https://ep01.epimg.net/rss/elcomidista/portada.xml,El Comidista | EL PAÍS,Food,Enabled,9.08,,article,,elcomidista.elpais.com
+recetasdecocina.elmundo.es,https://www.recetasdecocinadesergio.com/feed,Recetas de cocina fáciles paso a paso | Recetas del Señor Señor,Food,Enabled,2.9,,article,,recetasdecocina.elmundo.es
+webosfritos.es,https://webosfritos.es/feed/,webos fritos,Food,Enabled,1.82,,article,,webosfritos.es
+abcblogs.abc.es/gastronomia/,https://www.abc.es/blogs/gastronomia/feedrss.asp,Salsa de chiles,Food,Enabled,1.77,,article,,abcblogs.abc.es
+recetasderechupete.com,https://www.recetasderechupete.com/feed/,Recetas de rechupete – Recetas de cocina caseras y fáciles,Food,Disabled,0.98,,article,,www.recetasderechupete.com
+saborgourmet.com,https://saborgourmet.com/feed/,SaborGourmet.com,Food,Disabled,0.87,,article,,saborgourmet.com
+elcocinerofiel.com,https://elcocinerofiel.com/feed/,El Cocinero Fiel,Food,Disabled,0.75,,article,,elcocinerofiel.com
+velocidadcuchara.com,https://www.velocidadcuchara.com/feed/atom,Velocidad Cuchara,Food,Disabled,0.69,,article,,www.velocidadcuchara.com
+velocidadcuchara.com,https://www.velocidadcuchara.com/feed/atom,Velocidad Cuchara,Food,Disabled,0.69,,article,,www.velocidadcuchara.com
+garbancita.blogspot.com/,https://garbancita.blogspot.com/atom.xml,Garbancita®,Food,Disabled,0.63,,article,,garbancita.blogspot.com
+falsariuschef.com/,https://cocinaparaimpostores.blogspot.com/feeds/posts/default,Falsarius Chef - Blog de cocina fácil y recetas para el día a día,Food,Disabled,0.3,,article,,www.falsariuschef.com
+eladerezo.com,https://www.eladerezo.com/feed,"El Aderezo | Blog de Cocina, Gastronomía y Recetas",Food,Disabled,0.28,,article,,www.eladerezo.com
+directoalpaladar.com,https://www.directoalpaladar.com/index.xml,Directo al Paladar,Food,Disabled,0.28,,article,,www.directoalpaladar.com
+gourmetymerlin.blogspot.com/,https://gourmetymerlin.blogspot.com/feeds/posts/default,Diario del Gourmet de Provincias y del Perro Gastrónomo,Food,Disabled,0.25,,article,,gourmetymerlin.blogspot.com
+objetivocupcake.com/,https://www.objetivocupcake.com/feeds/posts/default,Objetivo: Cupcake Perfecto.,Food,Disabled,0.17,,article,,objetivocupcake.com
+mercadocalabajio.com/,https://www.mercadocalabajio.com/feeds/posts/default,Mercado Calabajío,Food,Disabled,0.04,,article,,www.mercadocalabajio.com
+thermorecetas.com,https://www.thermorecetas.com/feed/,ThermoRecetas,Food,Disabled,-0.02,,article,,www.thermorecetas.com
+midulcetentacion.es/,https://www.midulcetentacion.es/feeds/posts/default,Mi dulce tentación,Food,Disabled,-0.07,,article,,www.midulcetentacion.es
+pequerecetas.com,https://www.pequerecetas.com/feed/,PequeRecetas,Food,Disabled,-0.12,,article,,www.pequerecetas.com
+cocina.facilisimo.com/,https://cocina.facilisimo.com/include/services/rss.cfm,Cocina facilisimo,Food,Disabled,-0.29,,article,,cocina.facilisimo.com
+gastroeconomy.com,https://www.gastroeconomy.com/feed/,Gastroeconomy,Food,Disabled,-0.3,,article,,www.gastroeconomy.com
+misthermorecetas.com,https://www.misthermorecetas.com/feed/,Recetas Thermomix | MisThermorecetas,Food,Disabled,-0.3,,article,,www.misthermorecetas.com
+cocinandoentreolivos.com,https://cocinandoentreolivos.blogspot.com/feeds/posts/default,Cocinando Entre Olivos,Food,Disabled,-0.31,,article,,cocinandoentreolivos.com
+elrincondebea.com,https://www.elrincondebea.com/feed,El Rincón de Bea,Food,Disabled,-0.32,,article,,elrincondebea.com
+danzadefogones.com,https://www.danzadefogones.com/feed/,Danza de Fogones,Food,Disabled,-0.33,,article,,danzadefogones.com
+vitonica.com,https://www.vitonica.com/index.xml,Vitónica,Health,Enabled,7.31,,article,,www.vitonica.com
+mejorconsalud.as.com,https://mejorconsalud.com/feed/,Mejor con Salud,Health,Enabled,5.57,,article,,mejorconsalud.as.com
+ejerciciosencasa.as.com,https://ejerciciosencasa.es/feed/,Ejercicios En Casa,Health,Enabled,5.32,,article,,ejerciciosencasa.as.com
+who.int/feeds/entity/csr/don/es/rss.xml,https://www.who.int/feeds/entity/csr/don/es/rss.xml,BROTES EPIDEMICOS,Health,Enabled,3.1,,article,,who.int
+fitnessrevolucionario.com,https://fitnessrevolucionario.com/feed/,Fitness Revolucionario,Health,Enabled,2.82,,article,,www.fitnessrevolucionario.com
+rinconpsicologia.com,https://rincon-psicologia.blogspot.com/feeds/posts/default,Alimenta tus Neuronas :),Health,Disabled,1.82,,article,,rinconpsicologia.com
+midietacojea.com,https://midietacojea.com/feed/,Mi Dieta Cojea,Health,Disabled,1.52,,article,,midietacojea.com
+diariomedico.com/,https://www.diariomedico.com/services/rss,DiarioMedico - Plataforma de profesionales sanitarios,Health,Disabled,1.33,,article,,www.diariomedico.com
+lavanguardia.com/vida/salud,https://www.lavanguardia.com/mvc/feed/rss/vida/salud,Salud,Health,Disabled,1.33,,article,,lavanguardia.com
+lavanguardia.com/vida/salud,https://www.lavanguardia.com/mvc/feed/rss/vida/salud,Salud,Health,Disabled,1.33,,article,,www.abc.es
+loquedicelacienciaparadelgazar.blogspot.com/,https://loquedicelacienciaparadelgazar.blogspot.com/feeds/posts/default,Lo que dice la ciencia para adelgazar de forma fácil y saludable,Health,Disabled,1.15,,article,,loquedicelacienciaparadelgazar.blogspot.com
+20minutos.es,https://www.20minutos.es/rss/salud/,20MINUTOS.ES - Salud,Health,Disabled,1.13,,article,,www.20minutos.es
+abc.es,https://www.abc.es/rss/feeds/abc_SociedadSalud.xml,Salud,Health,Disabled,1.08,,article,,abc.es
+abc.es,https://www.abc.es/rss/feeds/abc_SociedadSalud.xml,Salud,Health,Disabled,1.08,,article,,www.abc.es
+consumer.es/,https://www.consumer.es/sindicacion/rss/estandar/,EROSKI CONSUMER,Health,Disabled,0.56,,article,,consumer.es
+hsnstore.com/blog,https://blog.hsnstore.com/feed/,"Blog de Fitness, Nutrición, Salud y Deporte | Blog HSN",Health,Disabled,0.46,,article,,www.hsnstore.com
+elblogalternativo.com,https://feeds.feedburner.com/ElBlogAlternativo,El Blog Alternativo,Health,Disabled,0.35,,article,,g3adventures.com
+operaciontransformer.com,https://transformer.blogs.quo.es/feed/,Operación Transformer,Health,Disabled,0.35,,article,,operaciontransformer.com
+vicentebaos.blogspot.com/,https://vicentebaos.blogspot.com/feeds/posts/default,El Supositorio,Health,Disabled,0.24,,article,,vicentebaos.blogspot.com
+saludconcosas.es,https://saludconcosas.blogspot.com/feeds/posts/default,Saludconcosas,Health,Disabled,0.14,,article,,saludconcosas.es
+infosalus.com,https://www.europapress.es/rss/rss.aspx?ch=74,infosalus.com,Health,Disabled,0.1,,article,,www.infosalus.com
+runfitners.com,https://runfitners.com/feed/,Runfitners,Health,Disabled,0.1,,article,,runfitners.com
+powerexplosive.com,https://powerexplosive.com/feed/,Power Explosive,Health,Disabled,0.05,,article,,powerexplosive.com
+juanrevenga.com,https://juanrevenga.com/feed/,El nutricionista de la General,Health,Disabled,0.03,,article,,juanrevenga.com
+elperiodico.com/es,https://www.elperiodico.com/es/rss/sanidad/rss.xml,El Periódico - sanidad,Health,Disabled,-0.09,,article,,www.elperiodico.com
+megustaestarbien.com,https://megustaestarbien.com/feed/,Me gusta estar bien,Health,Disabled,-0.14,,article,,megustaestarbien.com
+boticariagarcia.com,https://boticariagarcia.com/feed/,Boticaria García,Health,Disabled,-0.15,,article,,boticariagarcia.com
+entrenamiento.com,https://www.entrenamiento.com/feed/,Entrenamiento,Health,Disabled,-0.25,,article,,www.entrenamiento.com
+ocularis.es,https://ocularis.es/blog/?feed=rss2,Ocularis,Health,Disabled,-0.26,,article,,ocularis.es
+realfooding.com,https://realfooding.com/feed/,Realfooding,Health,Disabled,-0.28,,article,,realfooding.com
+hola.com,https://blog.hola.com/elrincondesonia/feed,"Hola.com - diario de actualidad, moda y belleza",Home,Enabled,16.48,,article,,hola.com
+decoracion.trendencias.com,https://www.decoesfera.com/index.xml,Decoesfera,Home,Enabled,7.74,,article,,decoracion.trendencias.com
+decoracion.trendencias.com,https://www.decoesfera.com/index.xml,Decoesfera,Home,Enabled,7.74,,article,,decoracion.trendencias.com
+x4duros.com/,https://www.x4duros.com/feeds/posts/default,x4duros.com,Home,Enabled,2.68,,article,,x4duros.com
+decoracion2.com,https://decoracion2.com/feed/atom,Decoración 2.0,Home,Disabled,2.5,,article,,decoracion2.com
+decoracion.facilisimo.com/,https://decoracion.facilisimo.com/include/services/rss.cfm,Decoración facilisimo,Home,Disabled,2.24,,article,,decoracion.facilisimo.com
+bricolaje.facilisimo.com/,https://bricolaje.facilisimo.com/include/services/rss.cfm,Bricolaje facilisimo,Home,Disabled,2.12,,article,,bricolaje.facilisimo.com
+muymolon.com,https://muymolon.com/feed/,muymolon,Home,Disabled,1.67,,article,,muymolon.com
+elmueble.com/,https://www.elmueble.com/feeds/rss.html,www.elmueble.com - Últimas noticias,Home,Disabled,1.57,,article,,www.elmueble.com
+delikatissen.com,https://www.delikatissen.com/feed/,delikatissen,Home,Disabled,1.34,,article,,www.delikatissen.com
+blogs.hogarmania.com,https://blogs.hogarutil.com/feed/,Blog de Hogarmania,Home,Disabled,1.19,,article,,blogs.hogarmania.com
+decopeques.com,https://feeds.feedburner.com/Decopequescom,DecoPeques,Home,Disabled,0.42,,article,,decopeques.com
+bohodecochic.com/,https://bohodecochic.blogspot.com/feeds/posts/default,Boho Deco Chic,Home,Disabled,0.09,,article,,www.bohodecochic.com
+proyectos.habitissimo.es,https://proyectos.habitissimo.es/feed,Proyectos Habitissimo,Home,Disabled,0.08,,article,,proyectos.habitissimo.es
+conbotasdeagua.com,https://www.conbotasdeagua.com/feed/,Con botas de agua,Home,Disabled,0.06,,article,,conbotasdeagua.com
+blog.cosasmolonas.com,https://blog.cosasmolonas.com/feed/,Cosas Molonas,Home,Disabled,-0.01,,article,,blog.cosasmolonas.com
+estiloydeco.com,https://www.estiloydeco.com/feed/,Decoración de Interiores y Exteriores – EstiloyDeco,Home,Disabled,-0.05,,article,,www.estiloydeco.com
+homify.com.mx/,https://www.homify.com.mx/revista.rss,magazine de homify,Home,Disabled,-0.14,,article,,homify.com.mx
+houzz.es,https://www.houzz.es/getGalleries/featured/out-rss,Houzz,Home,Disabled,-0.19,,article,,www.houzz.es
+decorablog.com,https://www.decorablog.com/feed/,Decorablog – Revista de decoración,Home,Disabled,-0.35,,article,,www.decorablog.com
+diariodesign.com,https://diariodesign.com/feed/,diariodesign.com,Home,Disabled,-0.36,,article,,diariodesign.com
+nuevo-estilo.micasarevista.com/,https://nuevo-estilo.micasarevista.com/rss/feed/nuevoestilo,NuevoEstilo,Home,Disabled,-0.37,,article,,nuevo-estilo.micasarevista.com
+decoracion2.com/opendeco,https://feeds.feedburner.com/openDeco,Decoración de interiores | Opendeco,Home,Disabled,-0.4,,article,,decoracion2.com
+milideas.net,https://www.milideas.net/feed,Mil Ideas de Decoración,Home,Disabled,-0.48,,article,,www.milideas.net
+ciencia.nasa.gov,https://ciencia.nasa.gov/rss.xml,Ciencia de la NASA,Science,Enabled,5.24,,article,,ciencia.nasa.gov
+microsiervos.com,https://www.microsiervos.com/index.xml,Microsiervos,Science,Enabled,4.77,,article,,www.microsiervos.com
+es.gizmodo.com,https://es.gizmodo.com/rss,Gizmodo en Español,Science,Enabled,4.73,,article,,es.gizmodo.com
+muyinteresante.es,https://feeds.feedburner.com/Muyinteresantees,MuyInteresante.es,Science,Enabled,4,,article,,www.muyinteresante.es
+fayerwayer.com/fw,https://feeds.feedburner.com/FayerWayer,Fayerwayer,Science,Enabled,3.86,,article,,fayerwayer.com
+xatakaciencia.com,https://www.xatakaciencia.com/index.xml,Xataka Ciencia,Science,Enabled,3.63,,article,,xatakaciencia.com
+elespanol.com/omicrono/,https://www.omicrono.com/,El Español - Omicrono,Science,Disabled,2.54,,article,,elespanol.com
+abc.es,https://www.abc.es/rss/feeds/abc_Ciencia_Tecnologia.xml,Ciencia y Tecnología,Science,Disabled,2.18,,article,,www.abc.es
+abc.es,https://www.abc.es/rss/feeds/abc_Ciencia_Tecnologia.xml,Ciencia y Tecnología,Science,Disabled,2.18,,article,,abcblogs.abc.es
+abc.es,https://www.abc.es/rss/feeds/abc_Ciencia_Tecnologia.xml,Ciencia y Tecnología,Science,Disabled,2.18,,article,,www.abc.es
+abc.es,https://www.abc.es/rss/feeds/abc_Ciencia_Tecnologia.xml,Ciencia y Tecnología,Science,Disabled,2.18,,article,,abcblogs.abc.es
+abcblogs.abc.es/nieves/,https://www.abc.es/blogs/nieves/feedrss.asp,Ciencia y Tecnología,Science,Disabled,2.13,,article,,www.abc.es
+abcblogs.abc.es/nieves/,https://www.abc.es/blogs/nieves/feedrss.asp,Ciencia y Tecnología,Science,Disabled,2.13,,article,,abcblogs.abc.es
+magnet.xataka.com,https://magnet.xataka.com/index.xml,Magnet,Science,Disabled,2.08,,article,,magnet.xataka.com
+nationalgeographic.com.es/,https://www.nationalgeographic.com.es/feeds/rss.html,www.nationalgeographic.com.es - Últimas noticias,Science,Disabled,1.75,,article,,www.nationalgeographic.com.es
+amazings.es,https://amazings.es/,Amazings,Science,Disabled,1.44,,article,,amazings.es
+rtve.es,https://www.rtve.es/rss/temas_ciencia-tecnologia.xml,Ciencia y tecnología en rtve.es,Science,Disabled,1.39,,article,,www.rtve.es
+tendencias21.es/,https://www.tendencias21.net/xml/syndication.rss,"Tendencias 21. Ciencia, tecnología, sociedad y cultura",Science,Disabled,1.18,,article,,tendencias21.es
+20minutos.es,https://www.20minutos.es/rss/ciencia/,20MINUTOS.ES - Ciencia,Science,Disabled,0.89,,article,,www.20minutos.es
+blogs.20minutos.es/ciencia-para-llevar-csic,https://blogs.20minutos.es/ciencia-para-llevar-csic/,Ciencia para llevar,Science,Disabled,0.88,,article,,20minutos.es
+fogonazos.es/,https://fogonazos.blogspot.com/feeds/posts/default?alt=rss,Fogonazos,Science,Disabled,0.56,,article,,www.fogonazos.es
+historiasdelahistoria.com,https://historiasdelahistoria.com/,Historias de la Historia,Science,Disabled,0.2,,article,,historiasdelahistoria.com
+historiasdelahistoria.com,https://historiasdelahistoria.com/,Historias de la Historia,Science,Disabled,0.2,,article,,historiasdelahistoria.com
+europapress.es/ciencia/,https://www.europapress.es/rss/rss.aspx?ch=298,Europa Press - Ciencia,Science,Disabled,0.13,,article,,www.europapress.es
+lacienciaysusdemonios.com,https://cnho.wordpress.com/,La Ciencia y sus Demonios,Science,Disabled,-0.08,,article,,lacienciaysusdemonios.com
+curistoria.com,https://curistoria.blogspot.com/feeds/posts/default,Curistoria,Science,Disabled,-0.15,,article,,curistoria.com
+scientiablog.com,https://scientiablog.com/,SCIENTIA,Science,Disabled,-0.24,,article,,scientiablog.com
+gaussianos.com,https://feeds.feedburner.com/gaussianos,Gaussianos,Science,Disabled,-0.35,,article,,gaussianos.com
+noticiasdelaciencia.com/coverrss/,https://feeds.feedburner.com/NoticiasDeLaCienciaYLaTecnologia,Noticias de la Ciencia,Science,Disabled,-0.36,,article,,noticiasdelaciencia.com
+planetacurioso.com,https://www.planetacurioso.com/,Planeta Curioso,Science,Disabled,-0.36,,article,,planetacurioso.com
+neoteo.com,https://www.neoteo.com/,NeoTeo,Science,Disabled,-0.47,,article,,neoteo.com
+cienciadesofa.com,https://cienciadesofa.com/feed,Ciencia de Sofá,Science,Disabled,-0.51,,article,,cienciadesofa.com
+danielmarin.naukas.com,https://danielmarin.naukas.com/,Eureka,Science,Disabled,-0.52,,article,,danielmarin.naukas.com
+cookingideas.es,https://www.cookingideas.es/feed,Cooking Ideas,Science,Disabled,-0.53,,article,,cookingideas.es
+technologyreview.es/feed/feeds/rss.aspx,https://feeds.technologyreview.com/technology_review_spanish_top_stories,Feed View,Science,Disabled,-0.54,,article,,technologyreview.es
+naukas.com,https://feeds.feedburner.com/naukas,Naukas,Science,Disabled,-0.55,,article,,naukas.com
+investigacionyciencia.es/rss/noticias,https://www.investigacionyciencia.es/rss/noticias,Investigación y Ciencia: Actualidad científica,Science,Disabled,-0.57,,article,,www.investigacionyciencia.es
+vozpopuli.com/altavoz/next/,https://www.vozpopuli.com/rss/section/3000000/,Vozpópuli - Ciencia,Science,Disabled,-0.59,,article,,vozpopuli.com
+follow.it/lamentiraestaahifuera,https://feeds.feedburner.com/LaMentiraEstAhiFuera,lamentiraestaahifuera,Science,Disabled,-0.6,,article,,www.lamentiraestaahifuera.com
+marca.com,https://rss.marca.com/rss/descarga.htm?data2=425,Portada // marca,Sports,Enabled,7.96,,article,,www.marca.com
+marca.com,https://rss.marca.com/rss/descarga.htm?data2=425,Portada // marca,Sports,Enabled,7.96,,article,,www.marca.com
+marca.com,https://rss.marca.com/rss/descarga.htm?data2=425,Portada // marca,Sports,Enabled,7.96,,article,,www.marca.com
+marca.com,https://rss.marca.com/rss/descarga.htm?data2=425,Portada // marca,Sports,Enabled,7.96,,article,,www.marca.com
+marca.com,https://rss.marca.com/rss/descarga.htm?data2=425,Portada // marca,Sports,Enabled,7.96,,article,,www.marca.com
+espndeportes.espn.com,https://espndeportes.espn.go.com/rss/news,ESPN Deportes RSS,Sports,Enabled,6.71,,article,,espndeportes.espn.com
+espndeportes.espn.com,https://espndeportes.espn.go.com/rss/news,ESPN Deportes RSS,Sports,Enabled,6.71,,article,,espndeportes-assets.espn.com
+espndeportes-assets.espn.com,https://espndeportes-assets.espn.go.com/rss/news?cc=5200,ESPN Deportes RSS,Sports,Enabled,4.84,,article,,espndeportes.espn.com
+espndeportes-assets.espn.com,https://espndeportes-assets.espn.go.com/rss/news?cc=5200,ESPN Deportes RSS,Sports,Enabled,4.84,,article,,espndeportes-assets.espn.com
+as.com/rss/tags/ultimas_noticias-resumen-f00.xml,https://www.as.com/rss.html,Últimas noticias | Diario AS,Sports,Disabled,3.79,,article,,as.com
+vitonica.com,https://www.vitonica.com/index.xml,Vitónica,Sports,Disabled,3.25,,article,,www.vitonica.com
+sport.es,https://www.sport.es/es/rss/last_news/rss.xml,Últimas Noticias,Sports,Disabled,1.97,,article,,sport.es
+sport.es,https://www.sport.es/es/rss/last_news/rss.xml,Últimas Noticias,Sports,Disabled,1.97,,article,,sport.es
+mundodeportivo.com,https://www.elmundodeportivo.es/web/rss/titulares.rss,Portada,Sports,Disabled,1.52,,article,,mundodeportivo.com
+abc.es,https://www.abc.es/rss/feeds/abc_Deportes.xml,Deportes,Sports,Disabled,1.37,,article,,www.abc.es
+fitnessrevolucionario.com,https://fitnessrevolucionario.com/feed/,Fitness Revolucionario,Sports,Disabled,0.94,,article,,www.fitnessrevolucionario.com
+as.com/rss/futbol/portada-resumen-f00.xml,https://www.as.com/rss/feed.html?feedId=61,Sección Portada de Fútbol | Diario AS,Sports,Disabled,0.91,,article,,as.com
+marca.com/blogs/planeta-axel,https://marcawas5.recoletos.es/blogs/Rss?tp=4&u=284,Planeta Axel,Sports,Disabled,0.48,,article,,marca.com
+as.com/tag/real_madrid/a,https://www.as.com/rss/feed.html?feedId=85,Noticias sobre Real Madrid,Sports,Disabled,0.3,,article,,as.com
+20minutos.es,https://www.20minutos.es/rss/deportes/,20MINUTOS.ES - Deportes,Sports,Disabled,0.27,,article,,www.20minutos.es
+f1aldia.com,https://feeds.noxvo.com/f1aldia/,F1 al día,Sports,Disabled,0.2,,article,,www.f1aldia.com
+as.com/rss/baloncesto/portada-resumen-f00.xml,https://www.as.com/rss/feed.html?feedId=62,Sección Portada de Baloncesto | Diario AS,Sports,Disabled,0.19,,article,,as.com
+as.com/rss/masdeporte/nfl.xml,https://as.com/rss/masdeporte/nfl.xml,Sección NFL | Más Deporte | Diario AS,Sports,Disabled,0.18,,article,,as.com
+elmundo.es,https://rss.elmundo.es/rss/descarga.htm?data2=14,Deportes // elmundo,Sports,Disabled,0.17,,article,,www.elmundo.es
+as.com/rss/diarioas/portada.xml,https://as.com/rss/diarioas/portada.xml,Portada del Diario AS,Sports,Disabled,0.17,,article,,as.com
+as.com/tag/fc_barcelona/a,https://www.as.com/rss/feed.html?feedId=73,Noticias sobre FC Barcelona,Sports,Disabled,0.16,,article,,as.com
+as.com/rss/futbol/primera.xml,https://futbol.as.com/rss/futbol/primera.xml,Sección Primera División de la Liga Española - LaLiga | Fútbol | Diario AS,Sports,Disabled,0.14,,article,,as.com
+clarin.com/deportes/,https://www.clarin.com/diario/hoy/deportes.xml,Clarin.com - Deportes,Sports,Disabled,0.04,,article,,www.clarin.com
+mundodeportivo.com/futbol/fc-barcelona,https://feeds.feedburner.com/mundodeportivo-futbol-fc-barcelona,F.C. Barcelona,Sports,Disabled,-0.18,,article,,www.mundodeportivo.com
+nbamaniacs.com,https://feeds.feedburner.com/nbamaniacs,nbamaniacs,Sports,Disabled,-0.28,,article,,www.nbamaniacs.com
+lalibretadevangaal.com,https://www.lalibretadevangaal.com/feed,La Libreta de Van Gaal,Sports,Disabled,-0.32,,article,,www.lalibretadevangaal.com
+todomountainbike.net/,https://www.todomountainbike.es/rss,TodoMountainBike,Sports,Disabled,-0.37,,article,,www.todomountainbike.net
+runfitners.com,https://runfitners.com/feed/,Runfitners,Sports,Disabled,-0.44,,article,,runfitners.com
+lanacion.com.ar/herramientas/rss/index.aspx?categoria_id=131,https://contenidos.lanacion.com.ar/herramientas/rss/categoria_id=131,Deportes - lanacion.com,Sports,Disabled,-0.45,,article,,www.lanacion.com.ar
+rtve.es,https://www.rtve.es/rss/temas_deportes.xml,Deportes en rtve.es,Sports,Disabled,-0.46,,article,,www.rtve.es
+cnet.com/es/#ftag=ESPdf5230a,https://www.cnet.com/es/rss/,CNET en Español,Technology,Enabled,8.68,,article,,cnet.com
+xataka.com,https://feeds.weblogssl.com/xataka2,Xataka,Technology,Enabled,6.17,,article,,www.xataka.com
+genbeta.com,https://www.genbeta.com/index.xml,Genbeta,Technology,Enabled,3.34,,article,,www.genbeta.com
+genbeta.com,https://www.genbeta.com/index.xml,Genbeta,Technology,Enabled,3.34,,article,,www.genbeta.com
+elandroidelibre.elespanol.com,https://www.elandroidelibre.com/,El Androide Libre,Technology,Enabled,3.19,,article,,elandroidelibre.elespanol.com
+hipertextual.com,https://alt1040.com/,Hipertextual,Technology,Enabled,2.95,,article,,hipertextual.com
+elpais.com/rss/tecnologia/portada.xml,https://www.elpais.com/rss/feed.html?feedId=1005,Portada de Tecnología | EL PAÍS,Technology,Enabled,2.38,,article,,elpais.com
+engadget.com/,https://es.engadget.com/rss.xml,Engadget,Technology,Enabled,2.36,,article,,engadget.com
+microsiervos.com,https://www.microsiervos.com/index.xml,Microsiervos,Technology,Enabled,1.88,,article,,www.microsiervos.com
+applesfera.com,https://feeds.weblogssl.com/applesfera,Applesfera,Technology,Enabled,1.8,,article,,www.applesfera.com
+xatakandroid.com,https://www.xatakandroid.com/index.xml,Xataka Android,Technology,Disabled,1.47,,article,,www.xatakandroid.com
+muyinteresante.es,https://feeds.feedburner.com/Muyinteresantees,MuyInteresante.es,Technology,Disabled,1.47,,article,,www.muyinteresante.es
+fayerwayer.com/fw,https://feeds.feedburner.com/FayerWayer,Fayerwayer,Technology,Disabled,1.43,,article,,fayerwayer.com
+xatakaciencia.com,https://www.xatakaciencia.com/index.xml,Xataka Ciencia,Technology,Disabled,1.34,,article,,xatakaciencia.com
+es.gizmodo.com,https://es.gizmodo.com/rss,Gizmodo en Español,Technology,Disabled,1.3,,article,,es.gizmodo.com
+xatakamovil.com,https://www.xatakamovil.com/atom.xml,Xataka Móvil,Technology,Disabled,1.03,,article,,www.xatakamovil.com
+vidaextra.com,https://feeds.weblogssl.com/vidaextra,Vida Extra,Technology,Disabled,1,,article,,www.vidaextra.com
+enriquedans.com,https://feeds.feedburner.com/ElBlogDeEnriqueDans,Enrique Dans,Technology,Disabled,0.77,,article,,www.enriquedans.com
+wwwhatsnew.com,https://feeds2.feedburner.com/Wwwhatsnew,Wwwhat's new?,Technology,Disabled,0.76,,article,,wwwhatsnew.com
+elespanol.com/omicrono/,https://www.omicrono.com/,El Español - Omicrono,Technology,Disabled,0.35,,article,,elespanol.com
+amazings.es,https://amazings.es/,Amazings,Technology,Disabled,0.29,,article,,amazings.es
+andro4all.com,https://feeds.feedburner.com/Andro4allcom,Andro4all,Technology,Disabled,0.27,,article,,andro4all.com
+tendencias21.es/,https://www.tendencias21.net/xml/syndication.rss,"Tendencias 21. Ciencia, tecnología, sociedad y cultura",Technology,Disabled,0.16,,article,,tendencias21.es
+magnet.xataka.com,https://magnet.xataka.com/index.xml,Magnet,Technology,Disabled,0.13,,article,,magnet.xataka.com
+20minutos.es,https://www.20minutos.es/rss/tecnologia/,20MINUTOS.ES - Tecnología,Technology,Disabled,-0.02,,article,,www.20minutos.es
+xatakafoto.com,https://feeds.weblogssl.com/xatakafoto,Xataka Foto,Technology,Disabled,-0.02,,article,,xatakafoto.com
+nopuedocreer.com,https://feeds.feedburner.com/NoPuedoCreerQueLoHayanInventado,No Puedo Creer,Technology,Disabled,-0.04,,article,,nopuedocreer.com
+nopuedocreer.com,https://feeds.feedburner.com/NoPuedoCreerQueLoHayanInventado,No Puedo Creer,Technology,Disabled,-0.04,,article,,nopuedocreer.com
+rss.elconfidencial.com/tecnologia/,https://www.elconfidencial.com/rss/tecnologia.xml,Tecnología,Technology,Disabled,-0.1,,article,,www.elconfidencial.com
+elladodelmal.com/,https://feeds.feedburner.com/ElLadoDelMal,Un informático en el lado del mal,Technology,Disabled,-0.15,,article,,www.elladodelmal.com
+adslzone.net,https://feeds.feedburner.com/adslzone,ADSLZone,Technology,Disabled,-0.19,,article,,www.adslzone.net
+elviajero.elpais.com/rss/elviajero/portada.xml,https://ep01.epimg.net/rss/elviajero/portada.xml,Portada de El Viajero | EL PAÍS,Travel,Enabled,9.51,,article,,elpais.com;elviajero.elpais.com
+elpais.com/agr/rss/paco_nadal,https://elpais.com/agr/rss/paco_nadal/a,Paco Nadal,Travel,Enabled,8.65,,article,,elpais.com
+nationalgeographic.com.es/,https://www.nationalgeographic.com.es/feeds/rss.html,www.nationalgeographic.com.es - Últimas noticias,Travel,Enabled,5.93,,article,,www.nationalgeographic.com.es
+diariodelviajero.com,https://feeds.weblogssl.com/diariodelviajero,Diario del Viajero,Travel,Enabled,5.1,,article,,www.diariodelviajero.com
+elmundo.es,https://e00-elmundo.uecdn.es/rss/viajes.xml,Viajes // elmundo,Travel,Enabled,4.2,,article,,www.elmundo.es
+101lugaresincreibles.com,https://feeds.feedburner.com/101LugaresIncreibles,101 Lugares increíbles,Travel,Enabled,4.13,,article,,101lugaresincreibles.com
+ofertasparaviajar.com,https://www.ofertasparaviajar.com/index.rdf,Ofertas para Viajar,Travel,Disabled,1.55,,article,,ofertasparaviajar.com
+20minutos.es,https://www.20minutos.es/rss/viajes/,20MINUTOS.ES - Viajes,Travel,Disabled,1.09,,article,,www.20minutos.es
+kirainet.com,https://www.kirainet.com/,Kirai,Travel,Disabled,1.04,,article,,kirainet.com
+blogdeviajes.com.ar,https://www.blogdeviajes.com.ar/,Blog de Viajes,Travel,Disabled,0.83,,article,,blogdeviajes.com.ar
+hosteltur.com,https://www.hosteltur.com/rss/home.php?set_profile=1,Hosteltur Edición España,Travel,Disabled,0.38,,article,,www.hosteltur.com
+europapress.es/turismo/,https://www.europapress.es/rss/rss.aspx?ch=679,Europa Press - Turismo,Travel,Disabled,0.27,,article,,www.europapress.es
+viajes.101lugaresincreibles.com,https://viajes.101lugaresincreibles.com/,Viajes – 101lugaresincreibles –,Travel,Disabled,0.26,,article,,viajes.101lugaresincreibles.com
+guialowcost.es,https://www.guialowcost.es/atom/,Guía Low Cost,Travel,Disabled,0.17,,article,,www.guialowcost.es
+fronterasblog.com,https://fronterasblog.wordpress.com/,Fronteras,Travel,Disabled,0.04,,article,,fronterasblog.com
+locuraviajes.com,https://locuraviajes.com/blog/,LocuraViajes.com,Travel,Disabled,0.03,,article,,locuraviajes.com
+traveler.es,https://www.traveler.es/home.xml,Traveler Feed,Travel,Disabled,-0.04,,article,,traveler.es
+ignacioizquierdo.com,https://www.ignacioizquierdo.com/blog/,Blog – Crónicas de una cámara,Travel,Disabled,-0.12,,article,,ignacioizquierdo.com
+secretosdemadrid.es,https://www.secretosdemadrid.es/,Secretos de Madrid,Travel,Disabled,-0.13,,article,,secretosdemadrid.es
+madriddiferente.com,https://madriddiferente.com/index.php/,Madrid Diferente,Travel,Disabled,-0.16,,article,,madriddiferente.com
+preferente.com,https://www.preferente.com/feed,Preferente.com,Travel,Disabled,-0.21,,article,,www.preferente.com
+tecnohotelnews.com,https://www.tecnohotelnews.com/,TecnoHotel,Travel,Disabled,-0.26,,article,,tecnohotelnews.com
+sobreturismo.es,https://sobreturismo.es/,SobreTurismo,Travel,Disabled,-0.35,,article,,sobreturismo.es
+elpachinko.com,https://elpachinko.com/,El Pachinko,Travel,Disabled,-0.37,,article,,elpachinko.com
+viajablog.com,https://feeds.feedburner.com/viajablog/YFzw,Viajablog,Travel,Disabled,-0.43,,article,,www.viajablog.com
+sirchandler.com.ar,https://www.sirchandler.com.ar/,Sir Chandler,Travel,Disabled,-0.46,,article,,sirchandler.com.ar
+elrincondesele.com,https://www.elrincondesele.com/,El rincón de Sele,Travel,Disabled,-0.48,,article,,elrincondesele.com
+promociones-aereas.com.ar,https://www.promociones-aereas.com.ar/feeds/posts/default,Promociones Aéreas,Travel,Disabled,-0.48,,article,,promociones-aereas.com.ar

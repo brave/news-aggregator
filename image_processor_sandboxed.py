@@ -56,19 +56,21 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path):
     return False
 
 
-def get_with_max_size(url, max_bytes):
+def get_with_max_size(url, max_bytes=5000000):
+    is_large = False
     response = requests.get(url, stream=True, timeout=10)
     response.raise_for_status()
     if response.headers.get('Content-Length') and int(response.headers.get('Content-Length')) > max_bytes:
-        raise ValueError('Content-type too large')
+        is_large = True
     count = 0
     content = BytesIO()
     for chunk in response.iter_content(4096):
         count += len(chunk)
         content.write(chunk)
         if count > max_bytes:
-            raise ValueError('Received more than max_bytes')
-    return content.getvalue()
+            is_large = True
+
+    return content.getvalue(), is_large
 
 
 class ImageProcessor():
@@ -76,34 +78,39 @@ class ImageProcessor():
         self.s3_bucket = s3_bucket
 
     def cache_image(self, url):
-        cache_fn = "%s.jpg" % (hashlib.sha256(url.encode('utf-8')).hexdigest())
-        cache_path = "./feed/cache/%s" % (cache_fn)
-
-        # if we have it dont do it again
-        if os.path.isfile(cache_path):
-            return cache_fn
-        # also check if we have it on s3
-        if not config.NO_UPLOAD:
-            exists = False
-            try:
-                s3_resource.Object(self.s3_bucket, "brave-today/cache/%s.pad" % (cache_fn)).load()
-                exists = True
-            except ValueError as e:
-                exists = False  # make tests work
-            except botocore.exceptions.ClientError as e:
-                if e.response['Error']['Code'] == "404":
-                    exists = False
-                else:
-                    return None  # should retry
-            if exists:
-                return cache_fn
-
         try:
-            content = get_with_max_size(url, 5000000)  # 5mb max
+            content, is_large = get_with_max_size(url)  # 5mb max
+            if not is_large:
+                return url
+
+            cache_fn = "%s.jpg" % (hashlib.sha256(url.encode('utf-8')).hexdigest())
+            cache_path = "./feed/cache/%s" % (cache_fn)
+
+            # if we have it dont do it again
+            if os.path.isfile(cache_path):
+                return cache_fn
+            # also check if we have it on s3
+            if not config.NO_UPLOAD:
+                exists = False
+                try:
+                    s3_resource.Object(self.s3_bucket, "brave-today/cache/%s.pad" % (cache_fn)).load()
+                    exists = True
+                except ValueError as e:
+                    exists = False  # make tests work
+                except botocore.exceptions.ClientError as e:
+                    if e.response['Error']['Code'] == "404":
+                        exists = False
+                    else:
+                        return None  # should retry
+                if exists:
+                    return cache_fn
+
         except requests.exceptions.ReadTimeout:
             return None
         except ValueError:
             return None  # skipping (image exceeds maximum size)
+        except requests.exceptions.SSLError:
+            return None
         except requests.exceptions.HTTPError as e:
             if e.response.status_code not in (403, 429, 500, 502, 503):
                 logging.error("Failed to get image [%s]: %s", e.response.status_code, url)

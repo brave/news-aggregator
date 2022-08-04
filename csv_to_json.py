@@ -48,6 +48,16 @@ with open(in_path, 'r') as f:
             content_type = row[7]
 
         domain = ensure_scheme(domain)
+        favicon_url = favicon_lookup[domain]
+
+        channels = []
+        if len(row) >= 11:
+            channels = [i.strip() for i in row[10].split(";")]
+
+        rank = None
+        if len(row) >= 12:
+            rank = int(row[11])
+
         record = {'category': row[3],
                   'default': default,
                   'publisher_name': row[2],
@@ -59,17 +69,23 @@ with open(in_path, 'r') as f:
                   'creative_instance_id': row[8],
                   'url': feed_url,
                   'favicon_url': favicon_url,
-                  'destination_domains': row[9]}
+                  'destination_domains': row[9],
+                  'channels': channels,
+                  'rank': rank
+                  }
         by_url[record['url']] = record
         sources_data[hashlib.sha256(feed_url.encode('utf-8')).hexdigest()] = {'enabled': default,
                                                                               'publisher_name': record[
                                                                                   'publisher_name'],
                                                                               'category': row[3],
-                                                                              'destination_domains': row[9].split(';'),
                                                                               'site_url': row[0],
                                                                               'feed_url': row[1],
                                                                               'favicon_url': record['favicon_url'],
-                                                                              'score': float(row[5] or 0)}
+                                                                              'score': float(row[5] or 0),
+                                                                              'destination_domains': row[9].split(';'),
+                                                                              'channels': channels,
+                                                                              'rank': rank
+                                                                              }
 with open(out_path, 'w') as f:
     f.write(json.dumps(by_url))
 
