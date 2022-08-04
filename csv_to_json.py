@@ -47,7 +47,7 @@ with open(in_path, 'r') as f:
         else:
             content_type = row[7]
 
-        domain = ensure_scheme(domain)
+        domain = ensure_scheme(row[0])
         favicon_url = favicon_lookup[domain]
 
         channels = []

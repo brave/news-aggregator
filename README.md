@@ -23,6 +23,11 @@ To generate browser feed and images:
 
     NO_UPLOAD=1 python feed_processor_multi.py feed
 
+To update the favicon urls:
+
+    python update_favicon_urls.py
+    NO_UPLOAD=1 python csv_to_json sources.json
+
 # wasm_thumbnail
 
 The `wasm_thumbnail.wasm` binary comes from <https://github.com/brave-intl/wasm-thumbnail>.
