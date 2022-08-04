@@ -3,11 +3,16 @@ import hashlib
 import json
 import sys
 from urllib.parse import urlparse, urlunparse
-
+from typing import Dict
 import bleach
 
 import config
+from utils import ensure_scheme
 from upload import upload_file
+
+favicon_lookup: Dict[str, str] = None
+with open(f'{config.FAVICON_LOOKUP_FILE}.json', 'r') as f:
+    favicon_lookup = json.load(f)
 
 in_path = "{}.csv".format(config.SOURCES_FILE)
 out_path = sys.argv[1]
@@ -42,6 +47,7 @@ with open(in_path, 'r') as f:
         else:
             content_type = row[7]
 
+        domain = ensure_scheme(domain)
         record = {'category': row[3],
                   'default': default,
                   'publisher_name': row[2],
@@ -52,6 +58,7 @@ with open(in_path, 'r') as f:
                   'og_images': og_images,
                   'creative_instance_id': row[8],
                   'url': feed_url,
+                  'favicon_url': favicon_url,
                   'destination_domains': row[9]}
         by_url[record['url']] = record
         sources_data[hashlib.sha256(feed_url.encode('utf-8')).hexdigest()] = {'enabled': default,
@@ -61,6 +68,7 @@ with open(in_path, 'r') as f:
                                                                               'destination_domains': row[9].split(';'),
                                                                               'site_url': row[0],
                                                                               'feed_url': row[1],
+                                                                              'favicon_url': record['favicon_url'],
                                                                               'score': float(row[5] or 0)}
 with open(out_path, 'w') as f:
     f.write(json.dumps(by_url))

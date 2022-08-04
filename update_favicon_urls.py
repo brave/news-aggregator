@@ -3,16 +3,14 @@ import glob
 from multiprocessing import Pool, cpu_count
 from typing import List, Tuple
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import json
-
-# The file the output mapping of domain => favicon is dumped into.
-# *NOTE:* Domains for lookup are normalized to start with https://.
-OUTPUT_FILE = 'favicon_lookup.json'
+from config import FAVICON_LOOKUP_FILE, CONCURRENCY
+from utils import ensure_scheme
 
 # In seconds. Tested with 5s but it's too low for a bunch of sites (I'm looking
 # at you https://skysports.com).
-REQUEST_TIMEOUT = 10
+REQUEST_TIMEOUT = 15
 
 def get_all_domains() -> List[str]:
     source_files = glob.glob('sources*.csv')
@@ -27,9 +25,9 @@ def get_all_domains() -> List[str]:
 
 
 def get_favicon(domain: str) -> Tuple[str, str]:
-    # Only sources from the Japanese file include a scheme, at time of writing.
-    if not domain.startswith('https'):
-        domain = f'https://{domain}'
+    # Only sources from the Japanese file include a scheme, so parse the domain
+    # as a url to get something we can use in a http request.
+    domain = ensure_scheme(domain)
 
     # Set the default favicon path. If we don't find something better, we'll use
     # this.
@@ -56,12 +54,12 @@ if __name__ == "__main__":
     print(f"Processing {len(domains)} domains")
 
     favicons: List[Tuple[str, str]]
-    with Pool(cpu_count()) as p:
+    with Pool(CONCURRENCY) as p:
         favicons = p.map(get_favicon, domains)
 
     # This isn't sent over the network, so format it nicely.
     result = json.dumps(dict(favicons), indent=4)
-    with open(OUTPUT_FILE, 'w') as f:
+    with open(f'{FAVICON_LOOKUP_FILE}.json', 'w') as f:
         f.write(result)
 
     print("Done!")
