@@ -1,8 +1,8 @@
 Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative Instance ID,Destination Domains,Channels,Rank
 nytimes.com,https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml,The New York Times,Top News,Enabled,,,article,,www.nytimes.com,Top Sources; Top News,1
-cnn.com,http://rss.cnn.com/rss/cnn_topstories.rss,CNN,Top News,Enabled,,,article,,www.cnn.com,Top Sources; Top News,2
+cnn.com,https://rss.cnn.com/rss/cnn_topstories.rss,CNN,Top News,Enabled,,,article,,www.cnn.com,Top Sources; Top News,2
 foxnews.com,https://feeds.feedburner.com/foxnews/latest,FOX News,Top News,Enabled,,,article,,www.foxnews.com,Top Sources; Top News,3
-washingtonpost.com,http://feeds.washingtonpost.com/rss/national,Washington Post,Top News,Enabled,,,article,,www.washingtonpost.com,Top Sources; Top News,4
+washingtonpost.com,https://feeds.washingtonpost.com/rss/national,Washington Post,Top News,Enabled,,,article,,www.washingtonpost.com,Top Sources; Top News,4
 theguardian.com,https://www.theguardian.com/world/rss,The Guardian,World News,Enabled,,,article,,www.theguardian.com,Top Sources; Top News; World News,5
 webmd.com,https://rssfeeds.webmd.com/rss/rss.aspx?RSSSource=RSS_PUBLIC,WebMD Health,Health,Enabled,,,article,,www.webmd.com,Top Sources; Health,6
 forbes.com,https://www.forbes.com/real-time/feed/,Forbes,Business,Enabled,,,article,,www.forbes.com,Top Sources; Business,7
@@ -15,14 +15,14 @@ dailymail.co.uk,https://www.dailymail.co.uk/ushome/index.rss,Daily Mail,World Ne
 businessinsider.com,https://feeds.businessinsider.com/custom/all,Business Insider,Business,Enabled,,,article,,markets.businessinsider.com;www.businessinsider.com;www.insiderintelligence.com,Top Sources; Business,14
 gamespot.com,https://www.gamespot.com/feeds/news,Gamespot,Gaming,Enabled,,,article,,www.gamespot.com,Top Sources; Entertainment; Gaming,15
 screenrant.com,https://screenrant.com/feed/,Screenrant,Entertainment,Enabled,,,article,,screenrant.com,Top Sources; Entertainment,16
-usatoday.com,http://rssfeeds.usatoday.com/usatoday-newstopstories&x=1,USA Today,Top News,Enabled,,,article,,usatoday.com,Top Sources; Top News,17
+usatoday.com,https://rssfeeds.usatoday.com/usatoday-newstopstories&x=1,USA Today,Top News,Enabled,,,article,,usatoday.com,Top Sources; Top News,17
 cbssports.com,https://www.cbssports.com/rss/headlines/,CBSSports,Sports,Enabled,,,article,,www.cbssports.com,Top Sources; Sports,18
 gamerant.com,https://www.gamerant.com/feed/,Gamerant,Gaming,Enabled,,,article,,gamerant.com,Top Sources; Gaming,19
 wsj.com,https://feeds.a.dj.com/rss/RSSMarketsMain.xml,WSJ,Business,Enabled,,,article,,www.wsj.com,Top Sources; Top News; Business,20
 npr.org,https://feeds.npr.org/1001/rss.xml,NPR,Top News,Enabled,,,article,,www.npr.org,Top Sources; Top News,21
 pcgamer.com,https://www.pcgamer.com/rss,PC Gamer,Gaming,Enabled,,,article,,www.pcgamer.com,Top Sources; Gaming,22
 nbcnews.com,https://www.nbcnews.com/rss,NBC News,Top News,Enabled,,,article,,www.nbcnews.com,Top Sources; Top News,23
-marketwatch.com,http://www.marketwatch.com/rss/topstories,MarketWatch,Business,Enabled,,,article,,www.marketwatch.com,Top Sources; Business,24
+marketwatch.com,https://www.marketwatch.com/rss/topstories,MarketWatch,Business,Enabled,,,article,,www.marketwatch.com,Top Sources; Business,24
 techradar.com,https://www.techradar.com/rss,TechRadar,Technology,Enabled,,,article,,www.techradar.com,Top Sources; Technology,25
 thegamer.com,https://www.thegamer.com/feed,The Gamer,Gaming,Enabled,,,article,,www.thegamer.com,Top Sources; Gaming,26
 wikihow.com,https://www.wikihow.com/feed.rss,Wikihow,Culture,Enabled,,,article,,www.wikihow.com,Top Sources; Culture,27
@@ -43,7 +43,7 @@ theatlantic.com,https://www.theatlantic.com/feed/all/,The Atlantic,Culture,Enabl
 thespruce.com,https://www.thespruce.com/feeds/google-news,The Spruce,Home,Enabled,,,article,,www.thespruce.com,Top Sources; Home,42
 rogerebert.com,https://www.rogerebert.com/feed,Roger Ebert,Entertainment,Enabled,,,article,,www.rogerebert.com,Top Sources; Entertainment,43
 fool.com,https://www.fool.com/a/feeds/partner/googlechromefollow?apikey=5e092c1f-c5f9-4428-9219-908a47d2e2de,The Motley Fool,Business,Enabled,,,article,,www.fool.com,Top Sources; Business,44
-nature.com,http://feeds.nature.com/nature/rss/current,Nature,Science,Enabled,,,article,,www.nature.com,Top Sources; Science,45
+nature.com,https://feeds.nature.com/nature/rss/current,Nature,Science,Enabled,,,article,,www.nature.com,Top Sources; Science,45
 bankrate.com,https://www.bankrate.com/feeds/google-news,Bankrate,Business,Enabled,,,article,,www.bankrate.com,Top Sources; Business,46
 cbr.com,https://www.cbr.com/feed/,CBR,Entertainment,Enabled,,,article,,www.cbr.com,Top Sources; Entertainment,47
 si.com,https://www.si.com/.rss/full/,Sports Illustrated,Sports,Enabled,,,article,,www.si.com,Top Sources; Sports,48
@@ -87,7 +87,7 @@ verywellmind.com,https://www.verywellmind.com/feeds/google-news,Very Well Mind,H
 tvinsider.com,https://www.tvinsider.com/feed/,TV Insider,Entertainment,Disabled,,,article,,www.tvinsider.com,Entertainment,86
 thebalance.com,https://www.thebalance.com/feeds/google-news,The Balance,Business,Disabled,,,article,,www.thebalance.com,Business,87
 goodhousekeeping.com,https://www.goodhousekeeping.com/rss/all,Good Housekeeping,Home,Disabled,,,article,,www.goodhousekeeping.com,Home,88
-houzz.com,http://feeds.feedburner.com/houzz,Houzz,Home,Disabled,,,article,,www.houzz.com,Home,89
+houzz.com,https://feeds.feedburner.com/houzz,Houzz,Home,Disabled,,,article,,www.houzz.com,Home,89
 biography.com,https://www.biography.com/.rss/excerpt/,Biography,Culture,Disabled,,,article,,www.biography.com,Culture,90
 aljazeera.com,https://www.aljazeera.com/xml/rss/all.xml,Al Jazeera,World News,Disabled,,,article,,www.aljazeera.com,World News,91
 thedailybeast.com,https://feeds.thedailybeast.com/rss/articles,The Daily Beast,Politics,Disabled,,,article,,www.thedailybeast.com,Politics,92
@@ -95,8 +95,8 @@ tasteofhome.com,https://www.tasteofhome.com/feed/,Taste of Home,Home,Disabled,,,
 livescience.com,https://www.livescience.com/feeds/all,Livescience.com,Science,Disabled,,,article,,www.livescience.com,Science,94
 rxlist.com,https://www.rxlist.com/rss/rxlist_news.xml,RXList,Health,Disabled,,,article,,www.rxlist.com,Health,95
 rockpapershotgun.com,https://www.rockpapershotgun.com/feed,Rock Paper Shotgun,Gaming,Disabled,,,article,,www.rockpapershotgun.com,Gaming,96
-macrumors.com,"https://www.omnycontent.com/d/playlist/69559fe8-3318-4d29-922f-abe10068ca63/8594f83c-0d7d-48d9-8971-adfa01039a31/d8086c96-b6d8-4d5c-a6b3-adfa0103c86d/podcast.rss,https://feeds.macrumors.com/MacRumors-All",MacRumors,Technology,Disabled,,,article,,theconversation.com,Technology,97
-arstechnica.com,http://feeds.arstechnica.com/arstechnica/index/,Ars Technica,Science,Disabled,,,article,,arstechnica.com,Science,98
+macrumors.com,https://feeds.macrumors.com/MacRumors-All,MacRumors,Technology,Disabled,,,article,,theconversation.com,Technology,97
+arstechnica.com,https://feeds.arstechnica.com/arstechnica/index/,Ars Technica,Science,Disabled,,,article,,arstechnica.com,Science,98
 politico.com,https://www.politico.com/rss/politicopicks.xml,Politico,Politics,Disabled,,,article,,www.politico.com,Top News; Politics,99
 decider.com,https://decider.com/feed/,Decider,Entertainment,Disabled,,,article,,decider.com,Entertainment,100
 eurogamer.net,https://www.eurogamer.net/feed,Eurogamer,Gaming,Disabled,,,article,,www.eurogamer.net,Gaming,101
@@ -164,19 +164,19 @@ pushsquare.com,https://www.pushsquare.com/feeds/latest,Push Square,Gaming,Disabl
 byrdie.com,https://www.byrdie.com/feeds/google-news,Byrdie,Health,Disabled,,,article,,www.byrdie.com,Health,163
 imore.com,https://www.imore.com/rss.xml,iMore,Technology,Disabled,,,article,,www.imore.com,Technology,164
 eonline.com,https://www.eonline.com/rss,E! Online,Entertainment,Disabled,,,article,,www.eonline.com,Entertainment,165
-scientificamerican.com,http://rss.sciam.com/ScientificAmerican-Global,Scientific American,Science,Disabled,,,article,,www.scientificamerican.com,Science,166
+scientificamerican.com,https://rss.sciam.com/ScientificAmerican-Global,Scientific American,Science,Disabled,,,article,,www.scientificamerican.com,Science,166
 9to5mac.com,https://9to5mac.com/feed/,9to5Mac,Technology,Disabled,,,article,,9to5mac.com,Technology,167
 simplyrecipes.com,https://www.simplyrecipes.com/rss,Simply Recipes,Food,Disabled,,,article,,www.simplyrecipes.com,Food,168
 nintendolife.com,https://www.nintendolife.com/feeds/latest,Nintendo Life,Gaming,Disabled,,,article,,www.nintendolife.com,Gaming,169
 slate.com,https://www.slate.com/rss,Slate,Culture,Disabled,,,article,,slate.com,Culture,170
 appuals.com,https://appuals.com/feed/,Appuals,Technology,Disabled,,,article,,appuals.com,Technology,171
-hbr.org,http://feeds.hbr.org/harvardbusiness/,Harvard Business Review,Business,Disabled,,,article,,hbr.org,Business,172
+hbr.org,https://feeds.hbr.org/harvardbusiness/,Harvard Business Review,Business,Disabled,,,article,,hbr.org,Business,172
 verywellfit.com,https://www.verywellfit.com/feeds/google-news,Very Well Fit,Health,Disabled,,,article,,www.verywellfit.com,Health,173
 vice.com,https://www.vice.com/rss,VICE,Culture,Disabled,,,article,,www.vice.com,Culture,174
 laptopmag.com,https://www.laptopmag.com/feeds/all,Laptop Mag,Technology,Disabled,,,article,,www.laptopmag.com,Technology,175
 gamepressure.com,https://www.gamepressure.com/rss/news.xml,Gamepressure,Gaming,Disabled,,,article,,www.gamepressure.com,Gaming,176
 gfinityesports.com,https://www.gfinityesports.com/rss,Gfinity Esports,Gaming,Disabled,,,article,,gfinityesports.com,Gaming,177
-bonappetit.com,http://www.bonappetit.com/rss/stories,Bon Appétit,Food,Disabled,,,article,,www.bonappetit.com,Food,178
+bonappetit.com,https://www.bonappetit.com/rss/stories,Bon Appétit,Food,Disabled,,,article,,www.bonappetit.com,Food,178
 dualshockers.com,https://www.dualshockers.com/feed/atom/,DualShockers,Gaming,Disabled,,,article,,www.dualshockers.com,Gaming,179
 apa.org,https://www.apa.org/news/apa/rss.xml,American Psychological Association,Health,Disabled,,,article,,www.apa.org,Health,180
 mdpi.com,https://www.mdpi.com/rss,MDPI,Science,Disabled,,,article,,www.mdpi.com,Science,181
@@ -198,4 +198,4 @@ womenshealthmag.com,https://www.womenshealthmag.com/rss/all,Women's Health,Healt
 scmp.com,https://www.scmp.com/rss/91/feed,South China Morning Post,World News,Disabled,,,article,,www.scmp.com,World News,197
 exputer.com,https://www.exputer.com/rss,eXputer,Technology,Disabled,,,article,,exputer.com,Technology,198
 tripsavvy.com,https://www.tripsavvy.com/feeds/google-news,TripSavvy,Travel,Disabled,,,article,,www.tripsavvy.com,Travel,199
-androidcentral.com,http://www.androidcentral.com/feed,AndroidCentral,Technology,Disabled,,,article,,www.androidcentral.com,Technology,200
+androidcentral.com,https://www.androidcentral.com/feed,AndroidCentral,Technology,Disabled,,,article,,www.androidcentral.com,Technology,200

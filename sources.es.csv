@@ -67,7 +67,7 @@ lasexta.com,https://www.lasexta.com/rss/351410.xml,La Sexta,Top News,Disabled,-0
 laopiniondemurcia.es,https://www.laopiniondemurcia.es/rss,La Opinión de Murcia,Top News,Disabled,-0.49,,article,,laopiniondemurcia.es
 elsaltodiario.com,https://www.elsaltodiario.com/general/feed,El Salto,Top News,Disabled,-0.5,,article,,www.elsaltodiario.com
 newtral.es,https://www.newtral.es/feed/,Newtral,Top News,Disabled,-0.5,,article,,www.newtral.es
-elblogsalmon.com,http://feeds.weblogssl.com/elblogsalmon2,El Blog Salmón,Business,Enabled,4.48,,article,,www.elblogsalmon.com
+elblogsalmon.com,https://feeds.weblogssl.com/elblogsalmon2,El Blog Salmón,Business,Enabled,4.48,,article,,www.elblogsalmon.com
 expansion.com,https://e00-expansion.uecdn.es/rss/economia.xml,Expansion,Business,Enabled,3.44,,article,,expansion.com
 expansion.com,https://e00-expansion.uecdn.es/rss/economia.xml,Expansion,Business,Enabled,3.44,,article,,www.expansion.com
 cincodias.elpais.com,https://cincodias.elpais.com/rss/cincodias/portada.xml,EL PAÍS - Cinco Días,Business,Enabled,2.55,,article,,cincodias.elpais.com
@@ -95,7 +95,7 @@ iprofesional.com,https://feeds.feedburner.com/iprofesional-economia,iProfesional
 rankia.com,https://feeds.feedburner.com/InversionEspeculacionYCosasMias,"INVERSIÓN, ESPECULACIÓN... y cosas mías",Business,Disabled,-0.48,,article,,www.rankia.com
 finanzasparatodos.es,https://www.finanzasparatodos.es/es/rss.xml,Finanzas para todos,Business,Disabled,-0.55,,article,,finanzasparatodos.es
 autoblog.com,https://es.autoblog.com/rss.xml,Autoblog,Cars,Enabled,8.63,,article,,autoblog.com
-motorpasion.com,http://feeds.weblogssl.com/motorpasion,Motorpasión,Cars,Enabled,5.79,,article,,www.motorpasion.com
+motorpasion.com,https://feeds.weblogssl.com/motorpasion,Motorpasión,Cars,Enabled,5.79,,article,,www.motorpasion.com
 marca.com,https://estaticos.marca.com/rss/motor.xml,Marca - Motor,Cars,Enabled,4.96,,article,,www.marca.com
 as.com/rss/motor/portada-resumen-f00.xml,https://as.com/rss/motor/portada-resumen-f00.xml,Diario AS,Cars,Disabled,4.29,,article,,as.com;motor.elpais.com
 diariomotor.com,https://feeds.feedburner.com/diariomotor,Diariomotor,Cars,Disabled,1.85,,article,,www.diariomotor.com
@@ -119,7 +119,7 @@ criptotendencia.com,https://criptotendencia.com/feed/,CRIPTO TENDENCIA,Crypto,Di
 tecnologia.press,https://www.tecnologia.press/feed/,Tecnologia.press,Crypto,Disabled,-0.3,,article,,www.tecnologia.press
 infocoin.net,https://infocoin.net/feed/,InfoCoin,Crypto,Disabled,-0.33,,article,,infocoin.net
 blog.bitso.com,https://blog.bitso.com/feed,Bitso - Medium,Crypto,Disabled,-0.35,,article,,blog.bitso.com
-elpais.com/rss/cultura/portada.xml,http://ep01.epimg.net/rss/cultura/portada.xml,EL PAÍS - Cultura,Culture,Enabled,7,,article,,elpais.com
+elpais.com/rss/cultura/portada.xml,https://ep01.epimg.net/rss/cultura/portada.xml,EL PAÍS - Cultura,Culture,Enabled,7,,article,,elpais.com
 yorokobu.es,https://www.yorokobu.es/feed/,Yorokobu,Culture,Disabled,4.75,,article,,yorokobu.es
 jotdown.es,https://www.jotdown.es/feed/,Jot Down Cultural Magazine,Culture,Disabled,2.95,,article,,www.jotdown.es
 elmundo.es,https://rss.elmundo.es/rss/descarga.htm?data2=6,El Mundo - Cultura,Culture,Disabled,2.75,,article,,www.elmundo.es
