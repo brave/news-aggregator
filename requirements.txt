@@ -6,7 +6,7 @@ dateparser==1.1.1
 feedparser==6.0.10
 html2text==2020.1.16
 metadata-parser==0.10.5
-pytz==2022.2.1
+pytz==2022.4
 requests==2.28.1
 requests-cache==0.5.2
 unshortenit==0.4.0
