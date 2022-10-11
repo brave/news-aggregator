@@ -27,6 +27,10 @@ from bs4 import BeautifulSoup as BS
 from pytz import timezone
 from requests.exceptions import ConnectTimeout, HTTPError, InvalidURL, ReadTimeout, SSLError, TooManyRedirects
 
+import numpy as np
+import tensorflow as tf
+import tensorflow_hub as hub
+
 import config
 import image_processor_sandboxed
 from utils import upload_file
@@ -339,6 +343,40 @@ class FeedProcessor():
             variety_by_source[entry['publisher_id']] = variety
         return out_entries
 
+    def mark_similarity(self, entries):
+        out_entries = []
+        module_url = "https://tfhub.dev/google/universal-sentence-encoder/4"
+        model = hub.load(module_url)
+        entries_n = len(entries)
+
+        def compute_source_similarity(entry_1, entry_2):
+            cosine_similarities = np.dot(entry_1, np.transpose(entry_2))
+            clip_cosine_similarity = tf.clip_by_value(cosine_similarities, -1.0, 1.0)
+            score = 1.0 - tf.acos(clip_cosine_similarity) / math.pi
+            return score
+
+        article_embeddings = np.zeros((entries_n, 512))
+        for i in range(entries_n):
+            article_embeddings[i] = model([entries[i]["title"]])[0]
+
+        entry_similarity_matrix = np.zeros((entries_n, entries_n))
+        for i in range(entries_n):
+            for j in range(i+1, entries_n):
+                entry_1 = article_embeddings[i]
+                entry_2 = article_embeddings[j]
+                sim_score = compute_source_similarity(entry_1, entry_2)
+                entry_similarity_matrix[i,j] = sim_score
+                entry_similarity_matrix[j,i] = sim_score
+
+        for i, entry in enumerate(entries):
+            similar_entries = []
+            for j in range(entries_n):
+                if i != j and entry_similarity_matrix[i,j] > config.MARK_SIMILARITY_THRESHOLD:
+                    similar_entries.append(entries[j]["index"])
+            entry["similar_entries"] = similar_entries
+            out_entries.append(entry)
+        return out_entries
+
     def aggregate_rss(self, feeds):
         entries = []
         entries += self.get_rss(feeds)
@@ -347,6 +385,8 @@ class FeedProcessor():
         filtered_entries = self.fixup_entries(sorted_entries)
         filtered_entries = self.scrub_html(filtered_entries)
         filtered_entries = self.score_entries(filtered_entries)
+        if config.MARK_SIMILARITY:
+            filtered_entries = self.mark_similarity(filtered_entries)
         return filtered_entries
 
     def fixup_entries(self, sorted_entries):
@@ -354,7 +394,7 @@ class FeedProcessor():
         url_dedupe = {}
         out = []
         now_utc = datetime.now().replace(tzinfo=pytz.utc)
-        for item in sorted_entries:
+        for i, item in enumerate(sorted_entries):
             # urlencoding url because sometimes downstream things break
             url_hash = hashlib.sha256(item['url'].encode('utf-8')).hexdigest()
             parts = urlparse(item['url'])
@@ -374,6 +414,7 @@ class FeedProcessor():
             item['title'] = html.unescape(item['title'])
             item['url'] = encoded_url
             item['url_hash'] = url_hash
+            item['index'] = str(i)
             out.append(item)
             url_dedupe[encoded_url] = True
         out = self.check_images(out)

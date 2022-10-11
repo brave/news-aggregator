@@ -27,3 +27,6 @@ SOURCES_FILE = os.getenv('SOURCES_FILE', 'sources')
 GLOBAL_SOURCES_FILE = os.getenv('GLOBAL_SOURCES_FILE', 'sources.global')
 FAVICON_LOOKUP_FILE = os.getenv('FAVICON_LOOKUP_FILE', 'favicon_lookup')
 COVER_INFO_LOOKUP_FILE = os.getenv('COVER_INFO_LOOKUP_FILE', 'cover_info_lookup')
+
+MARK_SIMILARITY = os.getenv('MARK_SIMILARITY', False)
+MARK_SIMILARITY_THRESHOLD = os.getenv('MARK_SIMILARITY_THRESHOLD', 0.65)

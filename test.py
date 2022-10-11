@@ -103,3 +103,22 @@ def test_score_entries():
     filtered_entries = fp.score_entries(filtered_entries)
 
     assert filtered_entries
+
+def test_mark_entries_similarity():
+    fp = feed_processor_multi.FeedProcessor()
+    with open('test.json') as f:
+        data = json.loads(f.read())
+    data = {'https://brave.com/blog/index.xml': data['https://brave.com/blog/index.xml']}
+    fp.report['feed_stats'] = {}
+    entries = fp.get_rss(data)
+    assert len(entries) != 0
+
+    sorted_entries = sorted(entries, key=lambda entry: entry["publish_time"])
+    sorted_entries.reverse() # for most recent entries first
+
+    filtered_entries = fp.fixup_entries(sorted_entries)
+    filtered_entries = fp.scrub_html(filtered_entries)
+    filtered_entries = fp.score_entries(filtered_entries)
+    filtered_entries = fp.mark_similarity(filtered_entries)
+
+    assert filtered_entries
