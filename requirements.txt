@@ -8,7 +8,7 @@ html2text==2020.1.16
 metadata-parser==0.10.5
 pytz==2022.5
 requests==2.28.1
-requests-cache==0.5.2
+requests-cache==0.9.7
 unshortenit==0.4.0
 urllib3==1.26.12
 wasmer==1.0.0
