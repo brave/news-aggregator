@@ -3,7 +3,7 @@ better-profanity==0.7.0
 bleach==6.0.0
 boto3==1.26.50
 botocore==1.29.50
-dateparser==1.1.6
+dateparser==1.1.7
 fake-useragent==1.1.1
 feedparser==6.0.10
 html2text==2020.1.16
