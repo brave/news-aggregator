@@ -12,7 +12,7 @@ orjson==3.9.7
 Pillow==10.0.0
 prometheus_client==0.17.1
 pydantic==1.10.12
-pytz==2023.3
+pytz==2023.3.post1
 regex==2022.3.2
 requests==2.31.0
 requests-cache==1.1.0
