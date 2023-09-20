@@ -4,7 +4,7 @@ black==23.7.0
 bpython==0.24
 flake8==6.1.0
 isort==5.12.0
-pip-check-reqs==2.4.4
+pip-check-reqs==2.5.3
 pre-commit==3.3.3
 pylint==2.17.5
 pytest==7.4.0
