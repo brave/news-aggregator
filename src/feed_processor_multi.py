@@ -362,6 +362,32 @@ def get_popularity_score(out_article):
     return out_article
 
 
+def get_predicted_category(out_article):
+    try:
+        pred_results = dict()
+        nu_api_response = requests.post(
+            url=config.nu_api_url,
+            json=[out_article],
+            headers=config.nu_api_headers,
+            timeout=config.request_timeout,
+        )
+        api_response = nu_api_response.json()
+        pred_category_results = api_response.get("results")[0]
+        pred_results["reliability"] = pred_category_results["reliability"]
+
+        for pred in pred_category_results.get("categories"):
+            pred_results["category"] = pred["name"]
+            pred_results["confidence"] = pred["confidence"]
+            break
+
+        out_article["predicted_category"] = pred_results
+    except Exception as e:
+        logger.error(f"Unable to get the pop score for predicted category due to {e}")
+        out_article["predicted_category"] = None
+
+    return out_article
+
+
 def check_images_in_item(article, _publishers):  # noqa: C901
     if article["img"]:
         try:
@@ -531,7 +557,16 @@ class FeedProcessor:
                     continue
                 raw_entries.append(result)
 
-        return raw_entries
+        entries.clear()
+
+        logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
+        with ThreadPool(config.thread_pool_size) as pool:
+            for result in pool.imap_unordered(get_predicted_category, raw_entries):
+                if not result:
+                    continue
+                entries.append(result)
+
+        return entries
 
     def aggregate_rss(self):
         entries = []
