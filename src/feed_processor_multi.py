@@ -515,7 +515,7 @@ class FeedProcessor:
 
         return feed_cache
 
-    def get_rss(self):
+    def get_rss(self):  # noqa: C901
         raw_entries = []
         entries = []
         self.report["feed_stats"] = {}
@@ -557,16 +557,17 @@ class FeedProcessor:
                     continue
                 raw_entries.append(result)
 
-        entries.clear()
+        if config.sources_file == "sources.en_US":
+            entries.clear()
+            logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
+            with ThreadPool(config.thread_pool_size) as pool:
+                for result in pool.imap_unordered(get_predicted_category, raw_entries):
+                    if not result:
+                        continue
+                    entries.append(result)
+            return entries
 
-        logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
-        with ThreadPool(config.thread_pool_size) as pool:
-            for result in pool.imap_unordered(get_predicted_category, raw_entries):
-                if not result:
-                    continue
-                entries.append(result)
-
-        return entries
+        return raw_entries
 
     def aggregate_rss(self):
         entries = []
