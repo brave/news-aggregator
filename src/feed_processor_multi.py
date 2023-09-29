@@ -91,7 +91,11 @@ def get_with_max_size(url, max_bytes=10000000):
     response = requests.get(
         url,
         timeout=config.request_timeout,
-        headers={"User-Agent": ua.random},
+        headers={
+            "User-Agent": ua.random,
+            "Accept-Encoding": "deflate, gzip;q=1.0, *;q=0.5",
+            "Accept": "*/*",
+        },
     )
     response.raise_for_status()
 
@@ -368,7 +372,7 @@ def get_predicted_category(out_article):
         nu_api_response = requests.post(
             url=config.nu_api_url,
             json=[out_article],
-            headers=config.nu_api_headers,
+            headers={"Authorization": f"Bearer {config.nu_api_token}"},
             timeout=config.request_timeout,
         )
         nu_api_response.raise_for_status()
