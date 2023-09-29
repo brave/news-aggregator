@@ -84,6 +84,10 @@ class Configuration(BaseSettings):
 
     bs_pop_endpoint: str = ""
 
+    nu_api_url: str = ""
+    nu_api_token: str = ""
+    nu_api_headers = {"Authorization": f"Bearer {nu_api_token}"}
+
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)
