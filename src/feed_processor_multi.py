@@ -557,7 +557,7 @@ class FeedProcessor:
                     continue
                 raw_entries.append(result)
 
-        if config.sources_file == "sources.en_US":
+        if str(config.sources_file) == "sources.en_US":
             entries.clear()
             logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
