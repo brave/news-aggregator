@@ -371,6 +371,8 @@ def get_predicted_category(out_article):
             headers=config.nu_api_headers,
             timeout=config.request_timeout,
         )
+        nu_api_response.raise_for_status()
+
         api_response = nu_api_response.json()
         pred_category_results = api_response.get("results")[0]
         pred_results["reliability"] = pred_category_results["reliability"]
@@ -382,7 +384,7 @@ def get_predicted_category(out_article):
 
         out_article["predicted_category"] = pred_results
     except Exception as e:
-        logger.error(f"Unable to get the pop score for predicted category due to {e}")
+        logger.error(f"Unable to get predicted category due to {e}")
         out_article["predicted_category"] = None
 
     return out_article
