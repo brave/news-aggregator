@@ -13,27 +13,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
       - name: Install ubuntu dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y yajl-tools
       - name: Setup Python Version
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4.7.0
         with:
           python-version: 3.9
           cache: 'pip' # caching pip dependencies
       - name: Install Python dependencies
         run: pip install -r requirements.dev.txt
       - name: Run pre-commit
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 # v3.0.0
       - name: Run tests
         run: CONCURRENCY=4 LOG_LEVEL=INFO make test
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355 # v2.2.0
         with:
           aws-access-key-id: ${{ secrets.GDBP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.GDBP_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
       - name: Generalized Deployments
-        uses: brave-intl/general-docker-build-pipeline-action@v1
+        uses: brave-intl/general-docker-build-pipeline-action@26516f4d579490c27e3b9dcc199f276f61f8d674 # v1.0.10
