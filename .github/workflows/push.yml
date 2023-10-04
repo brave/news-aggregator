@@ -36,4 +36,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.GDBP_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
       - name: Generalized Deployments
-        uses: brave-intl/general-docker-build-pipeline-action@26516f4d579490c27e3b9dcc199f276f61f8d674 # v1.0.10
+        uses: brave-intl/general-docker-build-pipeline-action@a5abec689bc65b6a985ed8527d741a130c1483af # v1.0.11
