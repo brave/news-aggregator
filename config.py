@@ -18,13 +18,13 @@ logger = structlog.getLogger(__name__)
 
 
 class Configuration(BaseSettings):
-    user_agent: str = (
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    )
+    default_headers = {
+        "Accept": "*/*",
+    }
 
     tz = timezone("UTC")
     request_timeout = 30
+    max_content_size = 10000000
 
     output_feed_path: Path = Field(default=Path(__file__).parent / "output/feed")
     output_path: Path = Field(default=Path(__file__).parent / "output")

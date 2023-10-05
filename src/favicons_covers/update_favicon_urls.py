@@ -43,7 +43,9 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
             f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=64"
         )
         res = requests.get(
-            icon_url, timeout=REQUEST_TIMEOUT, headers={"User-Agent": ua.random}
+            icon_url,
+            timeout=REQUEST_TIMEOUT,
+            headers={"User-Agent": ua.random, **config.default_headers},
         )
 
         res.raise_for_status()
@@ -61,7 +63,7 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
             page = metadata_parser.MetadataParser(
                 url=domain,
                 support_malformed=True,
-                url_headers={"User-Agent": ua.random},
+                url_headers={"User-Agent": ua.random, **config.default_headers},
                 search_head_only=True,
                 strategy=["page", "meta", "og", "dc"],
                 requests_timeout=config.request_timeout,
@@ -78,7 +80,9 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
     if icon_url is None:
         try:
             response = requests.get(
-                domain, timeout=REQUEST_TIMEOUT, headers={"User-Agent": ua.random}
+                domain,
+                timeout=REQUEST_TIMEOUT,
+                headers={"User-Agent": ua.random, **config.default_headers},
             )
             soup = BeautifulSoup(response.text, features="lxml")
             icon = soup.find("link", rel="icon")
