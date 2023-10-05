@@ -93,7 +93,6 @@ def get_with_max_size(url, max_bytes=10000000):
         timeout=config.request_timeout,
         headers={
             "User-Agent": ua.random,
-            "Accept-Encoding": "deflate, gzip;q=1.0, *;q=0.5",
             "Accept": "*/*",
         },
     )
