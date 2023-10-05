@@ -3,6 +3,7 @@ import json
 from config import get_config
 from utils import upload_file, s3_client
 from datetime import datetime, timedelta
+from sentry_sdk import capture_message
 
 config = get_config()
 
@@ -22,10 +23,12 @@ def main():
         except Exception as e:
             print(f"Error retrieving last modified date for {file_key}: {e}")
 
-    current_time = datetime.now()
-    expired_count = 0
-    total_files = len(file_modification_dates)
     json_content = {}
+    expired_files = []
+    expired_count = 0
+    current_time = datetime.now()
+    total_files = 0
+
 
     # Check if any files are older than 3 hours
     for file_key, last_modified in file_modification_dates.items():
@@ -34,6 +37,7 @@ def main():
       json_content[file_key] = { expired: is_file_expired }
       if is_file_expired:
         expired_count += 1
+        expired_files.append(file_key)
 
     # Determine the status based on the expiration
     # Check if less than 80% of the files are expired
@@ -49,7 +53,11 @@ def main():
         json.dump(result, json_file)
 
     # Upload the local JSON file to S3
-    upload_file("latest-updated.json", config.pub_s3_bucket, "latest-updated.json")
+    upload_file("latest-updated.json", config.pub_s3_bucket)
+
+     # Send a message to Sentry about the expired files
+    if expired_files:
+        capture_message(f"The following files are expired: {', '.join(expired_files)}")
 
 if __name__ == "__main__":
     main()
