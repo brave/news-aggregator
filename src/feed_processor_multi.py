@@ -209,29 +209,39 @@ def parse_rss(downloaded_feed):
     return {"report": report, "feed_cache": feed_cache, "key": url}
 
 
-def process_image(item: Dict[str, str]) -> Dict[str, str]:
-    if not item["img"]:
+def process_image(item: Dict) -> Dict[str, str]:
+    """
+    Processes an image item and returns the modified item.
+
+    Args:
+        item (Dict[str, str]): A dictionary representing the image item.
+
+    Returns:
+        Dict[str, str]: A dictionary representing the modified image item.
+    """
+    img = item.get("img")
+    if not img:
         item["img"] = ""
         item["padded_img"] = ""
         return item
 
-    else:
-        try:
-            cache_fn = im_proc.cache_image(item["img"])
-        except Exception as e:
-            cache_fn = None
-            logger.error(f"im_proc.cache_image failed [{e}]: {item['img']}")
+    try:
+        cache_fn = im_proc.cache_image(img)
         if cache_fn:
             parsed_url = urlparse(cache_fn)
-            if parsed_url.scheme:
-                item["padded_img"] = cache_fn
-            else:
-                item[
-                    "padded_img"
-                ] = f"{config.pcdn_url_base}/brave-today/cache/{cache_fn}"
+            item["padded_img"] = (
+                cache_fn
+                if parsed_url.scheme
+                else f"{config.pcdn_url_base}/brave-today/cache/{cache_fn}"
+            )
         else:
             item["img"] = ""
             item["padded_img"] = ""
+    except Exception as e:
+        # Handle the exception gracefully
+        logger.error(f"Error processing image: {e}")
+        item["img"] = ""
+        item["padded_img"] = ""
 
     return item
 
@@ -294,13 +304,15 @@ def process_articles(article, _publisher):  # noqa: C901
     out_article = {}
 
     # Process Title of the article
-    if "title" in article:
-        out_article["title"] = article.get("title")
-    else:
-        out_article["title"] = BS(article["title"], features="html.parser").get_text()
-        out_article["title"] = html.unescape(out_article["title"])
+    if not article.get("title"):
+        # No title. Skip.
+        return None
 
-    if not out_article.get("title"):
+    out_article["title"] = BS(article["title"], features="html.parser").get_text()
+    out_article["title"] = html.unescape(out_article["title"])
+
+    # Filter the offensive articles
+    if profanity.contains_profanity(out_article.get("title").lower()):
         return None
 
     # Filter the offensive articles

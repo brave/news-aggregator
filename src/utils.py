@@ -194,7 +194,7 @@ def push_metrics_to_pushgateway(metric, metric_value, label_value, registry):
     Pushes the given metric value to the Pushgateway for monitoring purposes.
 
     Parameters:
-        metric (str): The name of the metric.
+        metric: The name of the metric.
         metric_value (float): The value of the metric.
         label_value (str): The label value for the metric.
         registry (Registry): The Prometheus registry object.
