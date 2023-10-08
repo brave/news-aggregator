@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.9-slim-bullseye
+FROM public.ecr.aws/docker/library/python:3.12-slim-bullseye
 
 RUN mkdir -p workspace
 WORKDIR /workspace
