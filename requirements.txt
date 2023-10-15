@@ -17,7 +17,7 @@ regex==2022.3.2
 requests==2.31.0
 requests-cache==1.1.0
 sentry-sdk==1.31.0
-structlog==23.1.0
+structlog==23.2.0
 unshortenit==0.4.0
 urllib3==1.26.17
 wasmer==1.1.0
