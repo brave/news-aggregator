@@ -55,7 +55,7 @@ def main():
 
     status_file = config.output_path / "latest-updated.json"
     # Write the result as JSON to file
-    with open(status_file, "w") as json_file:
+    with open(status_file.__str__(), "w") as json_file:
         json.dump(result, json_file)
 
     # Upload the local JSON file to S3
