@@ -1,6 +1,7 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
+import pytz
 import structlog
 from sentry_sdk import capture_message
 
@@ -24,14 +25,14 @@ def main():
         try:
             response = s3_client.head_object(Bucket=bucket_name, Key=feed_file)
             last_modified = response["LastModified"]
-            file_modification_dates[file_key] = last_modified
+            file_modification_dates[file_key] = last_modified.astimezone(pytz.utc)
         except Exception as e:
             logger.error(f"Error retrieving last modified date for {feed_file}: {e}")
 
     json_content = {}
     expired_files = []
     expired_count = 0
-    current_time = datetime.now()
+    current_time = datetime.now(timezone.utc)
     total_files = len(list(sources_files))
 
     # Check if any files are older than 3 hours
