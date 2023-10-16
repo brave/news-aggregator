@@ -1,36 +1,38 @@
 import json
 from datetime import datetime, timedelta
-from pathlib import Path
 
+import structlog
 from sentry_sdk import capture_message
 
 from config import get_config
 from utils import s3_client, upload_file
 
+logger = structlog.getLogger(__name__)
 config = get_config()
 
 
 def main():
     bucket_name = config.pub_s3_bucket
-    sources_files = config.sources_dir.glob("sources.*_*.csv")
+    sources_files = list(config.sources_dir.glob("*"))
 
     # Initialize an empty dict to store the results
     file_modification_dates = {}
 
     # Iterate through the list of file keys and retrieve the last modified date
     for file_key in sources_files:
+        feed_file = "brave-today/feed" + file_key.suffixes[0] + ".json"
         try:
-            response = s3_client.head_object(Bucket=bucket_name, Key=file_key)
+            response = s3_client.head_object(Bucket=bucket_name, Key=feed_file)
             last_modified = response["LastModified"]
             file_modification_dates[file_key] = last_modified
         except Exception as e:
-            print(f"Error retrieving last modified date for {file_key}: {e}")
+            logger.error(f"Error retrieving last modified date for {feed_file}: {e}")
 
     json_content = {}
     expired_files = []
     expired_count = 0
     current_time = datetime.now()
-    total_files = 0
+    total_files = len(list(sources_files))
 
     # Check if any files are older than 3 hours
     for file_key, last_modified in file_modification_dates.items():
@@ -50,12 +52,13 @@ def main():
     # Create a dict to represent the result including status
     result = {"status": status, "files": json_content}
 
+    status_file = config.output_path / "latest-updated.json"
     # Write the result as JSON to file
-    with open("latest-updated.json", "w") as json_file:
+    with open(status_file, "w") as json_file:
         json.dump(result, json_file)
 
     # Upload the local JSON file to S3
-    upload_file(Path("latest-updated.json"), config.pub_s3_bucket)
+    upload_file(status_file, config.pub_s3_bucket, "latest-updated.json")
 
     # Send a message to Sentry about the expired files
     if expired_files:
