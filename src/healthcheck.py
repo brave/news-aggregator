@@ -1,6 +1,6 @@
-import json
 from datetime import datetime, timedelta, timezone
 
+import orjson
 import pytz
 import structlog
 from sentry_sdk import capture_message
@@ -21,7 +21,10 @@ def main():
 
     # Iterate through the list of file keys and retrieve the last modified date
     for file_key in sources_files:
-        feed_file = "brave-today/feed" + file_key.suffixes[0] + ".json"
+        if len(file_key.suffixes) == 1:
+            feed_file = "brave-today/feed" + ".json"
+        else:
+            feed_file = "brave-today/feed" + file_key.suffixes[0] + ".json"
         try:
             response = s3_client.head_object(Bucket=bucket_name, Key=feed_file)
             last_modified = response["LastModified"]
@@ -55,8 +58,8 @@ def main():
 
     status_file = config.output_path / "latest-updated.json"
     # Write the result as JSON to file
-    with open(status_file.__str__(), "w") as json_file:
-        json.dump(result, json_file)
+    with open(status_file.__str__(), "wb") as json_file:
+        json_file.write(orjson.dumps(result))
 
     # Upload the local JSON file to S3
     upload_file(status_file, config.pub_s3_bucket, "latest-updated.json")
