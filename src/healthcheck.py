@@ -21,15 +21,18 @@ def main():
 
     # Iterate through the list of file keys and retrieve the last modified date
     for file_key in sources_files:
-        if len(file_key.suffixes) == 1:
+        if len(file_key.suffixes) <= 1:
             feed_file = "brave-today/feed" + ".json"
         else:
             feed_file = "brave-today/feed" + file_key.suffixes[0] + ".json"
         try:
             response = s3_client.head_object(Bucket=bucket_name, Key=feed_file)
             last_modified = response["LastModified"]
-            file_modification_dates[file_key] = last_modified.astimezone(pytz.utc)
+            file_modification_dates[feed_file] = last_modified.astimezone(pytz.utc)
         except Exception as e:
+            file_modification_dates[feed_file] = datetime.now(timezone.utc) - timedelta(
+                hours=24
+            )
             logger.error(f"Error retrieving last modified date for {feed_file}: {e}")
 
     json_content = {}
