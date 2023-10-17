@@ -3,10 +3,10 @@ from datetime import datetime, timedelta, timezone
 
 import pytz
 import structlog
-from sentry_sdk import capture_message
+from sentry_sdk import capture_exception
 
 from config import get_config
-from utils import s3_client, upload_file
+from utils import ExpiredRegions, s3_client, upload_file
 
 logger = structlog.getLogger(__name__)
 config = get_config()
@@ -69,7 +69,12 @@ def main():
 
     # Send a message to Sentry about the expired files
     if expired_files:
-        capture_message(f"The following files are expired: {', '.join(expired_files)}")
+        capture_exception(
+            ExpiredRegions(
+                message=f"The following Regions are expired: {', '.join(expired_files)}"
+            ),
+            level="critical",
+        )
 
 
 if __name__ == "__main__":
