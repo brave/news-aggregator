@@ -12,62 +12,55 @@ logger = structlog.getLogger(__name__)
 config = get_config()
 
 
+def get_last_modified_date(bucket_name: str, file_key: str) -> datetime:
+    try:
+        response = s3_client.head_object(Bucket=bucket_name, Key=file_key)
+        last_modified = response["LastModified"]
+        return last_modified.astimezone(pytz.utc)
+    except Exception as e:
+        logger.error(f"Error retrieving last modified date for {file_key}: {e}")
+        return datetime.now(timezone.utc) - timedelta(hours=24)
+
+
 def main():
     bucket_name = config.pub_s3_bucket
     sources_files = list(config.sources_dir.glob("*"))
 
-    # Initialize an empty dict to store the results
     file_modification_dates = {}
 
-    # Iterate through the list of file keys and retrieve the last modified date
     for file_key in sources_files:
         if len(file_key.suffixes) <= 1:
-            feed_file = "brave-today/feed" + ".json"
+            feed_file = "feed.json"
         else:
-            feed_file = "brave-today/feed" + file_key.suffixes[0] + ".json"
-        try:
-            response = s3_client.head_object(Bucket=bucket_name, Key=feed_file)
-            last_modified = response["LastModified"]
-            file_modification_dates[feed_file] = last_modified.astimezone(pytz.utc)
-        except Exception as e:
-            file_modification_dates[feed_file] = datetime.now(timezone.utc) - timedelta(
-                hours=24
-            )
-            logger.error(f"Error retrieving last modified date for {feed_file}: {e}")
+            feed_file = f"feed{file_key.suffixes[0]}.json"
+        last_modified = get_last_modified_date(bucket_name, f"brave-today/{feed_file}")
+        file_modification_dates[feed_file] = last_modified
 
     json_content = {}
     expired_files = []
-    expired_count = 0
     current_time = datetime.now(timezone.utc)
-    total_files = len(list(sources_files))
+    total_files = len(sources_files)
 
-    # Check if any files are older than 3 hours
     for file_key, last_modified in file_modification_dates.items():
         time_difference = current_time - last_modified
         is_file_expired = time_difference > timedelta(hours=3)
-        json_content[file_key.__str__()] = {"expired": is_file_expired}
+        json_content[str(file_key)] = {"expired": is_file_expired}
         if is_file_expired:
-            expired_count += 1
-            expired_files.append(file_key.__str__())
+            expired_files.append(str(file_key))
 
-    # Determine the status based on the expiration
-    # Check if less than 80% of the files are expired
-    expiry_threshold = 0.8  # 80%
+    expiry_threshold = 0.8
+    expired_count = len(expired_files)
     expired = (expired_count / total_files) < expiry_threshold
-    status = "expired" if expired < 0.8 else "success"
+    status = "expired" if expired else "success"
 
-    # Create a dict to represent the result including status
     result = {"status": status, "files": json_content}
 
     status_file = config.output_path / "latest-updated.json"
-    # Write the result as JSON to file
-    with open(status_file.__str__(), "w") as json_file:
-        json_file.write(json.dumps(result))
+    with open(status_file, "w") as json_file:
+        json.dump(result, json_file)
 
-    # Upload the local JSON file to S3
     upload_file(status_file, config.pub_s3_bucket, "latest-updated.json")
 
-    # Send a message to Sentry about the expired files
     if expired_files:
         capture_exception(
             ExpiredRegions(
