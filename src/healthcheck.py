@@ -42,7 +42,7 @@ def main():
     for file_key, last_modified in file_modification_dates.items():
         time_difference = current_time - last_modified
         is_file_expired = time_difference > timedelta(hours=3)
-        json_content[file_key] = {"expired": is_file_expired}
+        json_content[file_key.__str__()] = {"expired": is_file_expired}
         if is_file_expired:
             expired_count += 1
             expired_files.append(file_key.__str__())
