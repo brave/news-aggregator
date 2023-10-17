@@ -37,6 +37,11 @@ class ObjectNotFound(Exception):
     pass
 
 
+class ExpiredRegions(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def upload_file(file_name: Path, bucket: str, object_name: Optional[str] = None):
     if object_name is None:
         object_name = file_name
