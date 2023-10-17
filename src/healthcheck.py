@@ -30,6 +30,9 @@ def main():
             last_modified = response["LastModified"]
             file_modification_dates[feed_file] = last_modified.astimezone(pytz.utc)
         except Exception as e:
+            file_modification_dates[feed_file] = datetime.now(timezone.utc) - timedelta(
+                hours=24
+            )
             logger.error(f"Error retrieving last modified date for {feed_file}: {e}")
 
     json_content = {}
