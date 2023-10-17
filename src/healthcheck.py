@@ -1,6 +1,6 @@
+import json
 from datetime import datetime, timedelta, timezone
 
-import orjson
 import pytz
 import structlog
 from sentry_sdk import capture_message
@@ -58,8 +58,8 @@ def main():
 
     status_file = config.output_path / "latest-updated.json"
     # Write the result as JSON to file
-    with open(status_file.__str__(), "wb") as json_file:
-        json_file.write(orjson.dumps(result))
+    with open(status_file.__str__(), "w") as json_file:
+        json_file.write(json.dumps(result))
 
     # Upload the local JSON file to S3
     upload_file(status_file, config.pub_s3_bucket, "latest-updated.json")
