@@ -54,7 +54,7 @@ def main():
     status = "expired" if expired else "success"
 
     # Create a dict to represent the result including status
-    result = {"status": status, "files": {}}
+    result = {"status": status, "files": json_content}
 
     status_file = config.output_path / "latest-updated.json"
     # Write the result as JSON to file
