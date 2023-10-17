@@ -54,7 +54,7 @@ def main():
     # Check if less than 80% of the files are expired
     expiry_threshold = 0.8  # 80%
     expired = (expired_count / total_files) < expiry_threshold
-    status = "expired" if expired else "success"
+    status = "expired" if expired < 0.8 else "success"
 
     # Create a dict to represent the result including status
     result = {"status": status, "files": json_content}
