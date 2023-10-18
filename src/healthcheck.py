@@ -1,5 +1,6 @@
 import json
 import math
+import time
 from datetime import datetime, timedelta, timezone
 
 import pytz
@@ -74,9 +75,10 @@ def main():
         capture_exception(
             ExpiredRegions(
                 message=f"The following Regions are expired: {', '.join(expired_files)}"
-            ),
-            level="critical",
+            )
         )
+        time.sleep(config.request_timeout)
+        logger.info(f"Alert sent to Sentry")
 
 
 if __name__ == "__main__":
