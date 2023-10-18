@@ -1,6 +1,6 @@
 -r requirements.txt
 bandit==1.7.5
-black==23.9.1
+black==23.10.0
 bpython==0.24
 flake8==6.1.0
 isort==5.12.0
