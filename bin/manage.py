@@ -2,8 +2,9 @@ import argparse
 import psycopg2
 from config import get_config
 
-## this script can be called in the following ways:
-## python manage.py add domain_override domain type value
+#  python ./bin/manage.py add domain_override domain type value
+#    or
+#  python ./bin/manage.py remove domain_override domain type
 
 def manage_domain_overrides(operation, domain, type, value):
     assert(operation in ['add', 'remove'])
@@ -46,5 +47,3 @@ if __name__ == "__main__":
       manage_domain_overrides(args.operation, args.domain, args.type, args.value)
     else:
       print("Invalid parameter. Only 'domain_override' is supported.")
-
-
