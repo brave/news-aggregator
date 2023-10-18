@@ -4,6 +4,7 @@ black==23.9.1
 bpython==0.24
 flake8==6.1.0
 isort==5.12.0
+psycopg2-binary==2.9.9
 pip-check-reqs==2.5.3
 pre-commit==3.4.0
 pylint==3.0.0

@@ -22,7 +22,9 @@ from requests import HTTPError
 import image_processor_sandboxed
 from config import get_config
 from favicons_covers.color import color_length, hex_color, is_transparent
-from utils import get_all_domains, upload_file
+from utils import get_all_domains, upload_file, perform_overrides
+
+import psycopg2
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 REQUEST_TIMEOUT = 15
@@ -297,6 +299,23 @@ def process_cover_image(item):
 
     return domain, padded_image_url, background_color
 
+def domain_overrides(config):
+    # connect to the database
+    db = psycopg2.connect(
+        host=config.db_host,
+        database=config.db_name,
+    )
+
+    # retrieve all the overrides from the domain_overrides table
+    cursor = db.cursor()
+    cursor.execute("SELECT domain, type, value FROM domain_overrides")
+    rows = cursor.fetchall()
+
+    # close the database connection
+    db.close()
+
+    return rows
+
 
 if __name__ == "__main__":
     domains = list(set(get_all_domains()))
@@ -319,10 +338,16 @@ if __name__ == "__main__":
     for entry in processed_cover_images:
         result.update({entry[0]: {"cover_url": entry[1], "background_color": entry[2]}})
 
+    # if the config.domain_overrides flag is set, then we need to override the background color and cover image url
+    # for any domains that are in the domain_overrides table
+    if config.domain_overrides:
+        overrides = domain_overrides(config) # domain_overrides is a list of tuples containing the domain, type, and value
+        result = perform_overrides(result, overrides)
+
     with open(config.output_path / config.cover_info_lookup_file, "wb") as f:
         f.write(orjson.dumps(result))
 
-    logger.info("Fetched all the Cover images!")
+    logger.info("fetched all the cover images")
 
     if not config.no_upload:
         upload_file(

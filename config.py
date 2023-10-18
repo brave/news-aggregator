@@ -41,6 +41,13 @@ class Configuration(BaseSettings):
     no_upload: Optional[str] = None
     no_download: Optional[str] = None
 
+    # Database configuration
+    db_host: str = "localhost"
+    db_name: str = "news"
+
+    # enabled domain overrides for background colors and cover images
+    domain_overrides: Optional[str] = None
+
     pcdn_url_base: str = Field(default="https://pcdn.brave.software")
 
     # Canonical ID of the private S3 bucket
@@ -64,6 +71,7 @@ class Configuration(BaseSettings):
     sentry_url: str = ""
 
     log_level: str = "info"
+
 
     structlog.configure(
         wrapper_class=structlog.make_filtering_bound_logger(
