@@ -66,10 +66,11 @@ def main():
     with open(status_file, "w") as json_file:
         json.dump(result, json_file)
 
-    logger.info(f"Upload latest health check file to S3")
+    logger.info(f"Uploading latest health check file to S3")
     upload_file(status_file, config.pub_s3_bucket, "latest-updated.json")
 
     if status == "expired":
+        logger.info(f"Sending Alert to Sentry")
         capture_exception(
             ExpiredRegions(
                 message=f"The following Regions are expired: {', '.join(expired_files)}"
