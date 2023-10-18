@@ -52,7 +52,11 @@ def main():
     expired_count = len(expired_files)
     logger.info(f"Total expired regions {expired_count}")
     expired = (expired_count / total_files) > expiry_threshold
-    status = "expired" if expired else "success"
+
+    if expired is True:
+        status = "expired"
+    else:
+        status = "success"
 
     logger.info(f"The status is {status}")
     result = {"status": status, "files": json_content}
