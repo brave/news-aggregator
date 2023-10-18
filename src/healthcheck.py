@@ -1,4 +1,5 @@
 import json
+import math
 from datetime import datetime, timedelta, timezone
 
 import pytz
@@ -48,15 +49,15 @@ def main():
         if is_file_expired:
             expired_files.append(str(file_key))
 
-    expiry_threshold = 0.8
     expired_count = len(expired_files)
+    logger.info(f"Total regions {total_files}")
     logger.info(f"Total expired regions {expired_count}")
-    expired = (expired_count / total_files) > expiry_threshold
 
-    if expired is True:
-        status = "expired"
-    else:
+    expiry_threshold = math.floor(total_files * 0.8)
+    if abs(total_files - expired_count) >= expiry_threshold:
         status = "success"
+    else:
+        status = "expired"
 
     logger.info(f"The status is {status}")
     result = {"status": status, "files": json_content}
