@@ -31,6 +31,11 @@ To update the favicon urls:
     export PYTHONPATH=$PWD:$PWD/src
     NO_UPLOAD=1 NO_DOWNLOAD=1 python src/favicons_covers/update_favicon_urls.py
 
+To manage domain overrides for background colors and cover urls:
+
+    export PYTHONPATH=$PWD:$PWD/src
+    python bin/manage.py add domain_override [domain] [background_color|cover_url] [value]
+
 ### Committing code
 
 We configured the pre-commit hooks to ensure the quality of the code. To setup the pre-commit hooks run the following

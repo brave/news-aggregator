@@ -12,7 +12,10 @@ from config import get_config
 from feed_processor_multi import score_entries, scrub_html
 from src import feed_processor_multi
 
+from utils import perform_overrides
+
 config = get_config()
+
 
 
 def test_feed_processor_download():
@@ -124,3 +127,16 @@ def test_score_entries():
     filtered_entries = score_entries(filtered_entries)
 
     assert filtered_entries
+
+def test_domain_overrides():
+    overrides = [
+        ['http://brave.com', 'background_color', '#000000'],
+        ['http://brave.com', 'cover_url', 'https://brave.com/cover.jpg'],
+        ['http://foo.com', 'cover_url', 'https://foo.com/cover2.jpg'] # this should be ignored
+    ]
+    result = { "http://brave.com": {"cover_url": "", "background_color": "#ffffff"} }
+
+    result = perform_overrides(result, overrides)
+
+    assert(result['http://brave.com']['background_color'] == '#000000')
+    assert(result['http://brave.com']['cover_url'] == 'https://brave.com/cover.jpg')

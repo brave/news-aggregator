@@ -183,3 +183,18 @@ def push_metrics_to_pushgateway(metric, metric_value, label_value, registry):
 
     except Exception as e:
         logger.error(f"Failed to push metrics: {e}")
+
+
+def perform_overrides(result, domain_overrides):
+    logger.info("replacing cover image and background color for domains in the domain_overrides table")
+    for override in domain_overrides:
+        # check to see if the domain is in the result
+        if result.get(override[0]):
+            if override[1] == "background_color":
+                logger.info(f"replacing background color for {override[0]}")
+                result[override[0]]["background_color"] = override[2]
+            elif override[1] == "cover_url":
+                logger.info(f"replacing cover url for {override[0]}")
+                result[override[0]]["cover_url"] = override[2]
+
+    return result
