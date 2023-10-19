@@ -7,7 +7,6 @@ import csv
 
 import orjson
 import structlog
-from pydantic import ValidationError
 
 from config import get_config
 from models.publisher import PublisherModel
@@ -52,24 +51,50 @@ feed_include_keys = {
 
 
 def main():
-    publisher_file_path = f"{config.sources_dir / config.sources_file}.csv"
-    publisher_output_path = "feed.json"
-    publishers = []
-    with open(publisher_file_path) as publisher_file_pointer:
-        publisher_reader = csv.DictReader(publisher_file_pointer)
-        for data in publisher_reader:
-            try:
-                publisher: PublisherModel = PublisherModel(**data)
-                publisher.favicon_url = favicons_lookup.get(publisher.site_url, None)
-                cover_info = cover_infos_lookup.get(
-                    publisher.site_url, {"cover_url": None, "background_color": None}
-                )
-                publisher.cover_url = cover_info.get("cover_url")
-                publisher.background_color = cover_info.get("background_color")
+    """
+    This function is the main entry point of the program. It performs the following tasks:
+    - Constructs the file paths for the publisher file, feed output, and sources output.
+    - Reads the publisher file and creates a list of PublisherModel objects.
+    - Sorts the list of PublisherModel objects based on the publisher name.
+    - Writes the list of publishers data by URL to the feed output file.
+    - Writes the list of publishers data as a list to the sources output file.
+    - Uploads the sources output file to the specified S3 bucket.
 
-                publishers.append(publisher)
-            except ValidationError as e:
-                logger.error(f"{e} on {data}")
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
+    publisher_file_path = f"{config.sources_dir / config.sources_file}.csv"
+    publisher_feed_output_path = "feed.json"
+    publisher_sources_output_path = "sources.json"
+
+    feed_output_path = config.output_path / publisher_feed_output_path
+    sources_output_path = config.output_path / publisher_sources_output_path
+
+    try:
+        with open(publisher_file_path) as publisher_file_pointer:
+            publisher_reader = csv.DictReader(publisher_file_pointer)
+            publishers = [
+                PublisherModel(
+                    **data,
+                    favicon_url=favicons_lookup.get(data["Domain"], None),
+                    cover_url=cover_infos_lookup.get(
+                        data["Domain"], {"cover_url": None, "background_color": None}
+                    )["cover_url"],
+                    background_color=cover_infos_lookup.get(
+                        data["Domain"], {"cover_url": None, "background_color": None}
+                    )["background_color"],
+                )
+                for data in publisher_reader
+            ]
+    except FileNotFoundError as e:
+        raise e
+    except csv.Error as e:
+        raise e
+    except Exception as e:
+        raise e
 
     publishers_data_by_url = {
         str(x.feed_url): x.dict(include=feed_include_keys) for x in publishers
@@ -83,25 +108,21 @@ def main():
         publishers_data_as_list, key=lambda x: x["publisher_name"]
     )
 
-    with open(config.output_path / publisher_output_path, "wb") as f:
+    with open(feed_output_path, "wb") as f:
         f.write(orjson.dumps(publishers_data_by_url))
 
-    with open(config.output_path / "sources.json", "wb") as f:
+    with open(sources_output_path, "wb") as f:
         f.write(orjson.dumps(publishers_data_as_list))
 
     if not config.no_upload:
         upload_file(
-            config.output_path / "sources.json",
-            config.pub_s3_bucket,
-            f"{config.sources_file}.json",
+            sources_output_path, config.pub_s3_bucket, f"{config.sources_file}.json"
         )
         # Temporarily upload also with incorrect filename as a stopgap for
         # https://github.com/brave/brave-browser/issues/20114
         # Can be removed once fixed in the brave-core client for all Desktop users.
         upload_file(
-            config.output_path / "sources.json",
-            config.pub_s3_bucket,
-            f"{config.sources_file}json",
+            sources_output_path, config.pub_s3_bucket, f"{config.sources_file}json"
         )
 
 

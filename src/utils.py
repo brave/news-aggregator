@@ -43,6 +43,18 @@ class ExpiredRegions(Exception):
 
 
 def upload_file(file_name: Path, bucket: str, object_name: Optional[str] = None):
+    """
+    Uploads a file to an S3 bucket.
+
+    Args:
+        file_name (Path): The path to the file to be uploaded.
+        bucket (str): The name of the S3 bucket to upload the file to.
+        object_name (Optional[str], optional): The name of the object to be used in the S3 bucket.
+        If not specified, the file_name will be used as the object name. Defaults to None.
+
+    Returns:
+        bool: True if the file was successfully uploaded, False otherwise.
+    """
     if object_name is None:
         object_name = file_name
     try:
@@ -80,6 +92,17 @@ def upload_file(file_name: Path, bucket: str, object_name: Optional[str] = None)
 
 
 def download_file(file_name: str, bucket: str, object_name: Optional[str] = None):
+    """
+    Downloads a file from an S3 bucket.
+
+    Args:
+        file_name (str): The name of the file to be downloaded.
+        bucket (str): The name of the S3 bucket from which to download the file.
+        object_name (Optional[str], optional): The name of the object in the S3 bucket. Defaults to None.
+
+    Returns:
+        bool: True if the file was downloaded successfully, False otherwise.
+    """
     if object_name is None:
         object_name = file_name
 
@@ -172,6 +195,21 @@ def get_cover_infos_lookup() -> Dict[Any, Any]:
 
 
 def push_metrics_to_pushgateway(metric, metric_value, label_value, registry):
+    """
+    Pushes the given metric value to the Pushgateway for monitoring purposes.
+
+    Parameters:
+        metric: The name of the metric.
+        metric_value (float): The value of the metric.
+        label_value (str): The label value for the metric.
+        registry (Registry): The Prometheus registry object.
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is an error while pushing the metrics to the Pushgateway.
+    """
     try:
         # Set the metric value
         metric.labels(url=label_value).inc(metric_value)
