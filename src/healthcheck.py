@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytz
 import structlog
-from sentry_sdk import capture_exception
+from sentry_sdk import capture_exception, flush
 
 from config import get_config
 from utils import ExpiredRegions, s3_client, upload_file
@@ -77,6 +77,7 @@ def main():
                 message=f"The following Regions are expired: {', '.join(expired_files)}"
             )
         )
+        flush(config.request_timeout)
         time.sleep(config.request_timeout)
         logger.info(f"Alert sent to Sentry")
 
