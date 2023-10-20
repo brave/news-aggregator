@@ -61,7 +61,7 @@ class Configuration(BaseSettings):
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
 
-    sentry_url: str = ""
+    sentry_dsn: str = ""
 
     log_level: str = "info"
 
@@ -71,10 +71,10 @@ class Configuration(BaseSettings):
         ),
     )
 
-    if sentry_url:
+    if sentry_dsn:
         import sentry_sdk
 
-        sentry_sdk.init(dsn=sentry_url, traces_sample_rate=0)
+        sentry_sdk.init(dsn=sentry_dsn, traces_sample_rate=0)
 
     prom_pushgateway_url: Optional[str] = None
 

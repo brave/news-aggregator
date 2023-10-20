@@ -76,9 +76,6 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
             cache_path,
         )
 
-        with open(str(cache_path) + ".failed", "wb+") as out_image:
-            out_image.write(image_bytes)
-
         return False
 
 
@@ -154,21 +151,10 @@ class ImageProcessor:
                     exists = False
                 if exists:
                     return cache_fn
-
-        except requests.exceptions.ReadTimeout as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except ValueError as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except requests.exceptions.SSLError as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except requests.exceptions.HTTPError as e:
-            logger.info(
-                f"Image is not already uploaded [{e.response.status_code}]: {url}"
-            )
         except Exception as e:
             logger.info(f"Image is not already uploaded {url} with {e}")
 
-        if not resize_and_pad_image(content, 1168, 657, 250000, cache_path):
+        if not resize_and_pad_image(content, 1168, 657, 250000, str(cache_path)):
             logger.info(f"Failed to cache image {url}")
             return None
 
