@@ -42,7 +42,9 @@ CACHE_FOLDER.mkdir(parents=True, exist_ok=True)
 def get_soup(domain) -> Optional[BeautifulSoup]:
     try:
         html = requests.get(
-            domain, timeout=config.request_timeout, headers={"User-Agent": ua.random}
+            domain,
+            timeout=config.request_timeout,
+            headers={"User-Agent": ua.random, **config.default_headers},
         ).content.decode("utf-8")
         return BeautifulSoup(html, features="lxml")
     # Failed to download html
@@ -63,7 +65,9 @@ def get_manifest_icon_urls(site_url: str, soup: BeautifulSoup):
 
     try:
         manifest_response = requests.get(
-            url, timeout=config.request_timeout, headers={"User-Agent": ua.random}
+            url,
+            timeout=config.request_timeout,
+            headers={"User-Agent": ua.random, **config.default_headers},
         )
 
         if not manifest_response.ok:
@@ -121,7 +125,7 @@ def get_icon(icon_url: str) -> Image:
                 icon_url,
                 stream=True,
                 timeout=config.request_timeout,
-                headers={"User-Agent": ua.random},
+                headers={"User-Agent": ua.random, **config.default_headers},
             )
             if not response.ok:
                 return None
@@ -222,7 +226,9 @@ def process_site(domain: str):  # noqa: C901
             f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
         )
         res = requests.get(
-            image_url, timeout=REQUEST_TIMEOUT, headers={"User-Agent": ua.random}
+            image_url,
+            timeout=REQUEST_TIMEOUT,
+            headers={"User-Agent": ua.random, **config.default_headers},
         )
 
         res.raise_for_status()
@@ -244,7 +250,7 @@ def process_site(domain: str):  # noqa: C901
             page = metadata_parser.MetadataParser(
                 url=domain,
                 support_malformed=True,
-                url_headers={"User-Agent": ua.random},
+                url_headers={"User-Agent": ua.random, **config.default_headers},
                 search_head_only=True,
                 strategy=["page", "meta", "og", "dc"],
                 requests_timeout=config.request_timeout,

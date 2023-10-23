@@ -18,13 +18,13 @@ logger = structlog.getLogger(__name__)
 
 
 class Configuration(BaseSettings):
-    user_agent: str = (
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    )
+    default_headers = {
+        "Accept": "*/*",
+    }
 
     tz = timezone("UTC")
     request_timeout = 30
+    max_content_size = 10000000
 
     output_feed_path: Path = Field(default=Path(__file__).parent / "output/feed")
     output_path: Path = Field(default=Path(__file__).parent / "output")
@@ -61,7 +61,7 @@ class Configuration(BaseSettings):
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
 
-    sentry_url: str = ""
+    sentry_dsn: str = ""
 
     log_level: str = "info"
 
@@ -71,10 +71,10 @@ class Configuration(BaseSettings):
         ),
     )
 
-    if sentry_url:
+    if sentry_dsn:
         import sentry_sdk
 
-        sentry_sdk.init(dsn=sentry_url, traces_sample_rate=0)
+        sentry_sdk.init(dsn=sentry_dsn, traces_sample_rate=0)
 
     prom_pushgateway_url: Optional[str] = None
 
@@ -83,6 +83,9 @@ class Configuration(BaseSettings):
     )
 
     bs_pop_endpoint: str = ""
+
+    nu_api_url: str = ""
+    nu_api_token: str = ""
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:

@@ -39,6 +39,36 @@ publisher_include_keys = {
 
 
 def main():
+    """
+    Main function that processes the source files and generates the publishers data.
+
+    This function iterates over the source files in the configured sources directory. For each file,
+    it extracts the locale from the file name using a regular expression. Then, it reads the file using
+    `csv.DictReader` and processes each row to create a `PublisherGlobal` object.
+    If the publisher ID is not already in the `publishers` dictionary, it sets additional properties
+    like `favicon_url`, `cover_url`, and `background_color` using lookup dictionaries.
+    It also creates a `LocaleModel` object and appends it to the `locales` list of the publisher.
+    If the publisher ID already exists in the `publishers` dictionary, it retrieves the existing publisher
+    object and appends a new `LocaleModel` object to its `locales` list.
+
+    After processing all the source files, the function converts the `publishers` dictionary into a list of
+    dictionaries using a list comprehension. The resulting list is then sorted by the `publisher_name` key.
+
+    Finally, the function writes the publishers data as a JSON string to the output file using the `orjson.dumps`
+     function. If the `no_upload` flag is not set, it also uploads the output file to a specified S3 bucket.
+
+    Note:
+    - The `publishers` dictionary stores publisher objects with the publisher ID as the key.
+    - The `PublisherGlobal` object is created using the `**data` syntax, which unpacks the values from the
+     row dictionary as keyword arguments.
+    - The `LocaleModel` object is also created using the `**data` syntax, and the `locale` property is set to
+    the extracted locale from the file name.
+    - The `publisher_include_keys` variable is used to specify the keys to include in the dictionaries when converting
+     the `publishers` dictionary to a list.
+
+    Returns:
+        None
+    """
     publishers = {}
     source_files = config.sources_dir.glob("sources.*_*.csv")
     for source_file in source_files:
