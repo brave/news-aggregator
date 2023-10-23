@@ -481,7 +481,7 @@ def get_predicted_category(article):
         return {**article, "predicted_category": None}
 
 
-def check_images_in_item(article, _publishers):
+def check_images_in_item(article, _publishers):  # noqa: C901
     """
     Check if the article has an image URL and if not, try to retrieve it from the metadata of the article's webpage.
 
@@ -495,14 +495,18 @@ def check_images_in_item(article, _publishers):
     img_url = article.get("img", "")
 
     if img_url:
-        parsed_img_url = urlparse(img_url)
-        if not parsed_img_url.scheme:
-            parsed_img_url = parsed_img_url._replace(scheme="https")
-            img_url = urlunparse(parsed_img_url)
-            article["img"] = img_url
+        try:
+            parsed_img_url = urlparse(img_url)
+            if not parsed_img_url.scheme:
+                parsed_img_url = parsed_img_url._replace(scheme="https")
+                img_url = urlunparse(parsed_img_url)
+                article["img"] = img_url
 
-            if len(parsed_img_url.path) < 4:
-                article["img"] = ""
+                if len(parsed_img_url.path) < 4:
+                    article["img"] = ""
+        except Exception as e:
+            article["img"] = ""
+            logger.error(f"Error parsing: {article['url']} -- {e}")
 
     if not img_url or _publishers[article["publisher_id"]]["og_images"]:
         try:
