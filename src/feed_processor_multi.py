@@ -506,7 +506,7 @@ def check_images_in_item(article, _publishers):  # noqa: C901
             article["img"] = ""
             logger.error(f"Error parsing: {article['url']} -- {e}")
 
-    if not img_url or _publishers[article["publisher_id"]]["og_images"]:
+    if not article["img"] or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
                 url=article["url"],
