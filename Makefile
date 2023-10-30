@@ -8,7 +8,7 @@ clean:
 
 pytest:
 	echo Running pytest...
-	pytest -s tests/test.py
+	pytest -s tests/
 
 validjson:
 	export PYTHONPATH=$PWD:$PWD/src

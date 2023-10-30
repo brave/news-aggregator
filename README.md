@@ -7,6 +7,10 @@ For more details: https://brave.com/brave-news-updates/
 ## Setup
 
 ### Dependencies
+Python Version (Required):
+
+    Python 3.9
+
 Required setup:
 
     virtualenv -p /usr/bin/python3.9 .venv
@@ -31,16 +35,7 @@ To update the favicon urls:
     export PYTHONPATH=$PWD:$PWD/src
     NO_UPLOAD=1 NO_DOWNLOAD=1 python src/favicons_covers/update_favicon_urls.py
 
-### Committing code
-
-We configured the pre-commit hooks to ensure the quality of the code. To setup the pre-commit hooks run the following
-commands:
-
-    pre-commit install
-    pre-commit run --all-files
-
-
-### organization
+### Organization
 
 This service organizes as follows:
 ```
@@ -52,6 +47,15 @@ news_aggregator/
 ├── src/                # This dir contains all the python script to run the new aggregator.
 ├── tests/              # This dir contains the tests.
 ```
+
+### Contribution
+
+We configured the pre-commit hooks to ensure the quality of the code. To set-up the pre-commit hooks run the following
+commands:
+
+    pre-commit install
+    pre-commit run --all-files
+
 
 # wasm_thumbnail
 

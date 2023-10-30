@@ -18,6 +18,7 @@ from functools import partial
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
+from typing import Dict, Optional
 from urllib.parse import quote, urlparse, urlunparse
 
 import bleach
@@ -38,6 +39,7 @@ from requests.exceptions import (
     HTTPError,
     InvalidURL,
     ReadTimeout,
+    RequestException,
     SSLError,
     TooManyRedirects,
 )
@@ -87,27 +89,64 @@ PUBLISHER_URL_ERR_ALERT_NAME_METRIC = Gauge(
 )
 
 
-def get_with_max_size(url, max_bytes=10000000):
-    response = requests.get(
-        url,
-        timeout=config.request_timeout,
-        headers={"User-Agent": ua.random},
-    )
-    response.raise_for_status()
+def get_with_max_size(
+    url: str, max_bytes: Optional[int] = config.max_content_size
+) -> bytes:
+    """
+    Get the content of a URL, raising an exception if the content is too large.
 
-    if response.status_code != 200:  # raise for status is not working with 3xx error
-        raise HTTPError(f"Http error with status code {response.status_code}")
+    Args:
+        url (str): The URL to get the content from.
+        max_bytes (Optional[int], optional): The maximum size of the content in bytes. Default is 10MB.
 
-    if (
-        response.headers.get("Content-Length")
-        and int(response.headers.get("Content-Length")) > max_bytes
-    ):
-        raise ValueError("Content-Length too large")
+    Returns:
+        bytes: The content of the URL.
 
-    return response.content
+    Raises:
+        HTTPError: If there is an HTTP error with the URL.
+        ValueError: If the content size exceeds the maximum size.
+    """
+    headers = {"User-Agent": ua.random, **config.default_headers}
+
+    try:
+        with requests.get(
+            url, timeout=config.request_timeout, headers=headers
+        ) as response:
+            response.raise_for_status()
+
+            if response.status_code != 200:
+                raise HTTPError(f"HTTP error with status code {response.status_code}")
+
+            content_length = response.headers.get("Content-Length")
+            if (
+                max_bytes is not None
+                and content_length
+                and int(content_length) > max_bytes
+            ):
+                raise ValueError("Content-Length too large")
+
+            return response.content
+
+    except RequestException as e:
+        raise HTTPError(f"Failed to make request: {e}")
 
 
-def download_feed(feed, max_feed_size=10000000):
+def download_feed(feed: str, max_feed_size: int = 10000000) -> Optional[Dict[str, str]]:
+    """
+    Downloads a feed from the given URL.
+
+    Args:
+        feed: The URL of the feed to download.
+        max_feed_size: The maximum size of the feed to download. Defaults to 10000000.
+
+    Returns:
+        A dictionary containing the downloaded feed data and the key of the feed.
+        Returns None if there is an error while downloading the feed.
+
+    Raises:
+        ReadTimeout: If the download times out.
+        HTTPError: If there is an HTTP error while downloading the feed.
+    """
     try:
         data = get_with_max_size(feed, max_feed_size)
         logger.debug(f"Downloaded feed: {feed}")
@@ -118,22 +157,6 @@ def download_feed(feed, max_feed_size=10000000):
             u = u._replace(scheme="http")
             feed_url = urlunparse(u)
             data = get_with_max_size(feed_url, max_feed_size)
-        except ReadTimeout as e:
-            logger.error(f"Failed to get feed: {feed} ({e})")
-            prom_label = urlparse(feed).hostname
-            prom_label = prom_label.replace(".", "_")
-            push_metrics_to_pushgateway(
-                PUBLISHER_URL_ERR_ALERT_NAME_METRIC, 1, prom_label, registry
-            )
-            return None
-        except HTTPError as e:
-            prom_label = urlparse(feed).hostname
-            prom_label = prom_label.replace(".", "_")
-            logger.error(f"Failed to get feed: {feed} ({e})")
-            push_metrics_to_pushgateway(
-                PUBLISHER_URL_ERR_ALERT_NAME_METRIC, 1, prom_label, registry
-            )
-            return None
         except Exception as e:
             logger.error(f"Failed to get [{e}]: {feed}")
             prom_label = urlparse(feed).hostname
@@ -147,6 +170,19 @@ def download_feed(feed, max_feed_size=10000000):
 
 
 def parse_rss(downloaded_feed):
+    """
+    Parses the downloaded RSS feed.
+
+    Parameters:
+        downloaded_feed (dict): A dictionary containing the downloaded feed, with the keys "key" and "feed_cache".
+
+    Returns:
+        None: If the feed fails to parse.
+
+    Raises:
+        Exception: If no articles are read from the feed.
+
+    """
     report = {"size_after_get": None, "size_after_insert": 0}
     url, data = downloaded_feed["key"], downloaded_feed["feed_cache"]
 
@@ -173,84 +209,111 @@ def parse_rss(downloaded_feed):
     return {"report": report, "feed_cache": feed_cache, "key": url}
 
 
-def process_image(item):
-    if item["img"] is None or item["img"] == "":
+def process_image(item: Dict) -> Dict[str, str]:
+    """
+    Processes an image item and returns the modified item.
+
+    Args:
+        item (Dict[str, str]): A dictionary representing the image item.
+
+    Returns:
+        Dict[str, str]: A dictionary representing the modified image item.
+    """
+    img = item.get("img")
+    if not img:
         item["img"] = ""
         item["padded_img"] = ""
         return item
 
-    else:
-        try:
-            cache_fn = im_proc.cache_image(item["img"])
-        except Exception as e:
-            cache_fn = None
-            logger.error(f"im_proc.cache_image failed [{e}]: {item['img']}")
+    try:
+        cache_fn = im_proc.cache_image(img)
         if cache_fn:
             parsed_url = urlparse(cache_fn)
-            if parsed_url.scheme:
-                item["padded_img"] = cache_fn
-            else:
-                item[
-                    "padded_img"
-                ] = f"{config.pcdn_url_base}/brave-today/cache/{cache_fn}"
+            item["padded_img"] = (
+                cache_fn
+                if parsed_url.scheme
+                else f"{config.pcdn_url_base}/brave-today/cache/{cache_fn}"
+            )
         else:
             item["img"] = ""
             item["padded_img"] = ""
+    except Exception as e:
+        # Handle the exception gracefully
+        logger.error(f"Error processing image: {e}")
+        item["img"] = ""
+        item["padded_img"] = ""
 
     return item
 
 
-def get_article_img(article):  # noqa: C901
-    # image determination
-    img_url = ""
-    if article.get("image"):
-        img_url = article["image"]
+def get_article_img(article: Dict) -> str:  # noqa: C901
+    """
+    Retrieves the image URL from the given article.
 
-    elif article.get("urlToImage"):
-        img_url = article["urlToImage"]
+    Args:
+        article Dict: The article object.
 
-    elif article.get("media_content"):
-        largest_width = 0
-        for content in article.get("media_content"):
-            if int(content.get("width") or 0) > largest_width:
-                largest_width = int(content.get("width"))
-                img_url = content.get("url")
+    Returns:
+        str: The URL of the image.
+    """
+    image_url: str = ""
 
-    elif article.get("media_thumbnail"):
-        largest_width = 0
-        for content in article.get("media_thumbnail"):
-            if int(content.get("width") or 0) > largest_width:
-                largest_width = int(content.get("width"))
-                img_url = content.get("url")
+    if "image" in article:
+        image_url = article["image"]
+    elif "urlToImage" in article:
+        image_url = article["urlToImage"]
+    elif "media_content" in article or "media_thumbnail" in article:
+        media = article.get("media_content") or article.get("media_thumbnail")
+        content_with_max_width = max(
+            media, key=lambda content: int(content.get("width") or 0), default=None
+        )
+        if content_with_max_width:
+            image_url = content_with_max_width.get("url")
 
-    elif article.get("summary"):
+    elif "summary" in article:
         soup = BS(article["summary"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
-                img_url = img_tag.get("src")
+                image_url = img_tag["src"]
                 break
 
-    elif article.get("content"):
+    elif "content" in article:
         soup = BS(article["content"][0]["value"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
-                img_url = img_tag.get("src")
+                image_url = img_tag["src"]
                 break
 
-    return img_url
+    return image_url
 
 
 def process_articles(article, _publisher):  # noqa: C901
+    """
+    Process the given article and return a dictionary containing the processed data.
+
+    Args:
+        article (dict): The article to be processed.
+        _publisher (dict): The publisher information.
+
+    Returns:
+        dict: A dictionary containing the processed data of the article.
+              Returns None if the article is not valid or should be skipped.
+    """
     out_article = {}
 
     # Process Title of the article
     if not article.get("title"):
         # No title. Skip.
         return None
+
     out_article["title"] = BS(article["title"], features="html.parser").get_text()
     out_article["title"] = html.unescape(out_article["title"])
+
+    # Filter the offensive articles
+    if profanity.contains_profanity(out_article.get("title").lower()):
+        return None
 
     # Filter the offensive articles
     if profanity.contains_profanity(out_article.get("title").lower()):
@@ -316,6 +379,15 @@ def process_articles(article, _publisher):  # noqa: C901
 
 
 def unshorten_url(out_article):
+    """
+    Unshortens a URL in the given output article.
+
+    Args:
+        out_article (dict): The output article containing the URL to unshorten.
+
+    Returns:
+        dict or None: The modified output article with the unshortened URL, or None if unshortening failed.
+    """
     unshortener = unshortenit.UnshortenIt(
         default_timeout=config.request_timeout,
         default_headers={"User-Agent": ua.random},
@@ -347,42 +419,94 @@ def unshorten_url(out_article):
     return out_article
 
 
-def get_popularity_score(out_article):
-    url = config.bs_pop_endpoint + out_article["url"]
+def get_popularity_score(_article):
+    """
+    Calculate the popularity score for an article.
+
+    Parameters:
+        _article (dict): The dictionary representing the article to calculate the popularity score for.
+
+    Returns:
+        dict: The updated dictionary with the calculated popularity score.
+    """
+    url = config.bs_pop_endpoint + _article["url"]
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
         pop_score = pop_response.get("popularity").get("popularity")
         pop_score_agg = sum(pop_score.values())
-        out_article["pop_score"] = pop_score_agg
+        return {**_article, "pop_score": pop_score_agg}
     except Exception as e:
         logger.error(f"Unable to get the pop score for {url} due to {e}")
-        out_article["pop_score"] = None
+        return {**_article, "pop_score": None}
 
-    return out_article
+
+def get_predicted_category(_article):
+    """
+    Retrieves the predicted category for an article using the Nu API.
+
+    Args:
+        _article (dict): The article to retrieve the predicted category for.
+
+    Returns:
+        dict: A dictionary containing the article and its predicted category.
+
+    Raises:
+        Exception: If there is an error retrieving the predicted category.
+    """
+    try:
+        response = requests.post(
+            url=config.nu_api_url,
+            json=[_article],
+            headers={"Authorization": f"Bearer {config.nu_api_token}"},
+            timeout=config.request_timeout,
+        )
+        response.raise_for_status()
+
+        api_response = response.json()
+        pred_category_results = api_response.get("results")[0]
+
+        pred_results = {"reliability": pred_category_results["reliability"]}
+
+        for pred in pred_category_results.get("categories"):
+            pred_results["category"] = pred["name"]
+            pred_results["confidence"] = pred["confidence"]
+            break
+
+        return {**_article, "predicted_category": pred_results}
+    except Exception as e:
+        logger.error(f"Unable to get predicted category due to {e}")
+        return {**_article, "predicted_category": None}
 
 
 def check_images_in_item(article, _publishers):  # noqa: C901
-    if article["img"]:
+    """
+    Check if the article has an image URL and if not, try to retrieve it from the metadata of the article's webpage.
+
+    Args:
+        article (dict): The dictionary representing the article.
+        _publishers (dict): The dictionary representing the publishers.
+
+    Returns:
+        dict: The modified article dictionary with the updated image URL.
+    """
+    img_url = article.get("img", "")
+
+    if img_url:
         try:
-            parsed_img_url = urlparse(article["img"])
+            parsed_img_url = urlparse(img_url)
             if not parsed_img_url.scheme:
-                parsed = parsed_img_url._replace(scheme="https")
-                url = urlunparse(parsed)
-                article["img"] = url
+                parsed_img_url = parsed_img_url._replace(scheme="https")
+                img_url = urlunparse(parsed_img_url)
+                article["img"] = img_url
 
-            if len(parsed_img_url.path) < 4:
-                article["img"] = ""
-
+                if len(parsed_img_url.path) < 4:
+                    article["img"] = ""
         except Exception as e:
-            logger.error(f"Can't parse image [{article['img']}]: {e}")
             article["img"] = ""
+            logger.error(f"Error parsing: {article['url']} -- {e}")
 
-    if (
-        article["img"] == ""
-        or _publishers[article["publisher_id"]]["og_images"] is True
-    ):
-        # if we came out of this without an image, lets try to get it from opengraph
+    if not article["img"] or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
                 url=article["url"],
@@ -407,7 +531,15 @@ def check_images_in_item(article, _publishers):  # noqa: C901
 
 
 def scrub_html(feed: dict):
-    """Scrubbing HTML of all entries that will be written to feed"""
+    """
+    Scrubs the HTML content in the given feed dictionary.
+
+    Parameters:
+        feed (dict): The dictionary containing the HTML content to be scrubbed.
+
+    Returns:
+        dict: The modified feed dictionary with the HTML content scrubbed.
+    """
     for key in feed.keys():
         try:
             feed[key] = bleach.clean(feed[key], strip=True)
@@ -421,6 +553,16 @@ def scrub_html(feed: dict):
 
 
 def score_entries(entries):
+    """
+    Generates a list of scored entries based on the provided entries.
+
+    Parameters:
+        entries (list): A list of dictionaries representing the entries to be scored.
+
+    Returns:
+        list: A list of dictionaries representing the scored entries. Each dictionary contains the original entry
+        along with an additional "score" field representing the calculated score.
+    """
     out_entries = []
     variety_by_source = {}
     for entry in entries:
@@ -448,6 +590,15 @@ class FeedProcessor:
         self.output_path: Path = _output_path
 
     def check_images(self, items):
+        """
+        Checks the images for the given items.
+
+        Args:
+            items (list): A list of items to check the images for.
+
+        Returns:
+            list: A list of items with the checked images.
+        """
         out_items = []
         logger.info(f"Checking images for {len(items)} items...")
         with ThreadPool(config.thread_pool_size) as pool:
@@ -464,6 +615,13 @@ class FeedProcessor:
         return result
 
     def download_feeds(self):
+        """
+        Downloads feeds from the publishers and parses them.
+
+        Returns:
+            feed_cache (dict): A dictionary containing the parsed feeds, with the publisher's key as the key and
+            the parsed feed as the value.
+        """
         downloaded_feeds = []
         feed_cache = {}
         logger.info(f"Downloading {len(self.publishers)} feeds...")
@@ -489,7 +647,14 @@ class FeedProcessor:
 
         return feed_cache
 
-    def get_rss(self):
+    def get_rss(self):  # noqa: C901
+        """
+        Retrieves the RSS feed data.
+
+        Returns:
+            - If `config.sources_file` is "sources.en_US", a list of entries with predicted categories.
+            - Otherwise, a list of entries with popularity scores.
+        """
         raw_entries = []
         entries = []
         self.report["feed_stats"] = {}
@@ -531,9 +696,31 @@ class FeedProcessor:
                     continue
                 raw_entries.append(result)
 
+        if str(config.sources_file) == "sources.en_US":
+            entries.clear()
+            logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
+            with ThreadPool(config.thread_pool_size) as pool:
+                for result in pool.imap_unordered(get_predicted_category, raw_entries):
+                    if not result:
+                        continue
+                    entries.append(result)
+            return entries
+
         return raw_entries
 
     def aggregate_rss(self):
+        """
+        Aggregates RSS entries by performing the following steps:
+
+        1. Retrieves RSS entries using the `get_rss` method.
+        2. Checks and fixes images for each entry using the `check_images` method.
+        3. Scrubs HTML content in parallel using a `ProcessPool` and the `scrub_html` function.
+        4. Removes duplicate entries based on the `url_hash` field.
+        5. Sorts the entries based on the `publish_time` field in descending order.
+        6. Calculates scores for each entry using the `score_entries` function.
+
+        Returns a list of filtered entries.
+        """
         entries = []
         filtered_entries = []
         entries += self.get_rss()
@@ -559,21 +746,18 @@ class FeedProcessor:
         return filtered_entries
 
     def aggregate(self):
+        """
+        Aggregates the RSS feeds and writes the result to the output file.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         with open(self.output_path, "wb") as _f:
             feeds = self.aggregate_rss()
             _f.write(orjson.dumps(feeds))
-
-    async def aggregate_shards(self):
-        by_category = {}
-        feeds = self.aggregate_rss()
-        for item in feeds:
-            if not item["category"] in by_category:
-                by_category[item["category"]] = [item]
-            else:
-                by_category[item["category"]].append(item)
-        for key in by_category:
-            with open(f"feed/category/{key}.json", "w") as _f:
-                _f.write(json.dumps(by_category[key]))
 
 
 if __name__ == "__main__":

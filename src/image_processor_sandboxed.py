@@ -32,6 +32,20 @@ instance = Instance(wasm_module)
 
 
 def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=80):
+    """
+    Resizes and pads an image.
+
+    Args:
+        image_bytes (bytes): The bytes of the image to resize and pad.
+        width (int): The desired width of the image.
+        height (int): The desired height of the image.
+        size (int): The size of the output image.
+        cache_path (str): The path where the resized and padded image will be cached.
+        quality (int, optional): The quality of the resized image. Defaults to 80.
+
+    Returns:
+        bool: True if the image was successfully resized and padded, False otherwise.
+    """
     image_length = len(image_bytes)
     input_pointer = instance.exports.allocate(image_length)
     memory = instance.exports.memory.uint8_view(input_pointer)
@@ -62,16 +76,26 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
             cache_path,
         )
 
-        with open(str(cache_path) + ".failed", "wb+") as out_image:
-            out_image.write(image_bytes)
-
         return False
 
 
 def get_with_max_size(url, max_bytes=1000000):
+    """
+    Retrieves the content of a URL and checks if it exceeds a maximum size.
+
+    Args:
+        url (str): The URL to retrieve the content from.
+        max_bytes (int, optional): The maximum size in bytes allowed for the content. Defaults to 1000000.
+
+    Returns:
+        tuple: A tuple containing the content of the response as bytes and a boolean indicating if the content
+        is larger than the maximum size.
+    """
     is_large = False
     response = requests.get(
-        url, timeout=config.request_timeout, headers={"User-Agent": ua.random}
+        url,
+        timeout=config.request_timeout,
+        headers={"User-Agent": ua.random, **config.default_headers},
     )
     response.raise_for_status()
     if (
@@ -92,6 +116,15 @@ class ImageProcessor:
         self.force_upload = force_upload
 
     def cache_image(self, url):  # noqa: C901
+        """
+        Caches an image from a given URL.
+
+        Args:
+            url (str): The URL of the image to be cached.
+
+        Returns:
+            str: The filename of the cached image, or None if caching failed.
+        """
         content = None
         cache_path = None
         cache_fn = None
@@ -118,21 +151,10 @@ class ImageProcessor:
                     exists = False
                 if exists:
                     return cache_fn
-
-        except requests.exceptions.ReadTimeout as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except ValueError as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except requests.exceptions.SSLError as e:
-            logger.info(f"Image is not already uploaded {url} with {e}")
-        except requests.exceptions.HTTPError as e:
-            logger.info(
-                f"Image is not already uploaded [{e.response.status_code}]: {url}"
-            )
         except Exception as e:
             logger.info(f"Image is not already uploaded {url} with {e}")
 
-        if not resize_and_pad_image(content, 1168, 657, 250000, cache_path):
+        if not resize_and_pad_image(content, 1168, 657, 250000, str(cache_path)):
             logger.info(f"Failed to cache image {url}")
             return None
 

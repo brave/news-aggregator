@@ -17,6 +17,7 @@ function die_usage() {
   echo ""
   echo "  $0 run-all                     Run all the required end-to-end (For deployment)"
   echo "  $0 favicons_covers             Run favicons and cover_images"
+  echo "  $0 healthcheck                 Run healthcheck for status.brave.com"
   echo "  $0 shell                       Start a bpython shell"
   exit 1
 }
@@ -57,6 +58,11 @@ elif [[ "$task" = "favicon-covers" ]]; then
   echo "Fetching Cover images"
   mkdir -p .cache
   python -u src/favicons_covers/cover_images.py
+
+elif [[ "$task" = "healthcheck" ]]; then
+  set -x
+  echo "Starting health check job..."
+  python -u src/healthcheck.py
 
 elif [[ "$task" = "shell" ]]; then
   set -x
