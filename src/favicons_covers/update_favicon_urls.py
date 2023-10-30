@@ -24,7 +24,10 @@ ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 config = get_config()
 logger = structlog.getLogger(__name__)
 im_proc = image_processor_sandboxed.ImageProcessor(
-    config.private_s3_bucket, s3_path="brave-today/favicons/{}", force_upload=True
+    config.private_s3_bucket,
+    s3_path="brave-today/favicons/{}",
+    force_upload=True,
+    img_format="png",
 )
 
 # In seconds. Tested with 5s, but it's too low for a bunch of sites (I'm looking
