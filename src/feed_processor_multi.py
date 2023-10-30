@@ -419,36 +419,34 @@ def unshorten_url(out_article):
     return out_article
 
 
-def get_popularity_score(out_article):
+def get_popularity_score(_article):
     """
     Calculate the popularity score for an article.
 
     Parameters:
-        out_article (dict): The dictionary representing the article to calculate the popularity score for.
+        _article (dict): The dictionary representing the article to calculate the popularity score for.
 
     Returns:
         dict: The updated dictionary with the calculated popularity score.
     """
-    url = config.bs_pop_endpoint + out_article["url"]
+    url = config.bs_pop_endpoint + _article["url"]
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
         pop_score = pop_response.get("popularity").get("popularity")
         pop_score_agg = sum(pop_score.values())
-        out_article["pop_score"] = pop_score_agg
+        return {**_article, "pop_score": pop_score_agg}
     except Exception as e:
         logger.error(f"Unable to get the pop score for {url} due to {e}")
-        out_article["pop_score"] = None
-
-    return out_article
+        return {**_article, "pop_score": None}
 
 
-def get_predicted_category(article):
+def get_predicted_category(_article):
     """
     Retrieves the predicted category for an article using the Nu API.
 
     Args:
-        article (dict): The article to retrieve the predicted category for.
+        _article (dict): The article to retrieve the predicted category for.
 
     Returns:
         dict: A dictionary containing the article and its predicted category.
@@ -459,7 +457,7 @@ def get_predicted_category(article):
     try:
         response = requests.post(
             url=config.nu_api_url,
-            json=[article],
+            json=[_article],
             headers={"Authorization": f"Bearer {config.nu_api_token}"},
             timeout=config.request_timeout,
         )
@@ -475,13 +473,13 @@ def get_predicted_category(article):
             pred_results["confidence"] = pred["confidence"]
             break
 
-        return {**article, "predicted_category": pred_results}
+        return {**_article, "predicted_category": pred_results}
     except Exception as e:
         logger.error(f"Unable to get predicted category due to {e}")
-        return {**article, "predicted_category": None}
+        return {**_article, "predicted_category": None}
 
 
-def check_images_in_item(article, _publishers):
+def check_images_in_item(article, _publishers):  # noqa: C901
     """
     Check if the article has an image URL and if not, try to retrieve it from the metadata of the article's webpage.
 
@@ -495,16 +493,20 @@ def check_images_in_item(article, _publishers):
     img_url = article.get("img", "")
 
     if img_url:
-        parsed_img_url = urlparse(img_url)
-        if not parsed_img_url.scheme:
-            parsed_img_url = parsed_img_url._replace(scheme="https")
-            img_url = urlunparse(parsed_img_url)
-            article["img"] = img_url
+        try:
+            parsed_img_url = urlparse(img_url)
+            if not parsed_img_url.scheme:
+                parsed_img_url = parsed_img_url._replace(scheme="https")
+                img_url = urlunparse(parsed_img_url)
+                article["img"] = img_url
 
-            if len(parsed_img_url.path) < 4:
-                article["img"] = ""
+                if len(parsed_img_url.path) < 4:
+                    article["img"] = ""
+        except Exception as e:
+            article["img"] = ""
+            logger.error(f"Error parsing: {article['url']} -- {e}")
 
-    if not img_url or _publishers[article["publisher_id"]]["og_images"]:
+    if not article["img"] or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
                 url=article["url"],
