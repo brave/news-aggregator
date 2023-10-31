@@ -4,6 +4,7 @@
 # You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import hashlib
+import mimetypes
 import os
 
 import boto3
@@ -46,12 +47,12 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
     Returns:
         bool: True if the image was successfully resized and padded, False otherwise.
     """
-    image_length = len(image_bytes)
-    input_pointer = instance.exports.allocate(image_length)
-    memory = instance.exports.memory.uint8_view(input_pointer)
-    memory[0:image_length] = image_bytes
-
     try:
+        image_length = len(image_bytes)
+        input_pointer = instance.exports.allocate(image_length)
+        memory = instance.exports.memory.uint8_view(input_pointer)
+        memory[0:image_length] = image_bytes
+
         output_pointer = instance.exports.resize_and_pad(
             input_pointer, image_length, width, height, size, quality
         )
@@ -109,11 +110,16 @@ def get_with_max_size(url, max_bytes=1000000):
 
 class ImageProcessor:
     def __init__(
-        self, s3_bucket=None, s3_path="brave-today/cache/{}", force_upload=False
+        self,
+        s3_bucket=None,
+        s3_path="brave-today/cache/{}",
+        force_upload=False,
+        img_format="jpg",
     ):
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
         self.force_upload = force_upload
+        self.img_format = img_format
 
     def cache_image(self, url):  # noqa: C901
         """
@@ -130,11 +136,15 @@ class ImageProcessor:
         cache_fn = None
 
         try:
+            content_type = mimetypes.guess_type(url)[0]
+            if "video" in content_type:
+                return None
+
             content, is_large = get_with_max_size(url)  # 1mb max
             if not is_large and not self.force_upload:
                 return url
 
-            cache_fn = f"{hashlib.sha256(url.encode('utf-8')).hexdigest()}.jpg.pad"
+            cache_fn = f"{hashlib.sha256(url.encode('utf-8')).hexdigest()}.{self.img_format}.pad"
             cache_path = config.img_cache_path / cache_fn
 
             # if we have it don't do it again
