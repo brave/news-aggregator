@@ -4,7 +4,6 @@
 # You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import hashlib
-import mimetypes
 import os
 
 import boto3
@@ -136,10 +135,6 @@ class ImageProcessor:
         cache_fn = None
 
         try:
-            content_type = mimetypes.guess_type(url)[0]
-            if "video" in content_type:
-                return None
-
             content, is_large = get_with_max_size(url)  # 1mb max
             if not is_large and not self.force_upload:
                 return url

@@ -42,7 +42,7 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
     icon_url = None
     try:
         icon_url = (
-            f"https://t0.gstatic.com/faviconV2?client=SOCIAL&"
+            f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
             f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=64"
         )
         res = requests.get(
