@@ -223,7 +223,7 @@ def process_site(domain: str):  # noqa: C901
 
     try:
         image_url = (
-            f"https://t0.gstatic.com/faviconV2?client=SOCIAL&"
+            f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
             f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
         )
         res = requests.get(
