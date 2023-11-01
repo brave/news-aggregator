@@ -7,6 +7,22 @@ import math
 from typing import Tuple
 
 
+def fade_to_brighter_color(hex_color, fade_factor=0.12):
+    # Convert hex color string to an RGB tuple
+    hex_color = tuple(int(hex_color[i : i + 2], 16) for i in (1, 3, 5))
+
+    # Calculate the blended RGB color
+    faded_color = tuple(int(c + fade_factor * (255 - c)) for c in hex_color)
+
+    # Ensure that the resulting color components do not exceed 255
+    faded_color = tuple(min(255, max(0, c)) for c in faded_color)
+
+    # Convert the blended RGB color back to a hex color
+    faded_hex_color = "#{:02X}{:02X}{:02X}".format(*faded_color)
+
+    return faded_hex_color
+
+
 def hex_color(col: Tuple[int, int, int]):
     """Converts a [r, g, b] tuple to it's hex representation. Transparency is ignored"""
 

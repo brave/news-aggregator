@@ -60,6 +60,7 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
         logger.info(
             f"Failed to download HTML for {domain} with exception {e}. Using default icon path {icon_url}"
         )
+        icon_url = None
 
     if icon_url is None:
         try:
@@ -75,10 +76,13 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
         except metadata_parser.NotParsableFetchError as e:
             if e.code and e.code not in (403, 429, 500, 502, 503):
                 logger.error(f"Error parsing [{domain}]: {e}")
+            icon_url = None
         except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            icon_url = None
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            icon_url = None
 
     if icon_url is None:
         try:

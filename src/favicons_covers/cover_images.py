@@ -21,7 +21,12 @@ from requests import HTTPError
 
 import image_processor_sandboxed
 from config import get_config
-from favicons_covers.color import color_length, hex_color, is_transparent
+from favicons_covers.color import (
+    color_length,
+    fade_to_brighter_color,
+    hex_color,
+    is_transparent,
+)
 from utils import get_all_domains, upload_file
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
@@ -135,7 +140,7 @@ def get_icon(icon_url: str) -> Image:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
 
-        return Image.open(filename).convert("RGBA")
+        return Image.open(filename).resize((256, 256)).convert("RGBA")
 
     # Failed to download the image, or the thing we downloaded wasn't valid.
     except Exception:
@@ -214,7 +219,7 @@ def get_background_color(image: Image):
 
     colors.sort(key=color_length)
     color = colors[len(colors) // 2]
-    return hex_color(color)
+    return fade_to_brighter_color(hex_color(color))
 
 
 def process_site(domain: str):  # noqa: C901
@@ -245,6 +250,7 @@ def process_site(domain: str):  # noqa: C901
         logger.info(
             f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
         )
+        image_url = None
 
     if image_url is None:
         try:
@@ -260,10 +266,13 @@ def process_site(domain: str):  # noqa: C901
         except metadata_parser.NotParsableFetchError as e:
             if e.code and e.code not in (403, 429, 500, 502, 503):
                 logger.error(f"Error parsing [{domain}]: {e}")
+            image_url = None
         except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            image_url = None
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            image_url = None
 
     if image_url is None:
         result = get_best_image(domain)
@@ -295,12 +304,13 @@ def process_cover_image(item):
         else:
             padded_image_url = None
 
+        logger.info(
+            f"The padded image of the {domain} org image is {image_url} and padded image is "
+            f"{padded_image_url} with {background_color}"
+        )
+
     except ValueError as e:
         logger.info(f"Tuple unpacking error {e}")
-
-    logger.info(
-        f"The padded image of the {domain} is {padded_image_url} with {background_color}"
-    )
 
     return domain, padded_image_url, background_color
 
