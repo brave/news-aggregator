@@ -20,6 +20,7 @@ import config
 
 boto_session = boto3.Session()
 s3_client = boto_session.client("s3")
+s3_resource = boto3.resource("s3")
 
 domain_url_fixer = re.compile(r"^https://(www\.)?|^")
 subst = "https://www."
@@ -141,7 +142,7 @@ def get_all_domains() -> List[str]:
             lines = f.readlines()[1:]
 
             # The domain is the first field on the line
-            yield from [line.split(",")[0].strip() for line in lines]
+            yield from [line.split(",")[0].strip().rstrip("/") for line in lines]
 
 
 def uri_validator(x):
