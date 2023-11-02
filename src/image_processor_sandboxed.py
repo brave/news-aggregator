@@ -6,6 +6,7 @@
 import hashlib
 import os
 
+import boto3
 import requests
 import structlog
 from fake_useragent import UserAgent
@@ -13,13 +14,17 @@ from wasmer import Instance, Module, Store, engine
 from wasmer_compiler_cranelift import Compiler
 
 from config import get_config
-from utils import ObjectNotFound, s3_resource, upload_file
+from utils import ObjectNotFound, upload_file
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 
 config = get_config()
 
 logger = structlog.getLogger(__name__)
+
+boto_session = boto3.Session()
+s3_client = boto_session.client("s3")
+s3_resource = boto3.resource("s3")
 
 wasm_store = Store(engine.JIT(Compiler))
 wasm_module = Module(wasm_store, open(config.wasm_thumbnail_path, "rb").read())
