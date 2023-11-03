@@ -331,17 +331,6 @@ def process_cover_image(item):
 
 if __name__ == "__main__":
     domains = list(set(get_all_domains()))
-    domains = [
-        # "https://www.foxnews.com/",
-        # "https://www.cnn.com/",
-        # "https://www.nytimes.com/",
-        # "https://brave.com/",
-        # "https://www.thegamer.com/",
-        # "https://www.cnn.com/",
-        # "https://www.cnet.com/",
-        # "https://gamerant.com/",
-        "https://www.manchestereveningnews.co.uk/",
-    ]
     logger.info(f"Processing {len(domains)} domains")
 
     cover_infos: List[Tuple[str, str, str]]

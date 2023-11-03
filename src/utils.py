@@ -142,7 +142,7 @@ def get_all_domains() -> List[str]:
             lines = f.readlines()[1:]
 
             # The domain is the first field on the line
-            yield from [line.split(",")[0].strip() for line in lines]
+            yield from [line.split(",")[0].strip().rstrip("/") for line in lines]
 
 
 def uri_validator(x):
