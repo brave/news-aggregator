@@ -23,8 +23,8 @@ import image_processor_sandboxed
 from config import get_config
 from favicons_covers.color import (
     color_length,
-    fade_to_brighter_color,
     hex_color,
+    is_monochromatic,
     is_transparent,
 )
 from utils import get_all_domains, upload_file
@@ -194,6 +194,9 @@ def get_background_color(image: Image):
     the median edge color. That is, the middle most color of all
     the edge pixels in the image.
     """
+    if is_monochromatic(image):
+        return "#FFFFFF"
+
     width, height = image.size
     colors = []
 
@@ -219,38 +222,58 @@ def get_background_color(image: Image):
 
     colors.sort(key=color_length)
     color = colors[len(colors) // 2]
-    return fade_to_brighter_color(hex_color(color))
+    return hex_color(color)
 
 
 def process_site(domain: str):  # noqa: C901
     image_url = None
     background_color = None
 
-    try:
-        image_url = (
-            f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
-            f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
-        )
-        res = requests.get(
-            image_url,
-            timeout=REQUEST_TIMEOUT,
-            headers={"User-Agent": ua.random, **config.default_headers},
-        )
+    if image_url is None:
+        try:
+            result = get_best_image(domain)
+            if not result:
+                raise ValueError("Failed to download the image using default way")
 
-        res.raise_for_status()
+            image, image_url = result
 
-        if res.status_code != 200:  # raise for status is not working with 3xx error
-            raise HTTPError(f"Http error with status code {res.status_code}")
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+        except Exception as e:
+            logger.info(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
 
-        image = get_icon(image_url)
+    if image_url is None:
+        try:
+            image_url = (
+                f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
+                f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
+            )
+            res = requests.get(
+                image_url,
+                timeout=REQUEST_TIMEOUT,
+                headers={"User-Agent": ua.random, **config.default_headers},
+            )
 
-        background_color = get_background_color(image) if image is not None else None
+            res.raise_for_status()
 
-    except Exception as e:
-        logger.info(
-            f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
-        )
-        image_url = None
+            if res.status_code != 200:  # raise for status is not working with 3xx error
+                raise HTTPError(f"Http error with status code {res.status_code}")
+
+            image = get_icon(image_url)
+
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+
+        except Exception as e:
+            logger.info(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
 
     if image_url is None:
         try:
@@ -273,15 +296,6 @@ def process_site(domain: str):  # noqa: C901
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
             image_url = None
-
-    if image_url is None:
-        result = get_best_image(domain)
-        if not result:
-            return None
-
-        image, image_url = result
-
-        background_color = get_background_color(image) if image is not None else None
 
     return domain, image_url, background_color
 
@@ -317,6 +331,17 @@ def process_cover_image(item):
 
 if __name__ == "__main__":
     domains = list(set(get_all_domains()))
+    domains = [
+        # "https://www.foxnews.com/",
+        # "https://www.cnn.com/",
+        # "https://www.nytimes.com/",
+        # "https://brave.com/",
+        # "https://www.thegamer.com/",
+        # "https://www.cnn.com/",
+        # "https://www.cnet.com/",
+        # "https://gamerant.com/",
+        "https://www.manchestereveningnews.co.uk/",
+    ]
     logger.info(f"Processing {len(domains)} domains")
 
     cover_infos: List[Tuple[str, str, str]]
