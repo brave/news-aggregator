@@ -6,6 +6,8 @@
 import math
 from typing import Tuple
 
+import numpy as np
+
 
 def fade_to_brighter_color(hex_color, fade_factor=0.12):
     # Convert hex color string to an RGB tuple
@@ -21,6 +23,22 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
     faded_hex_color = "#{:02X}{:02X}{:02X}".format(*faded_color)
 
     return faded_hex_color
+
+
+def is_monochromatic(image, tolerance=60):
+    try:
+        # Convert the image to grayscale and convert to NumPy array
+        grayscale_image = image.convert("L")
+        grayscale_array = np.array(grayscale_image)
+
+        # Calculate the standard deviation of pixel values in the grayscale image
+        std_deviation = np.std(grayscale_array)
+
+        # Check if the image is monochromatic (low standard deviation)
+        return std_deviation < tolerance
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return False
 
 
 def hex_color(col: Tuple[int, int, int]):

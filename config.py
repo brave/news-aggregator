@@ -87,6 +87,30 @@ class Configuration(BaseSettings):
     nu_api_url: str = ""
     nu_api_token: str = ""
 
+    video_ext = [
+        ".mp4",
+        ".avi",
+        ".mov",
+        ".mkv",
+        ".flv",
+        ".wmv",
+        ".webm",
+        ".mpg",
+        ".mpeg",
+        ".m4v",
+        ".ogg",
+        ".ogv",
+        ".3gp",
+        ".asf",
+        ".ts",
+        ".vob",
+        ".mp3",
+        ".wav",
+        ".flac",
+        ".aac",
+        ".wma",
+    ]
+
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)

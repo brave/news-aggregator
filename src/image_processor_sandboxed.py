@@ -14,7 +14,7 @@ from wasmer import Instance, Module, Store, engine
 from wasmer_compiler_cranelift import Compiler
 
 from config import get_config
-from utils import ObjectNotFound, upload_file
+from utils import ObjectNotFound, is_video_url, upload_file
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 
@@ -130,6 +130,9 @@ class ImageProcessor:
         Returns:
             str: The filename of the cached image, or None if caching failed.
         """
+        if is_video_url(url):
+            return None
+
         content = None
         cache_path = None
         cache_fn = None

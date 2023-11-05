@@ -142,7 +142,7 @@ def get_all_domains() -> List[str]:
             lines = f.readlines()[1:]
 
             # The domain is the first field on the line
-            yield from [line.split(",")[0].strip() for line in lines]
+            yield from [line.split(",")[0].strip().rstrip("/") for line in lines]
 
 
 def uri_validator(x):
@@ -222,3 +222,8 @@ def push_metrics_to_pushgateway(metric, metric_value, label_value, registry):
 
     except Exception as e:
         logger.error(f"Failed to push metrics: {e}")
+
+
+def is_video_url(url):
+    # Check if the URL ends with any of the video extensions
+    return any(url.endswith(ext) for ext in config.video_ext)
