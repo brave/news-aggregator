@@ -140,7 +140,7 @@ def get_icon(icon_url: str) -> Image:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
 
-        return Image.open(filename).resize((256, 256)).convert("RGBA")
+        return Image.open(filename).convert("RGBA")
 
     # Failed to download the image, or the thing we downloaded wasn't valid.
     except Exception:
@@ -231,23 +231,6 @@ def process_site(domain: str):  # noqa: C901
 
     if image_url is None:
         try:
-            result = get_best_image(domain)
-            if not result:
-                raise ValueError("Failed to download the image using default way")
-
-            image, image_url = result
-
-            background_color = (
-                get_background_color(image) if image is not None else None
-            )
-        except Exception as e:
-            logger.info(
-                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
-            )
-            image_url = None
-
-    if image_url is None:
-        try:
             image_url = (
                 f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
                 f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
@@ -265,10 +248,30 @@ def process_site(domain: str):  # noqa: C901
 
             image = get_icon(image_url)
 
+            if any(value < 50 for value in image.size):
+                raise ValueError("Value below 50 found in the tuple")
+
             background_color = (
                 get_background_color(image) if image is not None else None
             )
 
+        except Exception as e:
+            logger.info(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
+
+    if image_url is None:
+        try:
+            result = get_best_image(domain)
+            if not result:
+                raise ValueError("Failed to download the image using default way")
+
+            image, image_url = result
+
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
         except Exception as e:
             logger.info(
                 f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
