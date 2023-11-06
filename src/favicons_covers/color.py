@@ -27,15 +27,16 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
 
 def is_monochromatic(image, tolerance=60):
     try:
-        # Convert the image to grayscale and convert to NumPy array
         grayscale_image = image.convert("L")
         grayscale_array = np.array(grayscale_image)
 
-        # Calculate the standard deviation of pixel values in the grayscale image
-        std_deviation = np.std(grayscale_array)
+        scaled_grayscale_array = np.where(
+            grayscale_array > 200, grayscale_array * 1.5, grayscale_array
+        )
+        scaled_std_deviation = np.std(scaled_grayscale_array)
 
         # Check if the image is monochromatic (low standard deviation)
-        return std_deviation < tolerance
+        return scaled_std_deviation < tolerance
     except Exception as e:
         print(f"Error: {str(e)}")
         return False
