@@ -6,7 +6,6 @@
 import hashlib
 import os
 
-import boto3
 import requests
 import structlog
 from fake_useragent import UserAgent
@@ -14,17 +13,13 @@ from wasmer import Instance, Module, Store, engine
 from wasmer_compiler_cranelift import Compiler
 
 from config import get_config
-from utils import ObjectNotFound, is_video_url, upload_file
+from utils import s3_client, upload_file
 
-ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
+ua = UserAgent(browsers=["chrome", "edge", "firefox", "safari"])
 
 config = get_config()
 
 logger = structlog.getLogger(__name__)
-
-boto_session = boto3.Session()
-s3_client = boto_session.client("s3")
-s3_resource = boto3.resource("s3")
 
 wasm_store = Store(engine.JIT(Compiler))
 wasm_module = Module(wasm_store, open(config.wasm_thumbnail_path, "rb").read())
@@ -130,9 +125,6 @@ class ImageProcessor:
         Returns:
             str: The filename of the cached image, or None if caching failed.
         """
-        if is_video_url(url):
-            return None
-
         content = None
         cache_path = None
         cache_fn = None
@@ -151,11 +143,12 @@ class ImageProcessor:
             # also check if we have it on s3
             if not config.no_upload:
                 try:
-                    s3_resource.Object(
-                        self.s3_bucket, self.s3_path.format(cache_fn)
-                    ).load()
+                    s3_client.head_object(
+                        Bucket=config.private_s3_bucket,
+                        Key="brave-today/cache/" + cache_fn,
+                    )
                     exists = True
-                except ObjectNotFound:
+                except Exception:
                     exists = False
                 if exists:
                     return cache_fn

@@ -48,7 +48,7 @@ from config import get_config
 from src import image_processor_sandboxed
 from utils import push_metrics_to_pushgateway, upload_file
 
-ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
+ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari"])
 
 config = get_config()
 

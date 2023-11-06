@@ -29,7 +29,7 @@ from favicons_covers.color import (
 )
 from utils import get_all_domains, upload_file
 
-ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
+ua = UserAgent(browsers=["chrome", "edge", "firefox", "safari"])
 REQUEST_TIMEOUT = 15
 
 config = get_config()
