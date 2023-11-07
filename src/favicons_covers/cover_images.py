@@ -248,8 +248,8 @@ def process_site(domain: str):  # noqa: C901
 
             image = get_icon(image_url)
 
-            if any(value < 50 for value in image.size):
-                raise ValueError("Value below 50 found in the tuple")
+            if any(value < 40 for value in image.size):
+                raise ValueError("Value below 40 found in the tuple")
 
             background_color = (
                 get_background_color(image) if image is not None else None
