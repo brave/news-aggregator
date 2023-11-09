@@ -44,6 +44,7 @@ feed_include_keys = {
     "max_entries": True,
     "og_images": True,
     "creative_instance_id": True,
+    "channels": True,
     "feed_url": True,
     "site_url": True,
     "destination_domains": True,

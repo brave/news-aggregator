@@ -83,6 +83,9 @@ class Configuration(BaseSettings):
     )
 
     bs_pop_endpoint: str = ""
+    pop_score_cutoff = 300
+    pop_score_exponent = 2 / 3
+    pop_score_range = 300
 
     nu_api_url: str = ""
     nu_api_token: str = ""
