@@ -433,19 +433,19 @@ def get_popularity_score(_article):
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
-        pop_score = pop_response.get("popularity").get("popularity") or 0
+        pop_score = pop_response.get("popularity").get("popularity") or 1
         pop_score_agg = sum(pop_score.values())
 
-        if pop_score_agg < config.pop_score_cutoff:
-            return {**_article, "pop_score": {"org_pop_score": pop_score_agg}}
+        if pop_score_agg <= config.pop_score_cutoff:
+            return {**_article, "pop_score": pop_score_agg}
 
         pop_score_agg_lin = (config.pop_score_cutoff - 1) + (
             1 + pop_score_agg - config.pop_score_cutoff
         ) ** config.pop_score_exponent
-        return {**_article, "pop_score": {{"org_pop_score": pop_score_agg_lin}}}
+        return {**_article, "pop_score": pop_score_agg_lin}
     except Exception as e:
         logger.error(f"Unable to get the pop score for {url} due to {e}")
-        return {**_article, "pop_score": {"org_pop_score": 0}}
+        return {**_article, "pop_score": 1.0}
 
 
 def get_predicted_category(_article):
@@ -677,7 +677,12 @@ class FeedProcessor:
             if info.get("publisher_id") in target_publisher_ids
         ]
 
-    def norm_pop_score(self, articles):
+    def normalize_pop_score_by_channels(self, articles):
+        """
+        Not being used yet, Maybe we need it in the future for pop_score Normalization.
+        :param articles:
+        :return:
+        """
         for channel in self.extract_unique_channels():
             publishers_in_channel = self.get_publisher_ids_for_channel(channel)
             channel_articles = self.extract_articles_by_publisher_ids(
@@ -701,6 +706,22 @@ class FeedProcessor:
                     else 0,
                 }
                 article["pop_score"].update(normalized_pop_score)
+
+    def normalize_pop_score(self, articles):
+        max_pop_score = max(articles, key=lambda x: x["pop_score"])["pop_score"]
+        min_pop_score = min(articles, key=lambda x: x["pop_score"])["pop_score"]
+        for article in articles:
+            article_pop_score = article["pop_score"]
+            normalized_pop_score = (
+                config.pop_score_range
+                * (
+                    (article_pop_score - min_pop_score)
+                    / (max_pop_score - min_pop_score)
+                )
+                if max_pop_score != min_pop_score
+                else 1,
+            )
+            article["pop_score"] = max(normalized_pop_score[0], 1.0)
 
     def get_rss(self):  # noqa: C901
         """
@@ -751,7 +772,7 @@ class FeedProcessor:
                     continue
                 raw_entries.append(result)
 
-        self.norm_pop_score(raw_entries)
+        self.normalize_pop_score(raw_entries)
 
         if str(config.sources_file) == "sources.en_US":
             entries.clear()
