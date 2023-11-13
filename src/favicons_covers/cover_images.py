@@ -106,6 +106,7 @@ def get_apple_icon_urls(site_url: str, soup: BeautifulSoup):
 
 def get_open_graph_icon_urls(site_url: str, soup: BeautifulSoup):
     image_metas = soup.select('meta[property="og:image"]')
+    image_metas += soup.select('meta[property="og:image:url"]')
     image_metas += soup.select('meta[property="twitter:image"]')
     image_metas += soup.select('meta[property="image"]')
 
@@ -248,8 +249,8 @@ def process_site(domain: str):  # noqa: C901
 
             image = get_icon(image_url)
 
-            if any(value < 50 for value in image.size):
-                raise ValueError("Value below 50 found in the tuple")
+            if any(value < 40 for value in image.size):
+                raise ValueError("Value below 40 found in the tuple")
 
             background_color = (
                 get_background_color(image) if image is not None else None
@@ -289,6 +290,10 @@ def process_site(domain: str):  # noqa: C901
                 requests_timeout=config.request_timeout,
             )
             image_url = page.get_metadata_link("image")
+            image = get_icon(image_url)
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
         except metadata_parser.NotParsableFetchError as e:
             if e.code and e.code not in (403, 429, 500, 502, 503):
                 logger.error(f"Error parsing [{domain}]: {e}")
