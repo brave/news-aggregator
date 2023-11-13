@@ -6,6 +6,7 @@
 import math
 from typing import Tuple
 
+import numpy as np
 import structlog
 
 logger = structlog.getLogger(__name__)
@@ -27,44 +28,44 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
     return faded_hex_color
 
 
-# def is_monochromatic(image, tolerance=60):
-#     try:
-#         grayscale_image = image.convert("LA")
-#         grayscale_array = np.array(grayscale_image)
-#
-#         scaled_grayscale_array = np.where(
-#             grayscale_array > 200, grayscale_array * 1.5, grayscale_array
-#         )
-#         scaled_std_deviation = np.std(scaled_grayscale_array)
-#
-#         # Check if the image is monochromatic (low standard deviation)
-#         return scaled_std_deviation < tolerance
-#     except Exception as e:
-#         logger.info(f"Error: {str(e)}")
-#         return False
-
-
-def is_monochromatic(img, variance_threshold=100):
+def is_monochromatic(image, tolerance=60):
     try:
-        img = img.convert("RGBA")
+        grayscale_image = image.convert("L")
+        grayscale_array = np.array(grayscale_image)
 
-        # Get the image data
-        data = img.getdata()
-        # Calculate the color variance
-        variance = sum(
-            (
-                abs(pixel[0] - pixel[1])
-                + abs(pixel[1] - pixel[2])
-                + abs(pixel[2] - pixel[0])
-            )
-            / 3
-            for pixel in data
-        ) / len(data)
+        scaled_grayscale_array = np.where(
+            grayscale_array > 200, grayscale_array * 1.5, grayscale_array
+        )
+        scaled_std_deviation = np.std(scaled_grayscale_array)
 
-        return variance < variance_threshold
+        # Check if the image is monochromatic (low standard deviation)
+        return scaled_std_deviation < tolerance
     except Exception as e:
-        logger.info(f"Error: {e}")
+        print(f"Error: {str(e)}")
         return False
+
+
+# def is_monochromatic(img, variance_threshold=100):
+#     try:
+#         img = img.convert("RGBA")
+#
+#         # Get the image data
+#         data = img.getdata()
+#         # Calculate the color variance
+#         variance = sum(
+#             (
+#                 abs(pixel[0] - pixel[1])
+#                 + abs(pixel[1] - pixel[2])
+#                 + abs(pixel[2] - pixel[0])
+#             )
+#             / 3
+#             for pixel in data
+#         ) / len(data)
+#
+#         return variance < variance_threshold
+#     except Exception as e:
+#         logger.info(f"Error: {e}")
+#         return False
 
 
 def hex_color(col: Tuple[int, int, int]):
