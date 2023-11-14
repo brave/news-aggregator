@@ -433,12 +433,19 @@ def get_popularity_score(_article):
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
-        pop_score = pop_response.get("popularity").get("popularity")
+        pop_score = pop_response.get("popularity").get("popularity") or 1.0
         pop_score_agg = sum(pop_score.values())
-        return {**_article, "pop_score": pop_score_agg}
+
+        if pop_score_agg <= config.pop_score_cutoff:
+            return {**_article, "pop_score": pop_score_agg}
+
+        pop_score_agg_lin = (config.pop_score_cutoff - 1) + (
+            1 + pop_score_agg - config.pop_score_cutoff
+        ) ** config.pop_score_exponent
+        return {**_article, "pop_score": pop_score_agg_lin}
     except Exception as e:
         logger.error(f"Unable to get the pop score for {url} due to {e}")
-        return {**_article, "pop_score": None}
+        return {**_article, "pop_score": 1.0}
 
 
 def get_predicted_category(_article):
@@ -647,6 +654,22 @@ class FeedProcessor:
 
         return feed_cache
 
+    def normalize_pop_score(self, articles):
+        max_pop_score = max(articles, key=lambda x: x["pop_score"])["pop_score"]
+        min_pop_score = min(articles, key=lambda x: x["pop_score"])["pop_score"]
+        for article in articles:
+            article_pop_score = article["pop_score"]
+            normalized_pop_score = (
+                config.pop_score_range
+                * (
+                    (article_pop_score - min_pop_score)
+                    / (max_pop_score - min_pop_score)
+                )
+                if max_pop_score != min_pop_score
+                else 1,
+            )
+            article["pop_score"] = max(normalized_pop_score[0], 1.0)
+
     def get_rss(self):  # noqa: C901
         """
         Retrieves the RSS feed data.
@@ -695,6 +718,8 @@ class FeedProcessor:
                 if not result:
                     continue
                 raw_entries.append(result)
+
+        self.normalize_pop_score(raw_entries)
 
         if str(config.sources_file) == "sources.en_US":
             entries.clear()

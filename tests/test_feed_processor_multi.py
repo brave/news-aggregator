@@ -284,7 +284,7 @@ class TestGetPopularityScore:
         result = get_popularity_score(out_article)
 
         # Assert that the popularity score is None
-        assert result["pop_score"] is None
+        assert result["pop_score"] == 1.0
 
 
 class TestGetPredictedCategory:
