@@ -448,44 +448,6 @@ def get_popularity_score(_article):
         return {**_article, "pop_score": 1.0}
 
 
-def get_predicted_category(_article):
-    """
-    Retrieves the predicted category for an article using the Nu API.
-
-    Args:
-        _article (dict): The article to retrieve the predicted category for.
-
-    Returns:
-        dict: A dictionary containing the article and its predicted category.
-
-    Raises:
-        Exception: If there is an error retrieving the predicted category.
-    """
-    try:
-        response = requests.post(
-            url=config.nu_api_url,
-            json=[_article],
-            headers={"Authorization": f"Bearer {config.nu_api_token}"},
-            timeout=config.request_timeout,
-        )
-        response.raise_for_status()
-
-        api_response = response.json()
-        pred_category_results = api_response.get("results")[0]
-
-        pred_results = {"reliability": pred_category_results["reliability"]}
-
-        for pred in pred_category_results.get("categories"):
-            pred_results["category"] = pred["name"]
-            pred_results["confidence"] = pred["confidence"]
-            break
-
-        return {**_article, "predicted_category": pred_results}
-    except Exception as e:
-        logger.error(f"Unable to get predicted category due to {e}")
-        return {**_article, "predicted_category": None}
-
-
 def check_images_in_item(article, _publishers):  # noqa: C901
     """
     Check if the article has an image URL and if not, try to retrieve it from the metadata of the article's webpage.
@@ -595,6 +557,53 @@ class FeedProcessor:
         self.feeds = defaultdict(dict)
         self.publishers: dict = _publishers
         self.output_path: Path = _output_path
+
+    def get_predicted_category(self, _article):
+        """
+        Retrieves the predicted category for an article using the Nu API.
+
+        Args:
+            _article (dict): The article to retrieve the predicted category for.
+
+        Returns:
+            dict: A dictionary containing the article and its predicted category.
+
+        Raises:
+            Exception: If there is an error retrieving the predicted category.
+        """
+        try:
+            publisher_info = None
+            pub_id = _article.get("publisher_id")
+            for pub_info in self.publishers.values():
+                if pub_info.get("publisher_id") == pub_id:
+                    publisher_info = pub_info
+                    break
+
+            pub_channels = publisher_info.get("channels")
+            logger.info(f"Channel of the article {pub_channels}")
+
+            response = requests.post(
+                url=config.nu_api_url,
+                json=[_article],
+                headers={"Authorization": f"Bearer {config.nu_api_token}"},
+                timeout=config.request_timeout,
+            )
+            response.raise_for_status()
+
+            api_response = response.json()
+            pred_category_results = api_response.get("results")[0]
+
+            pred_results = {"reliability": pred_category_results["reliability"]}
+
+            for pred in pred_category_results.get("categories"):
+                pred_results["category"] = pred["name"]
+                pred_results["confidence"] = pred["confidence"]
+                break
+
+            return {**_article, "predicted_category": pred_results}
+        except Exception as e:
+            logger.error(f"Unable to get predicted category due to {e}")
+            return {**_article, "predicted_category": None}
 
     def check_images(self, items):
         """
@@ -725,7 +734,9 @@ class FeedProcessor:
             entries.clear()
             logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
-                for result in pool.imap_unordered(get_predicted_category, raw_entries):
+                for result in pool.imap_unordered(
+                    self.get_predicted_category, raw_entries
+                ):
                     if not result:
                         continue
                     entries.append(result)

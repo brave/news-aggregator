@@ -89,6 +89,8 @@ class Configuration(BaseSettings):
 
     nu_api_url: str = ""
     nu_api_token: str = ""
+    nu_default_channels = ["Funny"]
+    nu_augment_channels = ["Culture", "Top News", "World News"]
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
