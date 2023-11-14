@@ -145,7 +145,7 @@ class ImageProcessor:
                 try:
                     s3_client.head_object(
                         Bucket=config.private_s3_bucket,
-                        Key="brave-today/cache/" + cache_fn,
+                        Key=config.brave_img_s3_path + cache_fn,
                     )
                     exists = True
                 except Exception:
