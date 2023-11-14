@@ -433,7 +433,7 @@ def get_popularity_score(_article):
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
-        pop_score = pop_response.get("popularity").get("popularity") or 1
+        pop_score = pop_response.get("popularity").get("popularity") or 1.0
         pop_score_agg = sum(pop_score.values())
 
         if pop_score_agg <= config.pop_score_cutoff:
@@ -653,59 +653,6 @@ class FeedProcessor:
                 ] = self.publishers[result["key"]]
 
         return feed_cache
-
-    def extract_unique_channels(self):
-        return list(
-            {
-                channel
-                for info in self.publishers.values()
-                for channel in info.get("channels", [])
-            }
-        )
-
-    def get_publisher_ids_for_channel(self, channel_name):
-        publisher_ids = []
-        for feed_info in self.publishers.values():
-            if "channels" in feed_info and channel_name in feed_info["channels"]:
-                publisher_ids.append(feed_info["publisher_id"])
-        return publisher_ids
-
-    def extract_articles_by_publisher_ids(self, articles, target_publisher_ids):
-        return [
-            info
-            for info in articles
-            if info.get("publisher_id") in target_publisher_ids
-        ]
-
-    def normalize_pop_score_by_channels(self, articles):
-        """
-        Not being used yet, Maybe we need it in the future for pop_score Normalization.
-        :param articles:
-        :return:
-        """
-        for channel in self.extract_unique_channels():
-            publishers_in_channel = self.get_publisher_ids_for_channel(channel)
-            channel_articles = self.extract_articles_by_publisher_ids(
-                articles, publishers_in_channel
-            )
-            channel_max_pop_score = max(
-                entry["pop_score"]["org_pop_score"] for entry in channel_articles
-            )
-            channel_min_pop_score = min(
-                entry["pop_score"]["org_pop_score"] for entry in channel_articles
-            )
-            for article in channel_articles:
-                org_pop_score = article.get("pop_score").get("org_pop_score")
-                normalized_pop_score = {
-                    channel: config.pop_score_range
-                    * (
-                        (org_pop_score - channel_min_pop_score)
-                        / (channel_max_pop_score - channel_min_pop_score)
-                    )
-                    if channel_max_pop_score != channel_min_pop_score
-                    else 0,
-                }
-                article["pop_score"].update(normalized_pop_score)
 
     def normalize_pop_score(self, articles):
         max_pop_score = max(articles, key=lambda x: x["pop_score"])["pop_score"]
