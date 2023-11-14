@@ -60,7 +60,7 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
 #         return False
 
 
-def is_monochromatic(image, tolerance=50):
+def is_monochromatic(image, tolerance=25):
     colored_image = image.convert("RGB")
 
     image_array = np.array(colored_image)
