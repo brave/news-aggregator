@@ -9,6 +9,7 @@ import urllib
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Tuple
+from urllib.parse import urljoin
 
 import metadata_parser
 import requests
@@ -229,6 +230,7 @@ def get_background_color(image: Image):
 def process_site(domain: str):  # noqa: C901
     image_url = None
     background_color = None
+    default_icon_url = "/favicon.ico"
 
     if image_url is None:
         try:
@@ -303,6 +305,19 @@ def process_site(domain: str):  # noqa: C901
             image_url = None
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            image_url = None
+
+    if image_url is None:
+        try:
+            image_url = urljoin(domain, default_icon_url)
+            image = get_icon(image_url)
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+        except Exception as e:
+            logger.info(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
             image_url = None
 
     return domain, image_url, background_color

@@ -28,25 +28,43 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
     return faded_hex_color
 
 
-def is_monochromatic(image, tolerance=60, unique_tolerance=2):
-    try:
-        grayscale_image = image.convert("L")
-        grayscale_array = np.array(grayscale_image)
+# def is_monochromatic(image, tolerance=60, unique_tolerance=2):
+#     try:
+#         grayscale_image = image.convert("L")
+#         grayscale_array = np.array(grayscale_image)
+#
+#         unique_colors = np.unique(grayscale_array)
+#
+#         if len(unique_colors) <= unique_tolerance:
+#             return True
+#
+#         scaled_grayscale_array = np.where(
+#             grayscale_array > 200, grayscale_array * 1.5, grayscale_array
+#         )
+#         scaled_std_deviation = np.std(scaled_grayscale_array)
+#
+#         return scaled_std_deviation < tolerance
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
+#         return False
 
-        unique_colors = np.unique(grayscale_array)
 
-        if len(unique_colors) <= unique_tolerance:
-            return True
+def is_monochromatic(image, tolerance=25):
+    colored_image = image.convert("RGBA")
 
-        scaled_grayscale_array = np.where(
-            grayscale_array > 200, grayscale_array * 1.5, grayscale_array
-        )
-        scaled_std_deviation = np.std(scaled_grayscale_array)
+    image_array = np.array(colored_image)
 
-        return scaled_std_deviation < tolerance
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return False
+    std_rgb = [
+        int(np.std(image_array[:, :, 0][image_array[:, :, 0] != 0])),
+        int(np.std(image_array[:, :, 1][image_array[:, :, 1] != 0])),
+        int(np.std(image_array[:, :, 2][image_array[:, :, 2] != 0])),
+    ]
+
+    count_smaller_than_threshold = len(
+        [value for value in std_rgb if value < tolerance]
+    )
+
+    return count_smaller_than_threshold >= 1
 
 
 def hex_color(col: Tuple[int, int, int]):
