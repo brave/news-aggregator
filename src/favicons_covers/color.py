@@ -55,9 +55,9 @@ def is_monochromatic(image, tolerance=25):
     image_array = np.array(colored_image)
 
     std_rgb = [
-        int(np.std(image_array[:, :, 0][image_array[:, :, 0] != 0])),
-        int(np.std(image_array[:, :, 1][image_array[:, :, 1] != 0])),
-        int(np.std(image_array[:, :, 2][image_array[:, :, 2] != 0])),
+        int(np.std(image_array[:, :, 0][image_array[:, :, 3] != 0])),
+        int(np.std(image_array[:, :, 1][image_array[:, :, 3] != 0])),
+        int(np.std(image_array[:, :, 2][image_array[:, :, 3] != 0])),
     ]
 
     count_smaller_than_threshold = len(
