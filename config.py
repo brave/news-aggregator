@@ -52,7 +52,6 @@ class Configuration(BaseSettings):
     pub_s3_bucket: str = Field(default="brave-today-cdn-development")
     brave_today_canonical_id: str = ""
     brave_today_cloudfront_canonical_id: str = ""
-    brave_img_s3_path: str = "brave-today/cache/"
 
     sources_file: Path = Field(default="sources")
     sources_dir: Path = Field(default=Path(__file__).parent / "sources")
