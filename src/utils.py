@@ -21,7 +21,6 @@ import config
 boto_session = boto3.Session()
 s3_client = boto_session.client("s3")
 
-
 domain_url_fixer = re.compile(r"^https://(www\.)?|^")
 subst = "https://www."
 

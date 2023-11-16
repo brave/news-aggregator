@@ -30,7 +30,7 @@ from favicons_covers.color import (
 )
 from utils import get_all_domains, upload_file
 
-ua = UserAgent(browsers=["chrome", "edge", "firefox", "safari"])
+ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 REQUEST_TIMEOUT = 15
 
 config = get_config()
@@ -68,7 +68,7 @@ def get_manifest_icon_urls(site_url: str, soup: BeautifulSoup):
     if not manifest_link:
         return []
 
-    url = urllib.parse.urljoin(site_url, manifest_link)
+    url = urljoin(site_url, manifest_link)
 
     try:
         manifest_response = requests.get(
@@ -159,9 +159,7 @@ def get_best_image(site_url: str) -> Optional[tuple[Image, str]]:
     # The sources are in preference order. We take the largest image, if any
     # If a source has no images, we fall through to the next one.
     for source in sources:
-        icon_urls = [
-            urllib.parse.urljoin(site_url, url) for url in source(site_url, soup)
-        ]
+        icon_urls = [urljoin(site_url, url) for url in source(site_url, soup)]
         icons = filter(
             lambda x: x[0] is not None, [(get_icon(url), url) for url in icon_urls]
         )
@@ -230,7 +228,6 @@ def get_background_color(image: Image):
 def process_site(domain: str):  # noqa: C901
     image_url = None
     background_color = None
-    default_icon_url = "/favicon.ico"
 
     if image_url is None:
         try:
@@ -251,7 +248,7 @@ def process_site(domain: str):  # noqa: C901
 
             image = get_icon(image_url)
 
-            if any(value < 50 for value in image.size):
+            if all(value < 50 for value in image.size):
                 raise ValueError("Value below than 50 found in the image")
 
             background_color = (
@@ -259,7 +256,7 @@ def process_site(domain: str):  # noqa: C901
             )
 
         except Exception as e:
-            logger.info(
+            logger.error(
                 f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
             )
             image_url = None
@@ -276,7 +273,36 @@ def process_site(domain: str):  # noqa: C901
                 get_background_color(image) if image is not None else None
             )
         except Exception as e:
-            logger.info(
+            logger.error(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
+
+    if image_url is None:
+        try:
+            image_url = f"https://logo.clearbit.com/{domain}"
+            res = requests.get(
+                image_url,
+                timeout=REQUEST_TIMEOUT,
+                headers={"User-Agent": ua.random, **config.default_headers},
+            )
+
+            res.raise_for_status()
+
+            if res.status_code != 200:  # raise for status is not working with 3xx error
+                raise HTTPError(f"Http error with status code {res.status_code}")
+
+            image = get_icon(image_url)
+
+            if all(value < 50 for value in image.size):
+                raise ValueError("Value below than 50 found in the image")
+
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+
+        except Exception as e:
+            logger.error(
                 f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
             )
             image_url = None
@@ -305,19 +331,6 @@ def process_site(domain: str):  # noqa: C901
             image_url = None
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
-            image_url = None
-
-    if image_url is None:
-        try:
-            image_url = urljoin(domain, default_icon_url)
-            image = get_icon(image_url)
-            background_color = (
-                get_background_color(image) if image is not None else None
-            )
-        except Exception as e:
-            logger.info(
-                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
-            )
             image_url = None
 
     return domain, image_url, background_color

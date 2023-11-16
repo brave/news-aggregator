@@ -19,7 +19,7 @@ import image_processor_sandboxed
 from config import get_config
 from utils import get_all_domains, upload_file, uri_validator
 
-ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari"])
+ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 
 config = get_config()
 logger = structlog.getLogger(__name__)

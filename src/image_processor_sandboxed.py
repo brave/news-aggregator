@@ -6,6 +6,7 @@
 import hashlib
 import os
 
+import boto3
 import requests
 import structlog
 from fake_useragent import UserAgent
@@ -13,13 +14,17 @@ from wasmer import Instance, Module, Store, engine
 from wasmer_compiler_cranelift import Compiler
 
 from config import get_config
-from utils import s3_client, upload_file
+from utils import upload_file
 
-ua = UserAgent(browsers=["chrome", "edge", "firefox", "safari"])
+ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 
 config = get_config()
 
 logger = structlog.getLogger(__name__)
+
+boto_session = boto3.Session()
+s3_client = boto_session.client("s3")
+s3_resource = boto3.resource("s3")
 
 wasm_store = Store(engine.JIT(Compiler))
 wasm_module = Module(wasm_store, open(config.wasm_thumbnail_path, "rb").read())
@@ -41,12 +46,12 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
     Returns:
         bool: True if the image was successfully resized and padded, False otherwise.
     """
-    try:
-        image_length = len(image_bytes)
-        input_pointer = instance.exports.allocate(image_length)
-        memory = instance.exports.memory.uint8_view(input_pointer)
-        memory[0:image_length] = image_bytes
+    image_length = len(image_bytes)
+    input_pointer = instance.exports.allocate(image_length)
+    memory = instance.exports.memory.uint8_view(input_pointer)
+    memory[0:image_length] = image_bytes
 
+    try:
         output_pointer = instance.exports.resize_and_pad(
             input_pointer, image_length, width, height, size, quality
         )
@@ -143,10 +148,9 @@ class ImageProcessor:
             # also check if we have it on s3
             if not config.no_upload:
                 try:
-                    s3_client.head_object(
-                        Bucket=config.private_s3_bucket,
-                        Key=config.brave_img_s3_path + cache_fn,
-                    )
+                    s3_resource.Object(
+                        self.s3_bucket, self.s3_path.format(cache_fn)
+                    ).load()
                     exists = True
                 except Exception:
                     exists = False

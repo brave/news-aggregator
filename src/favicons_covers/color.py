@@ -54,6 +54,9 @@ def is_monochromatic(image, tolerance=25):
 
     image_array = np.array(colored_image)
 
+    if int(image_array.mean()) == 255:
+        raise ValueError("Image is all white")
+
     std_rgb = [
         int(np.std(image_array[:, :, 0][image_array[:, :, 3] != 0])),
         int(np.std(image_array[:, :, 1][image_array[:, :, 3] != 0])),

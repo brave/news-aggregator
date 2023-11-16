@@ -48,7 +48,7 @@ from config import get_config
 from src import image_processor_sandboxed
 from utils import push_metrics_to_pushgateway, upload_file
 
-ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari"])
+ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
 
 config = get_config()
 
@@ -600,7 +600,6 @@ class FeedProcessor:
             list: A list of items with the checked images.
         """
         out_items = []
-        result = []
         logger.info(f"Checking images for {len(items)} items...")
         with ThreadPool(config.thread_pool_size) as pool:
             for item in pool.imap_unordered(
@@ -610,6 +609,7 @@ class FeedProcessor:
 
         logger.info(f"Caching images for {len(out_items)} items...")
         with ProcessPool(config.concurrency) as pool:
+            result = []
             for item in pool.imap_unordered(process_image, out_items):
                 result.append(item)
         return result
