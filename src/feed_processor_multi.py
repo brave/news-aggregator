@@ -88,7 +88,6 @@ PUBLISHER_URL_ERR_ALERT_NAME_METRIC = Gauge(
     labelnames=["url"],
 )
 
-
 def get_with_max_size(
     url: str, max_bytes: Optional[int] = config.max_content_size
 ) -> bytes:
@@ -288,8 +287,12 @@ def get_article_img(article: Dict) -> str:  # noqa: C901
 
     return image_url
 
-def remove_none_properties(input_dict):
-    return {key: value for key, value in input_dict.items() if value is not None}
+# Returns a list of channels, defaults to article category for vague channel types
+def set_channels(article):
+    if article["category"] in config.nu_augment_channels:
+        if article["category"] not in config.nu_default_channels:
+            return [article[category]]
+    return []
 
 def process_articles(article, _publisher):  # noqa: C901
     """
@@ -303,22 +306,7 @@ def process_articles(article, _publisher):  # noqa: C901
         dict: A dictionary containing the processed data of the article.
               Returns None if the article is not valid or should be skipped.
     """
-    # Schema for out_article
-    out_article = {
-        "img": None,
-        "url": None,
-        "link": None,
-        "title": None,
-        "url_hash": None,
-        "enclosures": None,
-        "description": None,
-        "content_type": None,
-        "publisher_id": None,
-        "publish_time": None,
-        "publisher_name": None,
-        "offers_category": None,
-        "creative_instance_id": None,
-    }
+    out_article = {}
 
     # Process Title of the article
     if not article.get("title"):
@@ -393,7 +381,9 @@ def process_articles(article, _publisher):  # noqa: C901
     out_article["publisher_id"] = _publisher["publisher_id"]
     out_article["publisher_name"] = _publisher["publisher_name"]
     out_article["creative_instance_id"] = _publisher["creative_instance_id"]
-    out_article = remove_none_properties(out_article)
+
+    #  Set channels
+    out_article["channels"] = set_channels(article)
 
     return out_article
 
@@ -570,7 +560,6 @@ def score_entries(entries):
         variety_by_source[entry["publisher_id"]] = variety
     return out_entries
 
-
 class FeedProcessor:
     def __init__(self, _publishers: dict, _output_path: Path):
         self.report = defaultdict(dict)  # holds reports and stats of all actions
@@ -592,7 +581,6 @@ class FeedProcessor:
             Exception: If there is an error retrieving the predicted category.
         """
         try:
-            CATEGORY_FALLBACK_CONFIDENCE_THRESHOLD = .8
             publisher_info = None
             pub_id = _article.get("publisher_id")
             for pub_info in self.publishers.values():
@@ -617,14 +605,13 @@ class FeedProcessor:
             pred_results = {"reliability": pred_category_results["reliability"]}
 
             for pred in pred_category_results.get("categories"):
-                # If a classification result has poor reliability, fallback to publisher category
-                if pred["confidence"] < CATEGORY_FALLBACK_CONFIDENCE_THRESHOLD:
+                pred_results["category"] = pred["name"]
+                pred_results["confidence"] = pred["confidence"]
+                # If a classification result has poor confidence, fallback to publisher category
+                if pred["confidence"] < config.category_fallback_confidence_threshold:
                     _article["category"] = publisher_info.get("category")
-                    pred_results["category"] = publisher_info.get("category")
-                else:
-                    pred_results["category"] = pred["name"]
-                    pred_results["confidence"] = pred["confidence"]
                 break
+
 
             return {**_article, "predicted_category": pred_results}
         except Exception as e:
@@ -760,9 +747,7 @@ class FeedProcessor:
             entries.clear()
             logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
-                for result in pool.imap_unordered(
-                    self.get_predicted_category, raw_entries
-                ):
+                for result in pool.imap_unordered(self.get_predicted_category, raw_entries):
                     if not result:
                         continue
                     entries.append(result)
