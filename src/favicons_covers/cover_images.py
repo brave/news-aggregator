@@ -12,18 +12,19 @@ from typing import List, Optional, Tuple
 from urllib.parse import urljoin
 
 import metadata_parser
+import numpy as np
 import requests
 import structlog
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from orjson import orjson
 from PIL import Image
-from requests import HTTPError
 
 import image_processor_sandboxed
 from config import get_config
 from favicons_covers.color import (
     color_length,
+    has_transparency,
     hex_color,
     is_monochromatic,
     is_transparent,
@@ -135,6 +136,8 @@ def get_icon(icon_url: str) -> Image:
                 timeout=config.request_timeout,
                 headers={"User-Agent": ua.random, **config.default_headers},
             )
+
+            response.raise_for_status()
             if not response.ok:
                 return None
 
@@ -142,7 +145,13 @@ def get_icon(icon_url: str) -> Image:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
 
-        return Image.open(filename).convert("RGBA")
+        colored_image = Image.open(filename).convert("RGBA")
+        image_array = np.array(colored_image)
+
+        if int(image_array.mean()) == 255:
+            raise ValueError("Image is all white")
+
+        return colored_image
 
     # Failed to download the image, or the thing we downloaded wasn't valid.
     except Exception:
@@ -194,8 +203,9 @@ def get_background_color(image: Image):
     the median edge color. That is, the middle most color of all
     the edge pixels in the image.
     """
-    if is_monochromatic(image):
-        return "#FFFFFF"
+    if has_transparency(image):
+        if is_monochromatic(image):
+            return "#FFFFFF"
 
     width, height = image.size
     colors = []
@@ -228,32 +238,26 @@ def get_background_color(image: Image):
 def process_site(domain: str):  # noqa: C901
     image_url = None
     background_color = None
+    sizes = [128, 256]
 
     if image_url is None:
         try:
-            image_url = (
-                f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
-                f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
-            )
-            res = requests.get(
-                image_url,
-                timeout=REQUEST_TIMEOUT,
-                headers={"User-Agent": ua.random, **config.default_headers},
-            )
+            for index, size in enumerate(sizes):
+                image_url = (
+                    f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
+                    f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size={size}"
+                )
 
-            res.raise_for_status()
+                image = get_icon(image_url)
 
-            if res.status_code != 200:  # raise for status is not working with 3xx error
-                raise HTTPError(f"Http error with status code {res.status_code}")
+                if all(value < 50 for value in image.size):
+                    if index == len(sizes) - 1:
+                        raise ValueError("Value below than 50 found in the image")
+                    continue
 
-            image = get_icon(image_url)
-
-            if all(value < 50 for value in image.size):
-                raise ValueError("Value below than 50 found in the image")
-
-            background_color = (
-                get_background_color(image) if image is not None else None
-            )
+                background_color = (
+                    get_background_color(image) if image is not None else None
+                )
 
         except Exception as e:
             logger.error(
@@ -281,16 +285,6 @@ def process_site(domain: str):  # noqa: C901
     if image_url is None:
         try:
             image_url = f"https://logo.clearbit.com/{domain}"
-            res = requests.get(
-                image_url,
-                timeout=REQUEST_TIMEOUT,
-                headers={"User-Agent": ua.random, **config.default_headers},
-            )
-
-            res.raise_for_status()
-
-            if res.status_code != 200:  # raise for status is not working with 3xx error
-                raise HTTPError(f"Http error with status code {res.status_code}")
 
             image = get_icon(image_url)
 

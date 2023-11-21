@@ -20,7 +20,7 @@ information, employing multiple fallback mechanisms to ensure robustness in case
     - First attempt to fetch the cover image using Google's Favicon API.
     - If successful, retrieve the cover image and check its size. If the size is too small, raise a `ValueError`.
     - Obtain the background color associated with the cover image.
-2. **Fallback to Alternative cover image Retrieval:**
+2. **Fallback to Alternative cover image retrieval from the Website (using selectors):**
     - If the previous step fails, try an alternative method to obtain the cover image by calling `get_best_image(domain)`.
     - If successful, retrieve the cover image and its URL.
     - Obtain the background color associated with the cover image.
@@ -47,7 +47,8 @@ The elements of the tuple are as follows:
 
 
 ### `get_background_color` function
-The `get_background_color` function is responsible for determining the background color of an icon image. Here is the workflow:
+The `get_background_color` function is responsible for determining the background color of an cover image.
+Here is the workflow:
 
 1. If the image is monochromatic, it returns the hex color `#FFFFFF` (white).
 2. It iterates over the edge pixels of the image, both vertically and horizontally, and collects their colors.

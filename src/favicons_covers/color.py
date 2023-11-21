@@ -49,13 +49,10 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
 #         return False
 
 
-def is_monochromatic(image, tolerance=25):
+def is_monochromatic(image, tolerance=20):
     colored_image = image.convert("RGBA")
 
     image_array = np.array(colored_image)
-
-    if int(image_array.mean()) == 255:
-        raise ValueError("Image is all white")
 
     std_rgb = [
         int(np.std(image_array[:, :, 0][image_array[:, :, 3] != 0])),
@@ -68,6 +65,22 @@ def is_monochromatic(image, tolerance=25):
     )
 
     return count_smaller_than_threshold >= 1
+
+
+def has_transparency(image):
+    if image.info.get("transparency", None) is not None:
+        return True
+    if image.mode == "P":
+        transparent = image.info.get("transparency", -1)
+        for _, index in image.getcolors():
+            if index == transparent:
+                return True
+    elif image.mode == "RGBA":
+        extrema = image.getextrema()
+        if extrema[3][0] < 255:
+            return True
+
+    return False
 
 
 def hex_color(col: Tuple[int, int, int]):
