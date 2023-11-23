@@ -351,9 +351,9 @@ def process_articles(article, _publisher):  # noqa: C901
     )
 
     out_article["img"] = get_article_img(article)
-    out_article["category"] = _publisher.get("category")
 
     # Add some fields
+    out_article["category"] = _publisher.get("category")
     if article.get("description"):
         out_article["description"] = BS(
             article["description"], features="html.parser"
@@ -458,42 +458,40 @@ def get_predicted_channel(_article):
     Raises:
         Exception: If there is an error retrieving the predicted category.
     """
-    if bool(set(_article["channels"]).intersection(config.nu_default_channels)) or bool(
-        set(_article["channels"]).intersection(config.nu_augment_channels)
+    if (
+        bool(set(_article["channels"]).intersection(config.nu_default_channels))
+        or bool(set(_article["channels"]).intersection(config.nu_augment_channels))
+        or not _article.get("description")
     ):
         return _article
-    elif not _article.get("description"):
-        return _article
-    else:
-        try:
-            response = requests.post(
-                url=config.nu_api_url,
-                json=[_article],
-                headers={"Authorization": f"Bearer {config.nu_api_token}"},
-                timeout=config.request_timeout,
-            )
-            response.raise_for_status()
 
-            api_response = response.json()
-            pred_channel_results = api_response.get("results")[0]
-            pred_channels = pred_channel_results["categories"]
+    try:
+        response = requests.post(
+            url=config.nu_api_url,
+            json=[_article],
+            headers={"Authorization": f"Bearer {config.nu_api_token}"},
+            timeout=config.request_timeout,
+        )
+        response.raise_for_status()
 
-            pred_channels = sorted(
-                pred_channels, key=lambda d: d["confidence"], reverse=True
-            )[0]
+        api_response = response.json()
+        pred_channels = api_response.get("results")[0]["categories"]
+        pred_channels = sorted(
+            pred_channels, key=lambda d: d["confidence"], reverse=True
+        )[0]
 
-            if (
-                pred_channels["name"] in config.nu_excluded_channels
-                or pred_channels["confidence"] < config.nu_confidence_threshold
-            ):
-                return _article
-            else:
-                _article["channels"].append(pred_channels["name"])
-                return _article
-
-        except Exception as e:
-            logger.error(f"Unable to get predicted category due to {e}")
+        if (
+            pred_channels["name"] in config.nu_excluded_channels
+            or pred_channels["confidence"] < config.nu_confidence_threshold
+        ):
             return _article
+
+        _article["channels"].append(pred_channels["name"])
+        return _article
+
+    except Exception as e:
+        logger.error(f"Unable to get predicted category due to {e}")
+        return _article
 
 
 def check_images_in_item(article, _publishers):  # noqa: C901
