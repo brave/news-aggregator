@@ -361,6 +361,47 @@ def process_cover_image(item):
 
 if __name__ == "__main__":
     domains = list(set(get_all_domains()))
+    domains = [
+        # "https://collider.com/",
+        # "https://www.thespruce.com/",
+        # "https://www.menshealth.com/",
+        # "http://seekingalpha.com/",
+        # "https://thepointsguy.com/",
+        # "https://www.the-sun.com/",
+        # "https://www.independent.co.uk/",
+        # "https://www.rollingstone.com/",
+        # "https://www.makeuseof.com/",
+        # "https://www.cnn.com/",
+        # "https://screenrant.com",
+        # "https://gamerant.com/",
+        # "https://www.theguardian.com/",
+        # "https://www.edmunds.com/",
+        # "https://www.newyorker.com/",
+        # "https://www.businessinsider.com/",
+        # "https://forbes.com",
+        # "https://wired.com",
+        # "https://www.pocket-lint.com/",
+        # "https://pitchfork.com/",
+        # "https://www.cbr.com/",
+        # "https://cnet.com",
+        # "https://www.usatoday.com/",
+        # "https://www.fool.com/",
+        # "https://animenewsnetwork.com",
+        # "https://www.bbc.com/",
+        # "https://aljazeera.com",
+        # "https://gamerescape.com",
+        # "https://www.spiceworks.com/",
+        # "https://gsmarena.com",
+        # "https://definicion.de/",
+        # "https://techno-science.net",
+        # "https://www.alohacriticon.com/",
+        # "https://www.shift.jp.org/ja/",
+        # "https://maxifoot.fr",
+        # "https://bollywoodhungama.com",
+        # "https://www.cnn.com/",
+        "https://gameblog.fr",
+        # "https://number.bunshun.jp/subcategory/J%E3%83%AA%E3%83%BC%E3%82%B0/column/",
+    ]
     logger.info(f"Processing {len(domains)} domains")
 
     cover_infos: List[Tuple[str, str, str]]

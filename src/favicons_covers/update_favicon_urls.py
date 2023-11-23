@@ -7,7 +7,6 @@ from multiprocessing.pool import Pool, ThreadPool
 from typing import List, Tuple
 from urllib.parse import urljoin
 
-import metadata_parser
 import requests
 import structlog
 from bs4 import BeautifulSoup
@@ -61,28 +60,6 @@ def get_favicon(domain: str) -> Tuple[str, str]:  # noqa: C901
             f"Failed to download HTML for {domain} with exception {e}. Using default icon path {icon_url}"
         )
         icon_url = None
-
-    if icon_url is None:
-        try:
-            page = metadata_parser.MetadataParser(
-                url=domain,
-                support_malformed=True,
-                url_headers={"User-Agent": ua.random, **config.default_headers},
-                search_head_only=True,
-                strategy=["page", "meta", "og", "dc"],
-                requests_timeout=config.request_timeout,
-            )
-            icon_url = page.get_metadata_link("image")
-        except metadata_parser.NotParsableFetchError as e:
-            if e.code and e.code not in (403, 429, 500, 502, 503):
-                logger.error(f"Error parsing [{domain}]: {e}")
-            icon_url = None
-        except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
-            logger.error(f"Error parsing: {domain} -- {e}")
-            icon_url = None
-        except Exception as e:
-            logger.error(f"Error parsing: {domain} -- {e}")
-            icon_url = None
 
     if icon_url is None:
         try:
