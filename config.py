@@ -90,7 +90,13 @@ class Configuration(BaseSettings):
     nu_api_url: str = ""
     nu_api_token: str = ""
     nu_default_channels = ["Funny"]
-    nu_augment_channels = ["Culture", "Top News", "World News"]
+    nu_augment_channels = [
+        "Top Sources",
+        "Top News",
+        "World News",
+        "US News",
+        "Culture",
+    ]
     nu_confidence_threshold = 0.8
     nu_excluded_channels = ["Crime"]
 

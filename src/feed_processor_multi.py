@@ -445,23 +445,23 @@ def get_popularity_score(_article):
         return {**_article, "pop_score": 1.0}
 
 
-def get_predicted_channel(_article):
+def get_predicted_channels(_article):
     """
-    Retrieves the predicted category for an article using the Nu API.
+    Retrieves the predicted channels for an article using the NU-API.
 
     Args:
-        _article (dict): The article to retrieve the predicted category for.
+        _article (dict): The article to retrieve the predicted channels for.
 
     Returns:
-        dict: A dictionary containing the article and its predicted category.
+        dict: The input article with updated channels.
 
     Raises:
-        Exception: If there is an error retrieving the predicted category.
+        Exception: If there is an error retrieving the predicted channels.
     """
+    # Skip article if in default channels or if description + title is less than 20 characters
     if (
         bool(set(_article["channels"]).intersection(config.nu_default_channels))
-        or bool(set(_article["channels"]).intersection(config.nu_augment_channels))
-        or not _article.get("description")
+        or len(_article.get("description") + _article.get("title")) < 20
     ):
         return _article
 
@@ -480,13 +480,23 @@ def get_predicted_channel(_article):
             pred_channels, key=lambda d: d["confidence"], reverse=True
         )[0]
 
+        # Skip article if predicted channel is in excluded channels or if confidence is below threshold
         if (
             pred_channels["name"] in config.nu_excluded_channels
             or pred_channels["confidence"] < config.nu_confidence_threshold
         ):
             return _article
 
-        _article["channels"].append(pred_channels["name"])
+        # If article in augmented channels, only replace non-augmented channels with predicted channel
+        to_augment = list(
+            set(_article["channels"]).intersection(config.nu_augment_channels)
+        )
+        if to_augment and pred_channels["name"] not in _article["channels"]:
+            _article["channels"] = to_augment + [pred_channels["name"]]
+            return _article
+
+        # otherwise replace article channels with predicted channel
+        _article["channels"] = [pred_channels["name"]]
         return _article
 
     except Exception as e:
@@ -733,7 +743,7 @@ class FeedProcessor:
             entries.clear()
             logger.info(f"Getting the Predicted Channel the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
-                for result in pool.imap_unordered(get_predicted_channel, raw_entries):
+                for result in pool.imap_unordered(get_predicted_channels, raw_entries):
                     if not result:
                         continue
                     entries.append(result)
