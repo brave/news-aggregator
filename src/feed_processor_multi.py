@@ -315,10 +315,6 @@ def process_articles(article, _publisher):  # noqa: C901
     if profanity.contains_profanity(out_article.get("title").lower()):
         return None
 
-    # Filter the offensive articles
-    if profanity.contains_profanity(out_article.get("title").lower()):
-        return None
-
     # Process article URL
     if article.get("link"):
         out_article["link"] = article["link"]
@@ -373,6 +369,7 @@ def process_articles(article, _publisher):  # noqa: C901
 
     out_article["publisher_id"] = _publisher["publisher_id"]
     out_article["publisher_name"] = _publisher["publisher_name"]
+    out_article["channels"] = list(_publisher["channels"])
     out_article["creative_instance_id"] = _publisher["creative_instance_id"]
 
     return out_article
@@ -448,19 +445,26 @@ def get_popularity_score(_article):
         return {**_article, "pop_score": 1.0}
 
 
-def get_predicted_category(_article):
+def get_predicted_channels(_article):
     """
-    Retrieves the predicted category for an article using the Nu API.
+    Retrieves the predicted channels for an article using the NU-API.
 
     Args:
-        _article (dict): The article to retrieve the predicted category for.
+        _article (dict): The article to retrieve the predicted channels for.
 
     Returns:
-        dict: A dictionary containing the article and its predicted category.
+        dict: The input article with updated channels.
 
     Raises:
-        Exception: If there is an error retrieving the predicted category.
+        Exception: If there is an error retrieving the predicted channels.
     """
+    # Skip article if in default channels or if description + title is less than 20 characters
+    if (
+        bool(set(_article["channels"]).intersection(config.nu_default_channels))
+        or len(_article.get("description") + _article.get("title")) < 20
+    ):
+        return _article
+
     try:
         response = requests.post(
             url=config.nu_api_url,
@@ -471,19 +475,33 @@ def get_predicted_category(_article):
         response.raise_for_status()
 
         api_response = response.json()
-        pred_category_results = api_response.get("results")[0]
+        pred_channels = api_response.get("results")[0]["categories"]
+        pred_channels = sorted(
+            pred_channels, key=lambda d: d["confidence"], reverse=True
+        )[0]
 
-        pred_results = {"reliability": pred_category_results["reliability"]}
+        # Skip article if predicted channel is in excluded channels or if confidence is below threshold
+        if (
+            pred_channels["name"] in config.nu_excluded_channels
+            or pred_channels["confidence"] < config.nu_confidence_threshold
+        ):
+            return _article
 
-        for pred in pred_category_results.get("categories"):
-            pred_results["category"] = pred["name"]
-            pred_results["confidence"] = pred["confidence"]
-            break
+        # If article in augmented channels, only replace non-augmented channels with predicted channel
+        to_augment = list(
+            set(_article["channels"]).intersection(config.nu_augment_channels)
+        )
+        if to_augment and pred_channels["name"] not in _article["channels"]:
+            _article["channels"] = to_augment + [pred_channels["name"]]
+            return _article
 
-        return {**_article, "predicted_category": pred_results}
+        # otherwise replace article channels with predicted channel
+        _article["channels"] = [pred_channels["name"]]
+        return _article
+
     except Exception as e:
         logger.error(f"Unable to get predicted category due to {e}")
-        return {**_article, "predicted_category": None}
+        return _article
 
 
 def check_images_in_item(article, _publishers):  # noqa: C901
@@ -723,9 +741,9 @@ class FeedProcessor:
 
         if str(config.sources_file) == "sources.en_US":
             entries.clear()
-            logger.info(f"Getting the Pred categorize the API of {len(raw_entries)}")
+            logger.info(f"Getting the Predicted Channel the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
-                for result in pool.imap_unordered(get_predicted_category, raw_entries):
+                for result in pool.imap_unordered(get_predicted_channels, raw_entries):
                     if not result:
                         continue
                     entries.append(result)
@@ -794,26 +812,27 @@ if __name__ == "__main__":
     with open(config.output_path / f"{category}.json") as f:
         publishers = orjson.loads(f.read())
         output_path = config.output_feed_path / f"{category}.json-tmp"
-        fp = FeedProcessor(publishers, output_path)
-        fp.aggregate()
-        shutil.copyfile(
-            config.output_feed_path / f"{category}.json-tmp",
-            config.output_feed_path / f"{category}.json",
-        )
 
-        if not config.no_upload:
-            upload_file(
-                config.output_feed_path / f"{category}.json",
-                config.pub_s3_bucket,
-                f"brave-today/{category}{str(config.sources_file).replace('sources', '')}.json",
-            )
-            # Temporarily upload also with incorrect filename as a stopgap for
-            # https://github.com/brave/brave-browser/issues/20114
-            # Can be removed once fixed in the brave-core client for all Desktop users.
-            upload_file(
-                config.output_feed_path / f"{category}.json",
-                config.pub_s3_bucket,
-                f"brave-today/{category}{str(config.sources_file).replace('sources', '')}json",
-            )
+    fp = FeedProcessor(publishers, output_path)
+    fp.aggregate()
+    shutil.copyfile(
+        config.output_feed_path / f"{category}.json-tmp",
+        config.output_feed_path / f"{category}.json",
+    )
+
+    if not config.no_upload:
+        upload_file(
+            config.output_feed_path / f"{category}.json",
+            config.pub_s3_bucket,
+            f"brave-today/{category}{str(config.sources_file).replace('sources', '')}.json",
+        )
+        # Temporarily upload also with incorrect filename as a stopgap for
+        # https://github.com/brave/brave-browser/issues/20114
+        # Can be removed once fixed in the brave-core client for all Desktop users.
+        upload_file(
+            config.output_feed_path / f"{category}.json",
+            config.pub_s3_bucket,
+            f"brave-today/{category}{str(config.sources_file).replace('sources', '')}json",
+        )
     with open(config.output_path / "report.json", "w") as f:
         f.write(json.dumps(fp.report))

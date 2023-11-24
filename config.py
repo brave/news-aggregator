@@ -34,8 +34,8 @@ class Configuration(BaseSettings):
     img_cache_path: Path = Field(default=Path(__file__).parent / "output/feed/cache")
 
     # Set the number of processes to spawn for all multiprocessing tasks.
-    concurrency = cpu_count()
-    thread_pool_size = cpu_count() * 10
+    concurrency: int = cpu_count() - 1
+    thread_pool_size: int = cpu_count() * 5
 
     # Disable uploads and downloads to S3. Useful when running locally or in CI.
     no_upload: Optional[str] = None
@@ -89,6 +89,16 @@ class Configuration(BaseSettings):
 
     nu_api_url: str = ""
     nu_api_token: str = ""
+    nu_default_channels = ["Funny"]
+    nu_augment_channels = [
+        "Top Sources",
+        "Top News",
+        "World News",
+        "US News",
+        "Culture",
+    ]
+    nu_confidence_threshold = 0.8
+    nu_excluded_channels = ["Crime"]
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:

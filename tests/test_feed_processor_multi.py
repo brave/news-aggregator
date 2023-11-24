@@ -8,7 +8,7 @@ from requests import HTTPError
 from feed_processor_multi import (
     download_feed,
     get_popularity_score,
-    get_predicted_category,
+    get_predicted_channels,
     get_with_max_size,
     parse_rss,
     process_articles,
@@ -125,6 +125,7 @@ class TestProcessArticles:
             "creative_instance_id": "example_creative_instance",
             "category": "example_category",
             "content_type": "text",
+            "channels": ["Top News"],
         }
 
         processed_article = process_articles(article, _publisher)
@@ -139,6 +140,7 @@ class TestProcessArticles:
         assert processed_article["publisher_id"] == "example_publisher"
         assert processed_article["publisher_name"] == "Example Publisher"
         assert processed_article["creative_instance_id"] == "example_creative_instance"
+        assert processed_article["channels"] == ["Top News"]
 
     # Skip processing an article with no title.
     def test_skip_article_with_no_title(self):
@@ -287,63 +289,140 @@ class TestGetPopularityScore:
         assert result["pop_score"] == 1.0
 
 
-class TestGetPredictedCategory:
-    # Retrieves predicted category for a valid article.
-    def test_retrieves_predicted_category(self, mocker):
-        # Mock the requests.post method to return a mock response
-        mock_response = mocker.Mock()
-        mock_response.json.return_value = {
+class TestGetPredictedChannel:
+    def test_article_default_channel_or_short_text(self, mocker):
+        mocker.patch("requests.post")
+        mocker.patch("structlog.getLogger")
+
+        channels_1_default = ["Funny"]
+        channels_2 = ["Sports"]
+
+        article_1 = {
+            "channels": channels_1_default,
+            "title": "This is a title",
+            "description": "This is an article description",
+        }
+
+        article_2 = {
+            "channels": channels_2,
+            "title": "Short",
+            "description": "",
+        }
+
+        result_1 = get_predicted_channels(article_1)
+        result_2 = get_predicted_channels(article_2)
+
+        assert result_1["channels"] == channels_1_default
+        assert result_2["channels"] == channels_2
+
+    def test_article_api_response_no_categories(self, mocker):
+        # Mock the necessary dependencies
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        mock_post.return_value.json.return_value = {"results": [{"categories": []}]}
+        mocker.patch("structlog.getLogger")
+
+        channels = ["channel1", "channel2"]
+
+        article = {
+            "channels": channels,
+            "title": "This is a title",
+            "description": "This is an article description",
+        }
+
+        result = get_predicted_channels(article)
+
+        assert result["channels"] == channels
+
+    def test_article_if_predicted_category_excluded(self, mocker):
+        # Mock the necessary dependencies
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        excluded_category = "Crime"
+        mock_post.return_value.json.return_value = {
             "results": [
-                {
-                    "reliability": "high",
-                    "categories": [
-                        {"name": "Technology", "confidence": 0.9},
-                        {"name": "Science", "confidence": 0.8},
-                    ],
-                }
+                {"categories": [{"name": excluded_category, "confidence": 0.9}]}
             ]
         }
-        mocker.patch("requests.post", return_value=mock_response)
+        mocker.patch("structlog.getLogger")
 
-        # Define the input article
         article = {
-            "title": "Example Article",
-            "content": "This is an example article.",
-            "url": "https://example.com/article",
-            "publish_time": "2022-01-01T00:00:00Z",
+            "channels": ["channel1", "channel2"],
+            "title": "This is a title",
+            "description": "This is an article description",
         }
 
-        # Invoke the function under test
-        result = get_predicted_category(article)
+        result = get_predicted_channels(article)
 
-        # Assert the expected output
-        assert result == {
-            "title": "Example Article",
-            "content": "This is an example article.",
-            "url": "https://example.com/article",
-            "publish_time": "2022-01-01T00:00:00Z",
-            "predicted_category": {
-                "reliability": "high",
-                "category": "Technology",
-                "confidence": 0.9,
-            },
+        assert excluded_category not in result["channels"]
+
+    def test_article_if_predicted_category_below_threshold(self, mocker):
+        # Mock the necessary dependencies
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        valid_category = "Sports"
+        mock_post.return_value.json.return_value = {
+            "results": [{"categories": [{"name": valid_category, "confidence": 0.4}]}]
+        }
+        mocker.patch("structlog.getLogger")
+
+        article = {
+            "channels": ["channel1", "channel2"],
+            "title": "This is an article title",
+            "description": "This is an article description",
         }
 
-    # Handles an empty article and returns None as predicted category.
-    def test_handles_empty_article(self, mocker):
-        # Mock the requests.post method to return a mock response
-        mock_response = mocker.Mock()
-        mock_response.json.return_value = {"results": []}
-        mocker.patch("requests.post", return_value=mock_response)
+        result = get_predicted_channels(article)
 
-        # Define the input article
-        article = {}
+        assert valid_category not in result["channels"]
 
-        # Invoke the function under test
-        result = get_predicted_category(article)
+    def test_predict_channel(self, mocker):
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        valid_category = "Sports"
+        mock_post.return_value.json.return_value = {
+            "results": [{"categories": [{"name": valid_category, "confidence": 0.8}]}]
+        }
+        mocker.patch("structlog.getLogger")
 
-        # Assert the expected output
-        assert result == {"predicted_category": None}
+        article = {
+            "channels": ["channel1", "channel2"],
+            "title": "This is an article title",
+            "description": "This is an article description",
+        }
+
+        result = get_predicted_channels(article)
+
+        assert result["channels"] == [valid_category]
+
+    def test_predict_channel_with_augment_channel(self, mocker):
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        valid_category = "Sports"
+        mock_post.return_value.json.return_value = {
+            "results": [{"categories": [{"name": valid_category, "confidence": 0.8}]}]
+        }
+        mocker.patch("structlog.getLogger")
+
+        article_1 = {
+            "channels": ["Top Sources", "Politics"],
+            "title": "This is an article title",
+            "description": "This is an article description",
+        }
+
+        article_2 = {
+            "channels": ["Top News", "Top Sources"],
+            "title": "This is an article title",
+            "description": "This is an article description",
+        }
+
+        result_1 = get_predicted_channels(article_1)
+        result_2 = get_predicted_channels(article_2)
+
+        assert result_1["channels"] == ["Top Sources", valid_category]
+        assert set(result_2["channels"]) == set(
+            ["Top News", "Top Sources", valid_category]
+        )
 
 
 class TestScrubHtml:
