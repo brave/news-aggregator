@@ -43,11 +43,9 @@ from requests.exceptions import (
     SSLError,
     TooManyRedirects,
 )
-from feed import (
-    get_article_img
-)
 
 from config import get_config
+from feed import get_article_img
 from src import image_processor_sandboxed
 from utils import push_metrics_to_pushgateway, upload_file
 
@@ -247,8 +245,6 @@ def process_image(item: Dict) -> Dict[str, str]:
         item["padded_img"] = ""
 
     return item
-
-
 
 
 def process_articles(article, _publisher):  # noqa: C901

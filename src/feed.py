@@ -1,5 +1,7 @@
 from typing import Dict
+
 from bs4 import BeautifulSoup as BS
+
 
 def get_article_img(article: Dict) -> str:  # noqa: C901
     """

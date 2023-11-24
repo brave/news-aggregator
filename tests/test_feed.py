@@ -1,6 +1,5 @@
-from feed import (
-    get_article_img,
-)
+from feed import get_article_img
+
 
 class TestGetArticleImg:
     def test_image(self):
@@ -46,7 +45,9 @@ class TestGetArticleImg:
         url = get_article_img(article)
 
         # Assert
-        assert url == "https://example.com/media_content2.jpg", "Should return the image URL"
+        assert (
+            url == "https://example.com/media_content2.jpg"
+        ), "Should return the image URL"
 
     def test_media_thumbnail_media_thumbnail(self):
         # Arrange
@@ -67,7 +68,9 @@ class TestGetArticleImg:
         url = get_article_img(article)
 
         # Assert
-        assert url == "https://example.com/media_thumbnail2.jpg", "Should return the image URL"
+        assert (
+            url == "https://example.com/media_thumbnail2.jpg"
+        ), "Should return the image URL"
 
     def test_summary(self):
         # Arrange
