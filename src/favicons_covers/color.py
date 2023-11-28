@@ -28,22 +28,21 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
     return faded_hex_color
 
 
-def is_monochromatic(image, tolerance=5):
-    colored_image = image.convert("RGBA")
-
-    image_array = np.array(colored_image)
+def is_monochromatic(image, tolerance=50):
+    image_array = np.array(image.convert("RGBA"))
+    non_transparent_pixels = image_array[:, :, 3] != 0
 
     std_rgb = [
-        int(np.std(image_array[:, :, 0][image_array[:, :, 3] != 0])),
-        int(np.std(image_array[:, :, 1][image_array[:, :, 3] != 0])),
-        int(np.std(image_array[:, :, 2][image_array[:, :, 3] != 0])),
+        int(np.std(image_array[:, :, 0][non_transparent_pixels])),
+        int(np.std(image_array[:, :, 1][non_transparent_pixels])),
+        int(np.std(image_array[:, :, 2][non_transparent_pixels])),
     ]
 
     count_smaller_than_threshold = len(
         [value for value in std_rgb if value < tolerance]
     )
 
-    return count_smaller_than_threshold >= 1
+    return count_smaller_than_threshold == 3
 
 
 def has_transparency(image):
