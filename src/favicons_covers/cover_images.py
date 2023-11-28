@@ -41,6 +41,8 @@ im_proc = image_processor_sandboxed.ImageProcessor(
     s3_path="brave-today/cover_images/{}",
     force_upload=True,
     img_format="png",
+    img_width=256,
+    img_height=256,
 )
 
 CACHE_FOLDER = config.output_path / config.cover_info_cache_dir
