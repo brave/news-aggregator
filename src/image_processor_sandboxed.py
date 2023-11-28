@@ -114,11 +114,17 @@ class ImageProcessor:
         s3_path="brave-today/cache/{}",
         force_upload=False,
         img_format="jpg",
+        img_width=1168,
+        img_height=657,
+        img_size=250000,
     ):
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
         self.force_upload = force_upload
         self.img_format = img_format
+        self.img_width = img_width
+        self.img_height = img_height
+        self.img_size = img_size
 
     def cache_image(self, url):  # noqa: C901
         """
@@ -159,7 +165,9 @@ class ImageProcessor:
         except Exception as e:
             logger.info(f"Image is not already uploaded {url} with {e}")
 
-        if not resize_and_pad_image(content, 1168, 657, 250000, str(cache_path)):
+        if not resize_and_pad_image(
+            content, self.img_width, self.img_height, self.img_size, str(cache_path)
+        ):
             logger.info(f"Failed to cache image {url}")
             return None
 
