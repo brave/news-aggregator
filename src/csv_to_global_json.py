@@ -37,6 +37,17 @@ publisher_include_keys = {
     "publisher_id": True,
 }
 
+publisher_include_keys_v2 = {
+    "publisher_name": True,
+    "publisher_id": True,
+    "site_url": True,
+    "feed_url": True,
+    "favicon_url": True,
+    "cover_url": True,
+    "background_color": True,
+    "locales": True,
+}
+
 
 def main():
     """
@@ -116,11 +127,30 @@ def main():
     with open(f"{config.output_path / config.global_sources_file}", "wb") as f:
         f.write(orjson.dumps(publishers_data_as_list))
 
+    # V2
+    publishers_data_as_list_v2 = [
+        x.dict(include=publisher_include_keys_v2) for x in publishers.values()
+    ]
+
+    publishers_data_as_list_v2 = sorted(
+        publishers_data_as_list_v2, key=lambda x: x["publisher_name"]
+    )
+
+    with open(f"{config.output_path / config.global_sources_file_v2}", "wb") as f:
+        f.write(orjson.dumps(publishers_data_as_list_v2))
+
     if not config.no_upload:
         upload_file(
             config.output_path / config.global_sources_file,
             config.pub_s3_bucket,
             f"{config.global_sources_file}",
+        )
+
+        # V2 upload
+        upload_file(
+            config.output_path / config.global_sources_file_v2,
+            config.pub_s3_bucket,
+            f"{config.global_sources_file_v2}",
         )
 
 

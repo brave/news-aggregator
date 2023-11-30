@@ -32,6 +32,15 @@ class Configuration(BaseSettings):
         default=Path(__file__).parent / "wasm_thumbnail.wasm"
     )
     img_cache_path: Path = Field(default=Path(__file__).parent / "output/feed/cache")
+    keys_to_remove_v2 = [
+        "category",
+        "url_hash",
+        "img",
+        "creative_instance_id",
+        "publisher_name",
+    ]
+    feed_sources_path = "feed_source.json"
+    feed_path = "feed"
 
     # Set the number of processes to spawn for all multiprocessing tasks.
     concurrency: int = cpu_count() - 1
@@ -56,6 +65,7 @@ class Configuration(BaseSettings):
     sources_file: Path = Field(default="sources")
     sources_dir: Path = Field(default=Path(__file__).parent / "sources")
     global_sources_file: Path = Field(default="sources.global.json")
+    global_sources_file_v2: Path = Field(default="sources.global.v2.json")
     favicon_lookup_file: Path = Field(default="favicon_lookup.json")
     cover_info_lookup_file: Path = Field(default="cover_info_lookup.json")
     cover_info_cache_dir: Path = Field(default="cover_info_cache")

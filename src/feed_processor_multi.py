@@ -9,14 +9,15 @@ import json
 import logging
 import math
 import shutil
-import sys
 import time
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 from functools import partial
+from itertools import groupby
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.pool import ThreadPool
+from operator import itemgetter
 from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import quote, urlparse, urlunparse
@@ -804,35 +805,61 @@ class FeedProcessor:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        category = sys.argv[1]
-    else:
-        category = "feed"
-
-    with open(config.output_path / f"{category}.json") as f:
+    feed_sources = config.output_path / config.feed_sources_path
+    with open(feed_sources) as f:
         publishers = orjson.loads(f.read())
-        output_path = config.output_feed_path / f"{category}.json-tmp"
+        output_path = config.output_feed_path / f"{config.feed_path}.json-tmp"
 
     fp = FeedProcessor(publishers, output_path)
     fp.aggregate()
+
     shutil.copyfile(
-        config.output_feed_path / f"{category}.json-tmp",
-        config.output_feed_path / f"{category}.json",
+        config.output_feed_path / f"{config.feed_path}.json-tmp",
+        config.output_feed_path / f"{config.feed_path}.json",
     )
+
+    # V2
+    shutil.copyfile(
+        config.output_feed_path / f"{config.feed_path}.json-tmp",
+        config.output_feed_path / f"{config.feed_path}.v2.json-tmp",
+    )
+
+    with open(config.output_feed_path / f"{config.feed_path}.v2.json-tmp") as f:
+        feed_json = orjson.loads(f.read())
+        feed_v2 = [
+            {k: v for k, v in d.items() if k not in config.keys_to_remove_v2}
+            for d in feed_json
+        ]
+
+    key_func = itemgetter("publisher_id")
+    sorted_data = sorted(feed_v2, key=key_func)
+    grouped_feed_v2 = {
+        key: list(group) for key, group in groupby(sorted_data, key=key_func)
+    }
+    with open(config.output_feed_path / f"{config.feed_path}.v2.json", "wb") as _f:
+        _f.write(orjson.dumps(grouped_feed_v2))
 
     if not config.no_upload:
         upload_file(
-            config.output_feed_path / f"{category}.json",
+            config.output_feed_path / f"{config.feed_path}.json",
             config.pub_s3_bucket,
-            f"brave-today/{category}{str(config.sources_file).replace('sources', '')}.json",
+            f"brave-today/{config.feed_path}{str(config.sources_file).replace('sources', '')}.json",
         )
         # Temporarily upload also with incorrect filename as a stopgap for
         # https://github.com/brave/brave-browser/issues/20114
         # Can be removed once fixed in the brave-core client for all Desktop users.
         upload_file(
-            config.output_feed_path / f"{category}.json",
+            config.output_feed_path / f"{config.feed_path}.json",
             config.pub_s3_bucket,
-            f"brave-today/{category}{str(config.sources_file).replace('sources', '')}json",
+            f"brave-today/{config.feed_path}{str(config.sources_file).replace('sources', '')}json",
         )
+
+        # Upload v2 feed
+        upload_file(
+            config.output_feed_path / f"{config.feed_path}.v2.json",
+            config.pub_s3_bucket,
+            f"brave-today/{config.feed_path}{str(config.sources_file).replace('sources', '')}.v2.json",
+        )
+
     with open(config.output_path / "report.json", "w") as f:
         f.write(json.dumps(fp.report))
