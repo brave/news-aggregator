@@ -17,11 +17,11 @@ validjson:
 	NO_UPLOAD=1 NO_DOWNLOAD=1 python src/csv_to_json.py
 	mv sources/sources-orig.csv sources/sources.csv
 	json_verify < output/sources.json
-	json_verify < output/feed.json
+	json_verify < output/feed_source.json
 	echo Checking that sources.json is of the expected size...
 	test `stat -c%s output/sources.json` -gt 10
 	echo Checking that feed.json is of the expected size...
-	test `stat -c%s output/feed.json` -gt 10
+	test `stat -c%s output/feed_source.json` -gt 10
 	echo Checking that feed_processor_multi.py creates a valid JSON file...
 	NO_UPLOAD=1 NO_DOWNLOAD=1 python src/feed_processor_multi.py feed
 	json_verify < output/feed/feed.json
