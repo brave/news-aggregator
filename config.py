@@ -97,7 +97,7 @@ class Configuration(BaseSettings):
         "US News",
         "Culture",
     ]
-    nu_confidence_threshold = 0.8
+    nu_confidence_threshold = 0.9
     nu_excluded_channels = ["Crime"]
 
     @validator("img_cache_path")

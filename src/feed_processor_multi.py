@@ -476,6 +476,9 @@ def get_predicted_channels(_article):
 
         api_response = response.json()
         pred_channels = api_response.get("results")[0]["categories"]
+        if not pred_channels:
+            return _article
+
         pred_channels = sorted(
             pred_channels, key=lambda d: d["confidence"], reverse=True
         )[0]
@@ -491,8 +494,8 @@ def get_predicted_channels(_article):
         to_augment = list(
             set(_article["channels"]).intersection(config.nu_augment_channels)
         )
-        if to_augment and pred_channels["name"] not in _article["channels"]:
-            _article["channels"] = to_augment + [pred_channels["name"]]
+        if to_augment:
+            _article["channels"] = [pred_channels["name"]] + to_augment
             return _article
 
         # otherwise replace article channels with predicted channel
@@ -500,7 +503,7 @@ def get_predicted_channels(_article):
         return _article
 
     except Exception as e:
-        logger.error(f"Unable to get predicted category due to {e}")
+        logger.error(f"Unable to get predicted category for {_article} due to {e}")
         return _article
 
 
