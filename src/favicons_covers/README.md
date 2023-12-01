@@ -47,17 +47,26 @@ The elements of the tuple are as follows:
 
 
 ### `get_background_color` function
-The `get_background_color` function is responsible for determining the background color of an cover image.
+The `get_background_color` function is responsible for determining the background color of a cover image.
 Here is the workflow:
 
-1. If the image is monochromatic, it returns the hex color `#FFFFFF` (white).
-2. It iterates over the edge pixels of the image, both vertically and horizontally, and collects their colors.
-3. It discards any transparent colors and sorts the collected colors based on their length.
-4. It selects the middle color from the sorted colors list as the background color of the image.
+1. **Transparency Check:**
+   -  If the image has transparency (alpha channel) and is monochromatic, a default white background color `#FFFFFF` will return, assuming that the icon is designed for light backgrounds.
+   - Otherwise, we find the background color using following steps.
+2. **Edge Pixel Collection:**
+   - The function finds the leftmost and rightmost non-transparent pixels for each vertical edge in the image.
+   - The function finds the topmost and bottommost non-transparent pixels for each horizontal edge in the image.
+   - The non-transparent pixel coordinates are stored in the colors list.
+3. **Color Filtering:**
+   - The colors list is filtered to remove any None values (indicating a failure to find a non-transparent pixel).
+4. **Median Edge Color Determination:**
+   - If no non-transparent edge pixels are found, the function returns None.
+   - The remaining colors are sorted based on length, and the median color (middlemost) is identified.
+   - The median edge color is returned as a hexadecimal color code.
+
 
 #### Output
-The function returns the determined background color as a hexadecimal string. If the image is monochromatic,
-it defaults to white (#FFFFFF). If the image has no discernible colors, it returns None.
+The function returns the determined background color as a hexadecimal string.
 
 
 ### `process_cover_image` function
