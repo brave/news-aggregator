@@ -297,7 +297,7 @@ class TestGetPredictedChannel:
         mocker.patch("requests.post")
         mocker.patch("structlog.getLogger")
 
-        channels_1_default = ["Funny"]
+        channels_1_default = ["Fun"]
         channels_2 = ["Sports"]
 
         article_1 = {
@@ -460,6 +460,42 @@ class TestGetPredictedChannel:
         assert set(result_2["channels"]) == set(
             ["Top News", "Top Sources", valid_category]
         )
+
+    def test_predict_channel_with_default_channel(self, mocker):
+        mock_post = mocker.patch("requests.post")
+        mock_post.return_value.raise_for_status.return_value = None
+        valid_category = "Sports"
+        mock_post.return_value.json.return_value = {
+            "results": [
+                {
+                    "categories": [
+                        {
+                            "name": valid_category,
+                            "confidence": config.nu_confidence_threshold,
+                        }
+                    ]
+                }
+            ]
+        }
+        mocker.patch("structlog.getLogger")
+
+        article_1 = {
+            "channels": ["Fun", "Top Sources"],
+            "title": "This is an article title",
+            "description": "This is an article description",
+        }
+
+        article_2 = {
+            "channels": ["Fun"],
+            "title": "This is an article title",
+            "description": "This is an article description",
+        }
+
+        result_1 = get_predicted_channels(article_1)
+        result_2 = get_predicted_channels(article_2)
+
+        assert set(result_1["channels"]) == set(["Top Sources", "Fun"])
+        assert set(result_2["channels"]) == set(["Fun"])
 
 
 class TestScrubHtml:
