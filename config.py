@@ -89,7 +89,7 @@ class Configuration(BaseSettings):
 
     nu_api_url: str = ""
     nu_api_token: str = ""
-    nu_default_channels = ["Funny"]
+    nu_default_channels = ["Fun"]
     nu_augment_channels = [
         "Top Sources",
         "Top News",
