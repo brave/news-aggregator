@@ -29,6 +29,10 @@ def fade_to_brighter_color(hex_color, fade_factor=0.12):
 
 
 def is_monochromatic(image, tolerance=85):
+    """
+    Calculates the standard deviation of the RGB channels of an image with the transparent pixels and checks
+    if all three channels have a standard deviation smaller than or equal to a given tolerance.
+    """
     image_array = np.array(image.convert("RGBA"))
     non_transparent_pixels = image_array[:, :, 3] != 0
 
@@ -46,6 +50,12 @@ def is_monochromatic(image, tolerance=85):
 
 
 def has_transparency(image):
+    """
+    Check if the given image has transparency.
+    - If the image has an alpha channel, it is considered transparent
+    - For images in palette mode ("P"), it checks if there is a transparent color specified
+      in the image's transparency information.
+    """
     if image.info.get("transparency", None) is not None:
         return True
     if image.mode == "P":
