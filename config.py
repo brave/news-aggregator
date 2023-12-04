@@ -89,7 +89,7 @@ class Configuration(BaseSettings):
 
     nu_api_url: str = ""
     nu_api_token: str = ""
-    nu_default_channels = ["Funny"]
+    nu_default_channels = ["Fun"]
     nu_augment_channels = [
         "Top Sources",
         "Top News",
@@ -97,7 +97,7 @@ class Configuration(BaseSettings):
         "US News",
         "Culture",
     ]
-    nu_confidence_threshold = 0.8
+    nu_confidence_threshold = 0.9
     nu_excluded_channels = ["Crime"]
 
     @validator("img_cache_path")
