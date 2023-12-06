@@ -9,19 +9,26 @@ import urllib
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Tuple
+from urllib.parse import urljoin
 
 import metadata_parser
+import numpy as np
 import requests
 import structlog
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from orjson import orjson
 from PIL import Image
-from requests import HTTPError
 
 import image_processor_sandboxed
 from config import get_config
-from favicons_covers.color import color_length, hex_color, is_transparent
+from favicons_covers.color import (
+    color_length,
+    has_transparency,
+    hex_color,
+    is_monochromatic,
+    is_transparent,
+)
 from utils import get_all_domains, upload_file
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])
@@ -33,6 +40,9 @@ im_proc = image_processor_sandboxed.ImageProcessor(
     config.private_s3_bucket,
     s3_path="brave-today/cover_images/{}",
     force_upload=True,
+    img_format="png",
+    img_width=256,
+    img_height=256,
 )
 
 CACHE_FOLDER = config.output_path / config.cover_info_cache_dir
@@ -61,7 +71,7 @@ def get_manifest_icon_urls(site_url: str, soup: BeautifulSoup):
     if not manifest_link:
         return []
 
-    url = urllib.parse.urljoin(site_url, manifest_link)
+    url = urljoin(site_url, manifest_link)
 
     try:
         manifest_response = requests.get(
@@ -100,6 +110,7 @@ def get_apple_icon_urls(site_url: str, soup: BeautifulSoup):
 
 def get_open_graph_icon_urls(site_url: str, soup: BeautifulSoup):
     image_metas = soup.select('meta[property="og:image"]')
+    image_metas += soup.select('meta[property="og:image:url"]')
     image_metas += soup.select('meta[property="twitter:image"]')
     image_metas += soup.select('meta[property="image"]')
 
@@ -127,6 +138,8 @@ def get_icon(icon_url: str) -> Image:
                 timeout=config.request_timeout,
                 headers={"User-Agent": ua.random, **config.default_headers},
             )
+
+            response.raise_for_status()
             if not response.ok:
                 return None
 
@@ -134,7 +147,13 @@ def get_icon(icon_url: str) -> Image:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
 
-        return Image.open(filename).convert("RGBA")
+        colored_image = Image.open(filename).convert("RGBA")
+        image_array = np.array(colored_image)
+
+        if int(image_array.mean()) == 255:
+            raise ValueError("Image is all white")
+
+        return colored_image
 
     # Failed to download the image, or the thing we downloaded wasn't valid.
     except Exception:
@@ -151,9 +170,7 @@ def get_best_image(site_url: str) -> Optional[tuple[Image, str]]:
     # The sources are in preference order. We take the largest image, if any
     # If a source has no images, we fall through to the next one.
     for source in sources:
-        icon_urls = [
-            urllib.parse.urljoin(site_url, url) for url in source(site_url, soup)
-        ]
+        icon_urls = [urljoin(site_url, url) for url in source(site_url, soup)]
         icons = filter(
             lambda x: x[0] is not None, [(get_icon(url), url) for url in icon_urls]
         )
@@ -188,6 +205,10 @@ def get_background_color(image: Image):
     the median edge color. That is, the middle most color of all
     the edge pixels in the image.
     """
+    if has_transparency(image):
+        if is_monochromatic(image):
+            return "#FFFFFF"
+
     width, height = image.size
     colors = []
 
@@ -219,31 +240,68 @@ def get_background_color(image: Image):
 def process_site(domain: str):  # noqa: C901
     image_url = None
     background_color = None
+    sizes = [128, 256]
 
-    try:
-        image_url = (
-            f"https://t0.gstatic.com/faviconV2?client=SOCIAL&"
-            f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size=256"
-        )
-        res = requests.get(
-            image_url,
-            timeout=REQUEST_TIMEOUT,
-            headers={"User-Agent": ua.random, **config.default_headers},
-        )
+    if image_url is None:
+        try:
+            for index, size in enumerate(sizes):
+                image_url = (
+                    f"https://t2.gstatic.com/faviconV2?client=SOCIAL&"
+                    f"type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={domain}&size={size}"
+                )
 
-        res.raise_for_status()
+                image = get_icon(image_url)
 
-        if res.status_code != 200:  # raise for status is not working with 3xx error
-            raise HTTPError(f"Http error with status code {res.status_code}")
+                if all(value < 50 for value in image.size):
+                    if index == len(sizes) - 1:
+                        raise ValueError("Value below than 50 found in the image")
+                    continue
 
-        image = get_icon(image_url)
+                background_color = (
+                    get_background_color(image) if image is not None else None
+                )
 
-        background_color = get_background_color(image) if image is not None else None
+        except Exception as e:
+            logger.error(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
 
-    except Exception as e:
-        logger.info(
-            f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
-        )
+    if image_url is None:
+        try:
+            result = get_best_image(domain)
+            if not result:
+                raise ValueError("Failed to download the image using default way")
+
+            image, image_url = result
+
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+        except Exception as e:
+            logger.error(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
+
+    if image_url is None:
+        try:
+            image_url = f"https://logo.clearbit.com/{domain}"
+
+            image = get_icon(image_url)
+
+            if all(value < 50 for value in image.size):
+                raise ValueError("Value below than 50 found in the image")
+
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Failed to download HTML for {domain} with exception {e}. Using default icon path {image_url}"
+            )
+            image_url = None
 
     if image_url is None:
         try:
@@ -256,22 +314,20 @@ def process_site(domain: str):  # noqa: C901
                 requests_timeout=config.request_timeout,
             )
             image_url = page.get_metadata_link("image")
+            image = get_icon(image_url)
+            background_color = (
+                get_background_color(image) if image is not None else None
+            )
         except metadata_parser.NotParsableFetchError as e:
             if e.code and e.code not in (403, 429, 500, 502, 503):
                 logger.error(f"Error parsing [{domain}]: {e}")
+            image_url = None
         except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
             logger.error(f"Error parsing: {domain} -- {e}")
+            image_url = None
         except Exception as e:
             logger.error(f"Error parsing: {domain} -- {e}")
-
-    if image_url is None:
-        result = get_best_image(domain)
-        if not result:
-            return None
-
-        image, image_url = result
-
-        background_color = get_background_color(image) if image is not None else None
+            image_url = None
 
     return domain, image_url, background_color
 
@@ -294,12 +350,13 @@ def process_cover_image(item):
         else:
             padded_image_url = None
 
+        logger.info(
+            f"The padded image of the {domain} org image is {image_url} and padded image is "
+            f"{padded_image_url} with {background_color}"
+        )
+
     except ValueError as e:
         logger.info(f"Tuple unpacking error {e}")
-
-    logger.info(
-        f"The padded image of the {domain} is {padded_image_url} with {background_color}"
-    )
 
     return domain, padded_image_url, background_color
 
