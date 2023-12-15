@@ -5,7 +5,7 @@ boto3==1.27.0
 botocore==1.30.0
 dateparser==1.2.0
 fake-useragent==1.4.0
-feedparser==6.0.10
+feedparser==6.0.11
 html2text==2020.1.16
 metadata-parser==0.12.0
 numpy==1.22.2
