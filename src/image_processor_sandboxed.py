@@ -169,7 +169,7 @@ class ImageProcessor:
             content,
             self.img_width,
             self.img_height,
-            max(self.img_size, len(content) + 200000),
+            max(self.img_size, len(content) + 500000),
             str(cache_path),
         ):
             logger.info(f"Failed to cache image {url}")
