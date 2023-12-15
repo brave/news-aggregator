@@ -166,7 +166,11 @@ class ImageProcessor:
             logger.info(f"Image is not already uploaded {url} with {e}")
 
         if not resize_and_pad_image(
-            content, self.img_width, self.img_height, self.img_size, str(cache_path)
+            content,
+            self.img_width,
+            self.img_height,
+            max(self.img_size, len(content) + 200000),
+            str(cache_path),
         ):
             logger.info(f"Failed to cache image {url}")
             return None
