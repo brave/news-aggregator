@@ -5,6 +5,7 @@
 
 import hashlib
 import os
+import struct
 
 import boto3
 import requests
@@ -29,6 +30,15 @@ s3_resource = boto3.resource("s3")
 wasm_store = Store(engine.JIT(Compiler))
 wasm_module = Module(wasm_store, open(config.wasm_thumbnail_path, "rb").read())
 instance = Instance(wasm_module)
+
+
+def get_unpadded_length(data):
+    """Get the unpadded length from the header."""
+    data_length_without_header = len(data) - 4
+    if data_length_without_header < 0:
+        raise ValueError("Data must be at least 4 bytes long", len(data))
+
+    return struct.unpack("!L", data[0:4])[0]
 
 
 def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=80):
@@ -62,18 +72,18 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
 
         instance.exports.deallocate(output_pointer, size)
 
+        unpadded_length = get_unpadded_length(out_bytes)
+        if unpadded_length == 0:
+            raise RuntimeError("Image resizing failed")
+
         with open(str(cache_path), "wb+") as out_image:
             out_image.write(out_bytes)
 
         return True
     except RuntimeError:
         logger.info(
-            "resize_and_pad() hit a RuntimeError (length=%s, width=%s, height=%s, size=%s): %s.failed",
-            image_length,
-            width,
-            height,
-            size,
-            cache_path,
+            f"resize_and_pad() hit a RuntimeError "
+            f"(length={image_length}, width={width}, height={height}, size={size}): {cache_path}.failed"
         )
 
         return False
@@ -116,7 +126,7 @@ class ImageProcessor:
         img_format="jpg",
         img_width=1168,
         img_height=657,
-        img_size=250000,
+        img_size=1000000,
     ):
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
@@ -169,7 +179,7 @@ class ImageProcessor:
             content,
             self.img_width,
             self.img_height,
-            max(self.img_size, len(content)) + 500000,
+            self.img_size,
             str(cache_path),
         ):
             logger.info(f"Failed to cache image {url}")
