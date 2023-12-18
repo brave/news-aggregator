@@ -124,8 +124,8 @@ class ImageProcessor:
         s3_path="brave-today/cache/{}",
         force_upload=False,
         img_format="jpg",
-        img_width=1168,
-        img_height=657,
+        img_width=900,
+        img_height=750,
         img_size=1000000,
     ):
         self.s3_bucket = s3_bucket
