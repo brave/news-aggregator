@@ -43,7 +43,7 @@ https://www.howtogeek.com/,https://feeds.howtogeek.com/HowToGeek,How-To Geek,Tec
 https://www.zerohedge.com/,https://feeds.feedburner.com/zerohedge/feed,Zerohedge,Business,Enabled,,,article,,www.zerohedge.com,Business,41,
 https://www.rollingstone.com/,https://www.rollingstone.com/feed/,Rolling Stone,Culture,Enabled,,,article,,www.rollingstone.com,Culture;Top Sources,42,https://www.rollingstone.com/music/feed/
 https://www.gamesradar.com/,https://www.gamesradar.com/rss.xml,Games Radar,Gaming,Enabled,,,article,,www.gamesradar.com,Gaming,43,
-https://www.digitaltrends.com/,https://www.digitaltrends.com/feed/,Digital Trends,Tech Reviews,Enabled,,,article,,www.digitaltrends.com,Technolgy;Tech Reviews;Top Sources,44,
+https://www.digitaltrends.com/,https://www.digitaltrends.com/feed/,Digital Trends,Tech Reviews,Enabled,,,article,,www.digitaltrends.com,Technology;Tech Reviews;Top Sources,44,
 https://variety.com/,https://variety.com/feed/,Variety,Entertainment News,Enabled,,,article,,variety.com,Film and TV;Top Sources,45,https://feeds.feedburner.com/variety/headlines
 https://www.latimes.com/,https://www.latimes.com/nation/rss2.0.xml,LA Times,US News,Enabled,,,article,,www.latimes.com,US News,46,https://www.latimes.com/local/rss2.0.xml
 https://www.verywellhealth.com/,https://www.verywellhealth.com/feeds/google-news,Very Well Health,Health,Enabled,,,article,,www.verywellhealth.com,Health;Top Sources,47,
@@ -161,7 +161,7 @@ https://www.fanbyte.com/,https://www.fanbyte.com/rss,Fanbyte,Gaming,Disabled,,,a
 https://www.theepochtimes.com/,https://www.theepochtimes.com/c-us/feed,The Epoch Times,Politics,Disabled,,,article,,www.theepochtimes.com,Politics,161,
 https://www.familyhandyman.com/,https://www.familyhandyman.com/feed/,Familyhandyman,Home,Disabled,,,article,,www.familyhandyman.com,Home,162,
 https://www.fortune.com/,https://fortune.com/feed/fortune-feeds/?id=3230629,Fortune,Business,Disabled,,,article,,fortune.com,Business,163,https://fortune.com/feed/
-https://www.bustle.com/,https://www.bustle.com/rss,Bustle,Entertainment,Disabled,,,article,,www.bustle.com,Entertainment;Entertainment News,164,
+https://www.bustle.com/,https://www.bustle.com/rss,Bustle,Entertainment News,Disabled,,,article,,www.bustle.com,Entertainment;Entertainment News,164,
 https://www.pcworld.com/,https://www.pcworld.com/feed,PCWorld,Tech Reviews,Disabled,,,article,,www.pcworld.com,Technology;Tech Reviews,165,
 https://www.engadget.com/,https://www.engadget.com/rss.xml,Engadget,Tech News,Disabled,,,article,,www.engadget.com,Technology;Tech News,166,https://www.engadget.com/rss-full.xml
 https://www.foodandwine.com/,https://www.foodandwine.com/feeds/google-news,Food & Wine Magazine,Food,Disabled,,,article,,foodandwine.com,Food,167,
