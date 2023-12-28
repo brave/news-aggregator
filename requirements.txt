@@ -2,7 +2,7 @@ beautifulsoup4==4.12.2
 better-profanity==0.7.0
 bleach==6.1.0
 boto3==1.27.0
-botocore==1.30.0
+botocore==1.34.10
 dateparser==1.2.0
 fake-useragent==1.4.0
 feedparser==6.0.10
