@@ -3,7 +3,7 @@ bandit==1.7.5
 black==23.12.1
 bpython==0.24
 flake8==6.1.0
-isort==5.12.0
+isort==5.13.2
 pip-check-reqs==2.5.3
 pre-commit==3.5.0
 pylint==3.0.2
