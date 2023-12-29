@@ -15,7 +15,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y yajl-tools ffmpeg libsm6 libxext6 libxml2-dev libxslt-dev
       - name: Setup Python Version
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@b64ffcaf5b410884ad320a9cfac8866006a109aa # v4.8.0
         with:
           python-version: 3.9
           cache: 'pip' # caching pip dependencies
