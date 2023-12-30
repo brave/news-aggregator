@@ -129,6 +129,7 @@ class TestProcessArticles:
             "category": "example_category",
             "content_type": "text",
             "channels": ["Top News"],
+            "site_url": "https://brave.com/",
         }
 
         processed_article = process_articles(article, _publisher)
