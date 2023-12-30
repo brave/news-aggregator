@@ -363,7 +363,7 @@ def process_articles(article, _publisher):  # noqa: C901
     image_url = get_article_img(article)
 
     parsed_url = urlparse(image_url)
-    if not parsed_url.netloc:
+    if not parsed_url.netloc and image_url:
         # If not, update the URL by joining it with the publisher's URL
         image_url = urljoin(_publisher["site_url"], image_url)
 
