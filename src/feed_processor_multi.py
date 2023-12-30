@@ -298,6 +298,8 @@ def get_article_img(article: Dict) -> str:  # noqa: C901
         if image_url:
             return image_url
 
+    return image_url
+
 
 def process_articles(article, _publisher):  # noqa: C901
     """
