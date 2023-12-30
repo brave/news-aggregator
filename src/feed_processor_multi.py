@@ -19,7 +19,7 @@ from multiprocessing import Pool as ProcessPool
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import Dict, Optional
-from urllib.parse import quote, urlparse, urlunparse
+from urllib.parse import quote, urljoin, urlparse, urlunparse
 
 import bleach
 import dateparser
@@ -260,33 +260,43 @@ def get_article_img(article: Dict) -> str:  # noqa: C901
 
     if "image" in article:
         image_url = article["image"]
-    elif "urlToImage" in article:
+        if image_url:
+            return image_url
+
+    if "urlToImage" in article:
         image_url = article["urlToImage"]
-    elif "media_content" in article or "media_thumbnail" in article:
+        if image_url:
+            return image_url
+
+    if "media_content" in article or "media_thumbnail" in article:
         media = article.get("media_content") or article.get("media_thumbnail")
         content_with_max_width = max(
             media, key=lambda content: int(content.get("width") or 0), default=None
         )
         if content_with_max_width:
             image_url = content_with_max_width.get("url")
+            if image_url:
+                return image_url
 
-    elif "summary" in article:
+    if "summary" in article:
         soup = BS(article["summary"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
                 image_url = img_tag["src"]
                 break
+        if image_url:
+            return image_url
 
-    elif "content" in article:
+    if "content" in article:
         soup = BS(article["content"][0]["value"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
                 image_url = img_tag["src"]
                 break
-
-    return image_url
+        if image_url:
+            return image_url
 
 
 def process_articles(article, _publisher):  # noqa: C901
@@ -350,7 +360,14 @@ def process_articles(article, _publisher):  # noqa: C901
         "%Y-%m-%d %H:%M:%S"
     )
 
-    out_article["img"] = get_article_img(article)
+    image_url = get_article_img(article)
+
+    parsed_url = urlparse(image_url)
+    if not parsed_url.netloc:
+        # If not, update the URL by joining it with the publisher's URL
+        image_url = urljoin(_publisher["site_url"], image_url)
+
+    out_article["img"] = image_url
 
     # Add some fields
     out_article["category"] = _publisher.get("category")
