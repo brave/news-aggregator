@@ -268,8 +268,8 @@ def get_article_img(article: Dict) -> str:  # noqa: C901
         if image_url:
             return image_url
 
-    if "media_content" in article or "media_thumbnail" in article:
-        media = article.get("media_content") or article.get("media_thumbnail")
+    if "media_content" in article:
+        media = article.get("media_content")
         content_with_max_width = max(
             media, key=lambda content: int(content.get("width") or 0), default=None
         )
