@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 import pytz
+import requests
 from requests import HTTPError
 
 from config import get_config
@@ -86,17 +87,18 @@ class TestParseRss:
 class TestProcessImage:
     # item has 'img' key
     def test_item_has_img_key(self):
+        img_url = (
+            "https://www.learningcontainer.com/wp-content/uploads/2020/08/"
+            "Sample-Small-Image-PNG-file-Download.png"
+        )
         item = (
-            {
-                "img": "https://www.usmagazine.com/wp-content/uploads/2023/10/Ed-Sheeran-s-Reason-for-"
-                "Building-His-Final-Resting-Place-in-His-Own-Backyard-Will-Gut-You-297."
-                "jpg?crop=0px%2C86px%2C1331px%2C700px&resize=1200%2C630&quality=86&strip=all"
-            },
-            b"",
+            {"img": img_url},
+            requests.get(img_url).content,
         )
         out_item = process_image(item)
         assert out_item["img"] is not None
         assert out_item["padded_img"] is not None
+        assert out_item["padded_img"].endswith(".pad")
 
     # item has 'img' key but its value is None
     def test_item_img_value_is_none(self):
