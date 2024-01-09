@@ -86,21 +86,24 @@ class TestParseRss:
 class TestProcessImage:
     # item has 'img' key
     def test_item_has_img_key(self):
-        item = {
-            "img": "https://www.usmagazine.com/wp-content/uploads/2023/10/Ed-Sheeran-s-Reason-for-"
-            "Building-His-Final-Resting-Place-in-His-Own-Backyard-Will-Gut-You-297."
-            "jpg?crop=0px%2C86px%2C1331px%2C700px&resize=1200%2C630&quality=86&strip=all"
-        }
-        process_image(item)
-        assert item["img"] is not None
-        assert item["padded_img"] is not None
+        item = (
+            {
+                "img": "https://www.usmagazine.com/wp-content/uploads/2023/10/Ed-Sheeran-s-Reason-for-"
+                "Building-His-Final-Resting-Place-in-His-Own-Backyard-Will-Gut-You-297."
+                "jpg?crop=0px%2C86px%2C1331px%2C700px&resize=1200%2C630&quality=86&strip=all"
+            },
+            b"",
+        )
+        out_item = process_image(item)
+        assert out_item["img"] is not None
+        assert out_item["padded_img"] is not None
 
     # item has 'img' key but its value is None
     def test_item_img_value_is_none(self):
-        item = {"img": None}
-        process_image(item)
-        assert item["img"] == ""
-        assert item["padded_img"] == ""
+        item = ({"img": None}, None)
+        out_item = process_image(item)
+        assert out_item["img"] == ""
+        assert out_item["padded_img"] == ""
 
 
 class TestProcessArticles:

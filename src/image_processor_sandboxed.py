@@ -89,12 +89,12 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
         return False
 
 
-def get_with_max_size(url, max_bytes=1000000):
+def get_image_with_max_size(item, max_bytes=1000000):
     """
     Retrieves the content of a URL and checks if it exceeds a maximum size.
 
     Args:
-        url (str): The URL to retrieve the content from.
+        item (dict): The URL to retrieve the content from.
         max_bytes (int, optional): The maximum size in bytes allowed for the content. Defaults to 1000000.
 
     Returns:
@@ -103,7 +103,7 @@ def get_with_max_size(url, max_bytes=1000000):
     """
     is_large = False
     response = requests.get(
-        url,
+        item.get("img"),
         timeout=config.request_timeout,
         headers={"User-Agent": ua.random, **config.default_headers},
     )
@@ -114,7 +114,7 @@ def get_with_max_size(url, max_bytes=1000000):
     ):
         is_large = True
 
-    return response.content, is_large
+    return item, response.content, is_large
 
 
 class ImageProcessor:
@@ -136,25 +136,8 @@ class ImageProcessor:
         self.img_height = img_height
         self.img_size = img_size
 
-    def cache_image(self, url):  # noqa: C901
-        """
-        Caches an image from a given URL.
-
-        Args:
-            url (str): The URL of the image to be cached.
-
-        Returns:
-            str: The filename of the cached image, or None if caching failed.
-        """
-        content = None
-        cache_path = None
-        cache_fn = None
-
+    def cache_image(self, url, content):  # noqa: C901
         try:
-            content, is_large = get_with_max_size(url)  # 1mb max
-            if not is_large and not self.force_upload:
-                return url
-
             cache_fn = f"{hashlib.sha256(url.encode('utf-8')).hexdigest()}.{self.img_format}.pad"
             cache_path = config.img_cache_path / cache_fn
 
@@ -172,23 +155,23 @@ class ImageProcessor:
                     exists = False
                 if exists:
                     return cache_fn
+
+            if not resize_and_pad_image(
+                content,
+                self.img_width,
+                self.img_height,
+                self.img_size,
+                str(cache_path),
+            ):
+                logger.info(f"Failed to cache image {url}")
+                return None
+
+            if self.s3_bucket and not config.no_upload:
+                upload_file(
+                    cache_path,
+                    self.s3_bucket,
+                    self.s3_path.format(cache_fn),
+                )
+            return cache_fn
         except Exception as e:
             logger.info(f"Image is not already uploaded {url} with {e}")
-
-        if not resize_and_pad_image(
-            content,
-            self.img_width,
-            self.img_height,
-            self.img_size,
-            str(cache_path),
-        ):
-            logger.info(f"Failed to cache image {url}")
-            return None
-
-        if self.s3_bucket and not config.no_upload:
-            upload_file(
-                cache_path,
-                self.s3_bucket,
-                self.s3_path.format(cache_fn),
-            )
-        return cache_fn
