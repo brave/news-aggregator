@@ -101,20 +101,24 @@ def get_image_with_max_size(item, max_bytes=1000000):
         tuple: A tuple containing the content of the response as bytes and a boolean indicating if the content
         is larger than the maximum size.
     """
-    is_large = False
-    response = requests.get(
-        item.get("img"),
-        timeout=config.request_timeout,
-        headers={"User-Agent": ua.random, **config.default_headers},
-    )
-    response.raise_for_status()
-    if (
-        response.headers.get("Content-Length")
-        and int(response.headers.get("Content-Length")) > max_bytes
-    ):
-        is_large = True
+    try:
+        is_large = False
+        response = requests.get(
+            item.get("img"),
+            timeout=config.request_timeout,
+            headers={"User-Agent": ua.random, **config.default_headers},
+        )
+        response.raise_for_status()
+        if (
+            response.headers.get("Content-Length")
+            and int(response.headers.get("Content-Length")) > max_bytes
+        ):
+            is_large = True
 
-    return item, response.content, is_large
+        return item, response.content, is_large
+    except Exception as e:
+        logger.info(f"Error retrieving image from URL {item.get('url')}: {e}")
+        return item, None, False
 
 
 class ImageProcessor:
@@ -124,8 +128,8 @@ class ImageProcessor:
         s3_path="brave-today/cache/{}",
         force_upload=False,
         img_format="jpg",
-        img_width=900,
-        img_height=750,
+        img_width=700,
+        img_height=500,
         img_size=1000000,
     ):
         self.s3_bucket = s3_bucket
