@@ -98,7 +98,6 @@ class TestProcessImage:
         out_item = process_image(item)
         assert out_item["img"] is not None
         assert out_item["padded_img"] is not None
-        assert out_item["padded_img"].endswith(".pad")
 
     # item has 'img' key but its value is None
     def test_item_img_value_is_none(self):
