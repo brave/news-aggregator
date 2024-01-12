@@ -118,7 +118,7 @@ def get_image_with_max_size(item, max_bytes=1000000):
         return item, response.content, is_large
     except Exception as e:
         logger.info(f"Error retrieving image from URL {item.get('url')}: {e}")
-        return item, None, False
+        return item, "", False
 
 
 class ImageProcessor:
