@@ -537,13 +537,9 @@ def check_images_in_item(article, _publishers):  # noqa: C901
                 strategy=["page", "meta", "og", "dc"],
                 requests_timeout=config.request_timeout,
             )
-            article["img"] = page.get_metadata_link("image")
-        except metadata_parser.NotParsableFetchError as e:
-            if e.code and e.code not in (403, 429, 500, 502, 503):
-                logger.error(f"Error parsing [{article['url']}]: {e}")
-        except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
-            logger.error(f"Error parsing: {article['url']} -- {e}")
+            article["img"] = page.get_metadata_link("image") or ""
         except Exception as e:
+            article["img"] = ""
             logger.error(f"Error parsing: {article['url']} -- {e}")
 
     article["padded_img"] = article["img"]
