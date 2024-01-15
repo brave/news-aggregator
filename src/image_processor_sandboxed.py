@@ -56,12 +56,12 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
     Returns:
         bool: True if the image was successfully resized and padded, False otherwise.
     """
-    image_length = len(image_bytes)
-    input_pointer = instance.exports.allocate(image_length)
-    memory = instance.exports.memory.uint8_view(input_pointer)
-    memory[0:image_length] = image_bytes
-
     try:
+        image_length = len(image_bytes)
+        input_pointer = instance.exports.allocate(image_length)
+        memory = instance.exports.memory.uint8_view(input_pointer)
+        memory[0:image_length] = image_bytes
+
         output_pointer = instance.exports.resize_and_pad(
             input_pointer, image_length, width, height, size, quality
         )
@@ -130,7 +130,7 @@ class ImageProcessor:
         img_format="jpg",
         img_width=700,
         img_height=500,
-        img_size=1000000,
+        img_size=700000,
     ):
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
