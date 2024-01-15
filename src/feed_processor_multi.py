@@ -353,10 +353,11 @@ def process_articles(article, _publisher):  # noqa: C901
     image_url = get_article_img(article)
 
     parsed_url = urlparse(image_url)
-    if not parsed_url.netloc and len(parsed_url.path) > 4 and image_url:
+    if not parsed_url.netloc and image_url:
         # If not, update the URL by joining it with the publisher's URL
         image_url = urljoin(_publisher["site_url"], image_url)
-    else:
+
+    if len(parsed_url.path) < 4 and image_url:
         image_url = ""
 
     out_article["img"] = image_url
@@ -527,6 +528,7 @@ def check_images_in_item(article, _publishers):  # noqa: C901
     Returns:
         dict: The modified article dictionary with the updated image URL.
     """
+    og_image = ""
     if not article.get("img") or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
@@ -537,10 +539,12 @@ def check_images_in_item(article, _publishers):  # noqa: C901
                 strategy=["page", "meta", "og", "dc"],
                 requests_timeout=config.request_timeout,
             )
-            article["img"] = page.get_metadata_link("image") or ""
+            og_image = page.get_metadata_link("image") or ""
         except Exception as e:
-            article["img"] = ""
             logger.error(f"Error parsing: {article['url']} -- {e}")
+
+    if og_image:
+        article["img"] = og_image
 
     article["padded_img"] = article["img"]
 
