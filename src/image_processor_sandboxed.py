@@ -80,7 +80,7 @@ def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=8
             out_image.write(out_bytes)
 
         return True
-    except RuntimeError:
+    except Exception:
         logger.info(
             f"resize_and_pad() hit a RuntimeError "
             f"(length={image_length}, width={width}, height={height}, size={size}): {cache_path}.failed"
