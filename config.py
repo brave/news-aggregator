@@ -100,6 +100,24 @@ class Configuration(BaseSettings):
     nu_confidence_threshold = 0.9
     nu_excluded_channels = ["Crime"]
 
+    video_extensions = (
+        ".mp4",
+        ".avi",
+        ".mov",
+        ".wmv",
+        ".flv",
+        ".mkv",
+        ".webm",
+        ".mpg",
+        ".mpeg",
+        ".3gp",
+        ".ogg",
+        ".ogv",
+        ".rm",
+        ".swf",
+        ".vob",
+    )
+
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)

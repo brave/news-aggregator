@@ -103,6 +103,10 @@ def get_image_with_max_size(item, max_bytes=1000000):
     """
     try:
         is_large = False
+
+        if item.get("url").endswith(config.video_extensions):
+            return item, "", False
+
         response = requests.get(
             item.get("img"),
             timeout=config.request_timeout,
