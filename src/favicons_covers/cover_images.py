@@ -339,7 +339,8 @@ def process_cover_image(item):
     try:
         domain, image_url, background_color = item
         try:
-            cache_fn = im_proc.cache_image(image_url)
+            content = requests.get(image_url, timeout=config.request_timeout).content
+            cache_fn = im_proc.cache_image(image_url, content)
         except Exception as e:
             cache_fn = None
             logger.error(f"im_proc.cache_image failed [{e}]: {image_url}")
