@@ -41,7 +41,7 @@ def get_unpadded_length(data):
     return struct.unpack("!L", data[0:4])[0]
 
 
-def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=80):
+def resize_and_pad_image(image_bytes, width, height, size, cache_path, quality=70):
     """
     Resizes and pads an image.
 
@@ -134,7 +134,7 @@ class ImageProcessor:
         img_format="jpg",
         img_width=700,
         img_height=500,
-        img_size=700000,
+        img_size=1000000,
     ):
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
