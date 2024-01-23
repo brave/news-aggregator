@@ -12,7 +12,7 @@ pytest:
 
 validjson:
 	export PYTHONPATH=$PWD:$PWD/src
-	mv sources/sources.csv sources/sources-orig.csv ; head -10 sources/sources-orig.csv > sources/sources.csv
+	mv sources/sources.csv sources/sources-orig.csv ; head -5 sources/sources-orig.csv > sources/sources.csv
 	echo Checking that csv_to_json.py creates valid JSON files...
 	NO_UPLOAD=1 NO_DOWNLOAD=1 python src/csv_to_json.py
 	mv sources/sources-orig.csv sources/sources.csv

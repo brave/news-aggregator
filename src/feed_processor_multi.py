@@ -19,7 +19,7 @@ from multiprocessing import Pool as ProcessPool
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import Dict, Optional
-from urllib.parse import quote, urlparse, urlunparse
+from urllib.parse import quote, urljoin, urlparse, urlunparse
 
 import bleach
 import dateparser
@@ -45,6 +45,7 @@ from requests.exceptions import (
 )
 
 from config import get_config
+from image_processor_sandboxed import get_image_with_max_size
 from src import image_processor_sandboxed
 from utils import push_metrics_to_pushgateway, upload_file
 
@@ -209,41 +210,28 @@ def parse_rss(downloaded_feed):
     return {"report": report, "feed_cache": feed_cache, "key": url}
 
 
-def process_image(item: Dict) -> Dict[str, str]:
-    """
-    Processes an image item and returns the modified item.
-
-    Args:
-        item (Dict[str, str]): A dictionary representing the image item.
-
-    Returns:
-        Dict[str, str]: A dictionary representing the modified image item.
-    """
-    img = item.get("img")
-    if not img:
-        item["img"] = ""
-        item["padded_img"] = ""
-        return item
+def process_image(item: tuple) -> Dict[str, str]:
+    out_item, content = item
 
     try:
-        cache_fn = im_proc.cache_image(img)
+        cache_fn = im_proc.cache_image(out_item.get("img"), content)
         if cache_fn:
             parsed_url = urlparse(cache_fn)
-            item["padded_img"] = (
+            out_item["padded_img"] = (
                 cache_fn
                 if parsed_url.scheme
                 else f"{config.pcdn_url_base}/brave-today/cache/{cache_fn}"
             )
         else:
-            item["img"] = ""
-            item["padded_img"] = ""
+            out_item["img"] = ""
+            out_item["padded_img"] = ""
     except Exception as e:
         # Handle the exception gracefully
         logger.error(f"Error processing image: {e}")
-        item["img"] = ""
-        item["padded_img"] = ""
+        out_item["img"] = ""
+        out_item["padded_img"] = ""
 
-    return item
+    return out_item
 
 
 def get_article_img(article: Dict) -> str:  # noqa: C901
@@ -260,31 +248,43 @@ def get_article_img(article: Dict) -> str:  # noqa: C901
 
     if "image" in article:
         image_url = article["image"]
-    elif "urlToImage" in article:
+        if image_url:
+            return image_url
+
+    if "urlToImage" in article:
         image_url = article["urlToImage"]
-    elif "media_content" in article or "media_thumbnail" in article:
-        media = article.get("media_content") or article.get("media_thumbnail")
+        if image_url:
+            return image_url
+
+    if "media_content" in article:
+        media = article.get("media_content")
         content_with_max_width = max(
             media, key=lambda content: int(content.get("width") or 0), default=None
         )
         if content_with_max_width:
             image_url = content_with_max_width.get("url")
+            if image_url:
+                return image_url
 
-    elif "summary" in article:
+    if "summary" in article:
         soup = BS(article["summary"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
                 image_url = img_tag["src"]
                 break
+        if image_url:
+            return image_url
 
-    elif "content" in article:
+    if "content" in article:
         soup = BS(article["content"][0]["value"], features="html.parser")
         image_tags = soup.find_all("img")
         for img_tag in image_tags:
             if "src" in img_tag.attrs:
                 image_url = img_tag["src"]
                 break
+        if image_url:
+            return image_url
 
     return image_url
 
@@ -350,7 +350,17 @@ def process_articles(article, _publisher):  # noqa: C901
         "%Y-%m-%d %H:%M:%S"
     )
 
-    out_article["img"] = get_article_img(article)
+    image_url = get_article_img(article)
+
+    parsed_url = urlparse(image_url)
+    if not parsed_url.netloc and image_url:
+        # If not, update the URL by joining it with the publisher's URL
+        image_url = urljoin(_publisher["site_url"], image_url)
+
+    if len(parsed_url.path) < 4 and image_url:
+        image_url = ""
+
+    out_article["img"] = image_url
 
     # Add some fields
     out_article["category"] = _publisher.get("category")
@@ -518,23 +528,8 @@ def check_images_in_item(article, _publishers):  # noqa: C901
     Returns:
         dict: The modified article dictionary with the updated image URL.
     """
-    img_url = article.get("img", "")
-
-    if img_url:
-        try:
-            parsed_img_url = urlparse(img_url)
-            if not parsed_img_url.scheme:
-                parsed_img_url = parsed_img_url._replace(scheme="https")
-                img_url = urlunparse(parsed_img_url)
-                article["img"] = img_url
-
-                if len(parsed_img_url.path) < 4:
-                    article["img"] = ""
-        except Exception as e:
-            article["img"] = ""
-            logger.error(f"Error parsing: {article['url']} -- {e}")
-
-    if not article["img"] or _publishers[article["publisher_id"]]["og_images"]:
+    og_image = ""
+    if not article.get("img") or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
                 url=article["url"],
@@ -544,14 +539,12 @@ def check_images_in_item(article, _publishers):  # noqa: C901
                 strategy=["page", "meta", "og", "dc"],
                 requests_timeout=config.request_timeout,
             )
-            article["img"] = page.get_metadata_link("image")
-        except metadata_parser.NotParsableFetchError as e:
-            if e.code and e.code not in (403, 429, 500, 502, 503):
-                logger.error(f"Error parsing [{article['url']}]: {e}")
-        except (UnicodeDecodeError, metadata_parser.NotParsable) as e:
-            logger.error(f"Error parsing: {article['url']} -- {e}")
+            og_image = page.get_metadata_link("image") or ""
         except Exception as e:
             logger.error(f"Error parsing: {article['url']} -- {e}")
+
+    if og_image:
+        article["img"] = og_image
 
     article["padded_img"] = article["img"]
 
@@ -635,12 +628,31 @@ class FeedProcessor:
             ):
                 out_items.append(item)
 
-        logger.info(f"Caching images for {len(out_items)} items...")
-        with ProcessPool(config.concurrency) as pool:
+        logger.info(f"Checking images for padding from {len(out_items)} items...")
+        with ThreadPool(config.thread_pool_size) as pool:
             result = []
-            for item in pool.imap_unordered(process_image, out_items):
-                result.append(item)
+            is_large_result = []
+            for item, content, is_large in pool.imap_unordered(
+                get_image_with_max_size, out_items
+            ):
+                if is_large:
+                    is_large_result.append((item, content))
+                else:
+                    result.append(item)
+
+        out_items.clear()
+
+        logger.info(f"Caching images for {len(is_large_result)} items...")
+        with ProcessPool(config.concurrency) as pool:
+            padded_result = []
+            for item in pool.imap_unordered(process_image, is_large_result):
+                padded_result.append(item)
+
+        result.extend(padded_result)
+
         return result
+
+    # split the list needs padding or not and work on it.
 
     def download_feeds(self):
         """

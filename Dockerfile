@@ -4,7 +4,7 @@ RUN mkdir -p workspace
 WORKDIR /workspace
 
 RUN apt update
-RUN apt install ffmpeg libsm6 libxext6  -y
+RUN apt install ffmpeg libsm6 libxext6 libxml2-dev libxslt-dev gcc  -y
 
 ENV REQUIREMENTS_FILE=requirements.txt
 

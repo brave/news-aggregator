@@ -104,7 +104,8 @@ def process_favicons_image(item):
     try:
         domain, icon_url = item
         try:
-            cache_fn = im_proc.cache_image(icon_url)
+            content = requests.get(icon_url, timeout=config.request_timeout).content
+            cache_fn = im_proc.cache_image(icon_url, content)
         except Exception as e:
             cache_fn = None
             logger.error(f"im_proc.cache_image failed [{e}]: {icon_url}")
