@@ -350,17 +350,21 @@ def process_articles(article, _publisher):  # noqa: C901
         "%Y-%m-%d %H:%M:%S"
     )
 
-    image_url = get_article_img(article)
+    try:
+        image_url = get_article_img(article)
 
-    parsed_url = urlparse(image_url)
-    if not parsed_url.netloc and image_url:
-        # If not, update the URL by joining it with the publisher's URL
-        image_url = urljoin(_publisher["site_url"], image_url)
+        parsed_url = urlparse(image_url)
+        if not parsed_url.netloc and image_url:
+            # If not, update the URL by joining it with the publisher's URL
+            image_url = urljoin(_publisher["site_url"], image_url)
 
-    if len(parsed_url.path) < 4 and image_url:
-        image_url = ""
+        if len(parsed_url.path) < 4 and image_url:
+            image_url = ""
 
-    out_article["img"] = image_url
+        out_article["img"] = image_url
+    except Exception as e:
+        logger.error(f"Error retrieving image from URL {article.get('url')}: {e}")
+        out_article["img"] = ""
 
     # Add some fields
     out_article["category"] = _publisher.get("category")
