@@ -15,6 +15,7 @@ import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 from functools import partial
+from io import BytesIO
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
@@ -33,6 +34,7 @@ import unshortenit
 from better_profanity import profanity
 from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
+from PIL import Image
 from prometheus_client import CollectorRegistry, Gauge, multiprocess
 from requests.exceptions import (
     ConnectTimeout,
@@ -521,18 +523,19 @@ def get_predicted_channels(_article):
         return _article
 
 
-def check_images_in_item(article, _publishers):  # noqa: C901
+def check_images_in_item(article_with_detail, _publishers):  # noqa: C901
     """
     Check if the article has an image URL and if not, try to retrieve it from the metadata of the article's webpage.
 
     Args:
-        article (dict): The dictionary representing the article.
+        article_with_detail (tuple): The dictionary representing the article.
         _publishers (dict): The dictionary representing the publishers.
 
     Returns:
         dict: The modified article dictionary with the updated image URL.
     """
     og_image = ""
+    article, content, is_large = article_with_detail
     if not article.get("img") or _publishers[article["publisher_id"]]["og_images"]:
         try:
             page = metadata_parser.MetadataParser(
@@ -552,7 +555,7 @@ def check_images_in_item(article, _publishers):  # noqa: C901
 
     article["padded_img"] = article["img"]
 
-    return article
+    return article, content, is_large
 
 
 def scrub_html(feed: dict):
@@ -607,6 +610,20 @@ def score_entries(entries):
     return out_entries
 
 
+def check_small_image(article_with_bytes):
+    article, img_bytes, is_large = article_with_bytes
+
+    try:
+        image = Image.open(BytesIO(img_bytes))
+        if all(value < 300 for value in image.size):
+            article["img"] = ""
+    except Exception as e:
+        logger.error(f"Error checking image size: {e}")
+        article["img"] = ""
+
+    return article, img_bytes, is_large
+
+
 class FeedProcessor:
     def __init__(self, _publishers: dict, _output_path: Path):
         self.report = defaultdict(dict)  # holds reports and stats of all actions
@@ -624,39 +641,38 @@ class FeedProcessor:
         Returns:
             list: A list of items with the checked images.
         """
+        result = []
         out_items = []
-        logger.info(f"Checking images for {len(items)} items...")
+        logger.info(f"Checking images for padding from {len(items)} items...")
         with ThreadPool(config.thread_pool_size) as pool:
-            for item in pool.imap_unordered(
-                partial(check_images_in_item, _publishers=self.feeds), items
+            for item, content, is_large in pool.imap_unordered(
+                get_image_with_max_size, items
             ):
+                result.append((item, content, is_large))
+
+        logger.info(f"Checking images for {len(items)} items...")
+        with ProcessPool(config.concurrency) as pool:
+            for item in pool.imap_unordered(check_small_image, result):
                 out_items.append(item)
 
-        logger.info(f"Checking images for padding from {len(out_items)} items...")
+        result.clear()
+
         with ThreadPool(config.thread_pool_size) as pool:
-            result = []
-            is_large_result = []
-            for item, content, is_large in pool.imap_unordered(
-                get_image_with_max_size, out_items
+            for item in pool.imap_unordered(
+                partial(check_images_in_item, _publishers=self.feeds), out_items
             ):
-                if is_large:
-                    is_large_result.append((item, content))
-                else:
-                    result.append(item)
+                result.append(item)
 
         out_items.clear()
 
-        logger.info(f"Caching images for {len(is_large_result)} items...")
+        padded_result = [(item[0], item[1]) for item in result if item[2] is True]
+        out_items = [item[0] for item in result if item[2] is False]
+        logger.info(f"Caching images for items...")
         with ProcessPool(config.concurrency) as pool:
-            padded_result = []
-            for item in pool.imap_unordered(process_image, is_large_result):
-                padded_result.append(item)
+            for item in pool.imap_unordered(process_image, padded_result):
+                out_items.append(item)
 
-        result.extend(padded_result)
-
-        return result
-
-    # split the list needs padding or not and work on it.
+        return out_items
 
     def download_feeds(self):
         """
