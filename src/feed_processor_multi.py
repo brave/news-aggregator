@@ -615,7 +615,7 @@ def check_small_image(article_with_bytes):
 
     try:
         image = Image.open(BytesIO(img_bytes))
-        if all(value < 300 for value in image.size):
+        if all(value < config.min_image_size for value in image.size):
             article["img"] = ""
     except Exception as e:
         logger.error(f"Error checking image size: {e}")
