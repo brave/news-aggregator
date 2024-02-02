@@ -40,6 +40,7 @@ class Configuration(BaseSettings):
     # Disable uploads and downloads to S3. Useful when running locally or in CI.
     no_upload: Optional[str] = None
     no_download: Optional[str] = None
+    min_image_size = 400
 
     pcdn_url_base: str = Field(default="https://pcdn.brave.software")
 
