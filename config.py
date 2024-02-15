@@ -32,6 +32,8 @@ class Configuration(BaseSettings):
         default=Path(__file__).parent / "wasm_thumbnail.wasm"
     )
     img_cache_path: Path = Field(default=Path(__file__).parent / "output/feed/cache")
+    feed_path = "feed"
+    feed_sources_path = "feed_source.json"
 
     # Set the number of processes to spawn for all multiprocessing tasks.
     concurrency: int = cpu_count() - 1

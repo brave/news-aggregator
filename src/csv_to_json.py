@@ -68,11 +68,11 @@ def main():
     None
     """
     publisher_file_path = f"{config.sources_dir / config.sources_file}.csv"
-    publisher_feed_output_path = "feed.json"
-    publisher_sources_output_path = "sources.json"
+    feed_sources = "feed_source.json"
+    publisher_sources = "sources.json"
 
-    feed_output_path = config.output_path / publisher_feed_output_path
-    sources_output_path = config.output_path / publisher_sources_output_path
+    feed_sources_output_path = config.output_path / feed_sources
+    sources_output_path = config.output_path / publisher_sources
 
     try:
         with open(publisher_file_path) as publisher_file_pointer:
@@ -109,7 +109,7 @@ def main():
         publishers_data_as_list, key=lambda x: x["publisher_name"]
     )
 
-    with open(feed_output_path, "wb") as f:
+    with open(feed_sources_output_path, "wb") as f:
         f.write(orjson.dumps(publishers_data_by_url))
 
     with open(sources_output_path, "wb") as f:

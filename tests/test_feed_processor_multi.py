@@ -6,18 +6,17 @@ import pytz
 import requests
 from requests import HTTPError
 
-from config import get_config
-from feed_processor_multi import (
+from aggregator.external_services import get_popularity_score, get_predicted_channels
+from aggregator.image_fetcher import process_image
+from aggregator.parser import (
     download_feed,
-    get_popularity_score,
-    get_predicted_channels,
     get_with_max_size,
     parse_rss,
     process_articles,
-    process_image,
     scrub_html,
     unshorten_url,
 )
+from config import get_config
 
 config = get_config()
 

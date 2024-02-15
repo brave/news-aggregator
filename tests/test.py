@@ -8,15 +8,17 @@ import os
 
 import feedparser
 
+import aggregator.parser
+from aggregator.parser import scrub_html
 from config import get_config
-from feed_processor_multi import score_entries, scrub_html
+from feed_processor_multi import score_entries
 from src import feed_processor_multi
 
 config = get_config()
 
 
 def test_feed_processor_download():
-    result = feed_processor_multi.download_feed("https://brave.com/blog/index.xml")
+    result = aggregator.parser.download_feed("https://brave.com/blog/index.xml")
     assert result
 
 
