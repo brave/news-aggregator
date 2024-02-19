@@ -9,9 +9,9 @@ from urllib.parse import urlparse
 
 import metadata_parser
 import structlog
-from PIL import Image
 from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
+from PIL import Image
 
 import image_processor_sandboxed
 from config import get_config
