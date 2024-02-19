@@ -286,8 +286,8 @@ class TestGetPopularityScore:
         # Call the get_popularity_score function
         result = get_popularity_score(out_article)
 
-        # Assert that the popularity score is None
-        assert result is None
+        # Assert that the popularity score is 1.0
+        assert result["pop_score"] == 1.0
 
 
 class TestGetPredictedChannel:
