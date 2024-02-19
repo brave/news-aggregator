@@ -16,7 +16,7 @@ from aggregator.image_fetcher import (
 )
 from aggregator.image_processor_sandboxed import get_image_with_max_size
 from aggregator.parser import download_feed, parse_rss, score_entries
-from aggregator.processer import process_articles, scrub_html, unshorten_url
+from aggregator.processor import process_articles, scrub_html, unshorten_url
 from config import get_config
 
 config = get_config()

@@ -20,10 +20,11 @@ def get_popularity_score(_article):
         dict: The updated dictionary with the calculated popularity score.
     """
     url = config.bs_pop_endpoint + _article["url"]
+
     try:
         response = get_with_max_size(url)
         pop_response = orjson.loads(response)
-        pop_score = pop_response.get("popularity").get("popularity") or 1.0
+        pop_score = pop_response.get("popularity", {}).get("popularity", {}) or 1.0
         pop_score_agg = sum(pop_score.values())
 
         if pop_score_agg <= config.pop_score_cutoff:
@@ -33,9 +34,13 @@ def get_popularity_score(_article):
             1 + pop_score_agg - config.pop_score_cutoff
         ) ** config.pop_score_exponent
         return {**_article, "pop_score": pop_score_agg_lin}
+
+    except requests.RequestException as req_exc:
+        logger.error(f"Request to {url} failed with error: {req_exc}")
+    except orjson.JSONDecodeError as json_exc:
+        logger.error(f"Failed to decode JSON response for {url} with error: {json_exc}")
     except Exception as e:
-        logger.error(f"Unable to get the pop score for {url} due to {e}")
-        return {**_article, "pop_score": 1.0}
+        logger.error(f"An unexpected error occurred for {url}: {e}")
 
 
 def get_predicted_channels(_article):

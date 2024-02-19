@@ -8,14 +8,8 @@ from requests import HTTPError
 
 from aggregator.external_services import get_popularity_score, get_predicted_channels
 from aggregator.image_fetcher import process_image
-from aggregator.parser import (
-    download_feed,
-    get_with_max_size,
-    parse_rss,
-    process_articles,
-    scrub_html,
-    unshorten_url,
-)
+from aggregator.parser import download_feed, get_with_max_size, parse_rss
+from aggregator.processor import process_articles, scrub_html, unshorten_url
 from config import get_config
 
 config = get_config()
@@ -255,7 +249,7 @@ class TestGetPopularityScore:
     def test_retrieves_popularity_score(self, mocker):
         # Mock the get_with_max_size function to return a sample response
         mocker.patch(
-            "feed_processor_multi.get_with_max_size",
+            "aggregator.external_services.get_with_max_size",
             return_value=b'{"popularity": {"popularity": {"score1": 1, "score2": 2}}}',
         )
 
@@ -277,7 +271,7 @@ class TestGetPopularityScore:
     def test_invalid_or_empty_url(self, mocker):
         # Mock the get_with_max_size function to raise an exception
         mocker.patch(
-            "feed_processor_multi.get_with_max_size",
+            "aggregator.external_services.get_with_max_size",
             side_effect=ValueError("Content-Length too large"),
         )
 
@@ -293,7 +287,7 @@ class TestGetPopularityScore:
         result = get_popularity_score(out_article)
 
         # Assert that the popularity score is None
-        assert result["pop_score"] == 1.0
+        assert result is None
 
 
 class TestGetPredictedChannel:

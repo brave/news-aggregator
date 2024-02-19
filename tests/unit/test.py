@@ -9,7 +9,7 @@ import os
 import feedparser
 
 import aggregator.parser
-from aggregator.parser import scrub_html
+from aggregator.processor import scrub_html
 from config import get_config
 from feed_processor_multi import score_entries
 from src import feed_processor_multi
