@@ -112,13 +112,15 @@ class Aggregator:
         for article in articles:
             article_pop_score = article["pop_score"]
             normalized_pop_score = (
-                config.pop_score_range
-                * (
-                    (article_pop_score - min_pop_score)
-                    / (max_pop_score - min_pop_score)
-                )
-                if max_pop_score != min_pop_score
-                else 1,
+                (
+                    config.pop_score_range
+                    * (
+                        (article_pop_score - min_pop_score)
+                        / (max_pop_score - min_pop_score)
+                    )
+                    if max_pop_score != min_pop_score
+                    else 1
+                ),
             )
             article["pop_score"] = max(normalized_pop_score[0], 1.0)
 
