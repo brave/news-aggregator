@@ -37,10 +37,13 @@ def get_popularity_score(_article):
 
     except requests.RequestException as req_exc:
         logger.error(f"Request to {url} failed with error: {req_exc}")
+        return {**_article, "pop_score": 1.0}
     except orjson.JSONDecodeError as json_exc:
         logger.error(f"Failed to decode JSON response for {url} with error: {json_exc}")
+        return {**_article, "pop_score": 1.0}
     except Exception as e:
         logger.error(f"An unexpected error occurred for {url}: {e}")
+        return {**_article, "pop_score": 1.0}
 
 
 def get_predicted_channels(_article):
