@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
 from PIL import Image
 
-import image_processor_sandboxed
+from aggregator import image_processor_sandboxed
 from config import get_config
 
 ua = UserAgent(browsers=["edge", "chrome", "firefox", "safari", "opera"])

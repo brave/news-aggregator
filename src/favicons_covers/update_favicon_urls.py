@@ -14,7 +14,7 @@ from fake_useragent import UserAgent
 from orjson import orjson
 from requests import HTTPError
 
-import image_processor_sandboxed
+from aggregator import image_processor_sandboxed
 from config import get_config
 from utils import get_all_domains, upload_file, uri_validator
 

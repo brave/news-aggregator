@@ -63,6 +63,7 @@ class Configuration(BaseSettings):
     cover_info_lookup_file: Path = Field(default="cover_info_lookup.json")
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
+    tests_data_dir: Path = Field(default=Path(__file__).parent / "tests/tests_data")
 
     sentry_dsn: str = ""
 

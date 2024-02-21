@@ -20,7 +20,7 @@ from fake_useragent import UserAgent
 from orjson import orjson
 from PIL import Image
 
-import image_processor_sandboxed
+from aggregator import image_processor_sandboxed
 from config import get_config
 from favicons_covers.color import (
     color_length,
