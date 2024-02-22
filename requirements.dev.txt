@@ -5,7 +5,7 @@ bpython==0.24
 flake8==7.0.0
 isort==5.13.2
 pip-check-reqs==2.5.3
-pre-commit==3.6.0
+pre-commit==3.6.2
 pylint==3.0.3
 pytest==8.0.0
 pytest-mock==3.12.0
