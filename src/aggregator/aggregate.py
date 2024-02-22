@@ -227,12 +227,6 @@ class Aggregator:
     def aggregate(self):
         """
         Aggregates the RSS feeds and writes the result to the output file.
-
-        Parameters:
-            None
-
-        Returns:
-            None
         """
         with open(self.output_path, "wb") as _f:
             feeds = self.aggregate_rss()
