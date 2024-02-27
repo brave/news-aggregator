@@ -17,7 +17,7 @@ pytz==2024.1
 regex==2022.3.2
 requests==2.31.0
 requests-cache==1.2.0
-sentry-sdk==1.40.5
+sentry-sdk==1.40.6
 structlog==24.1.0
 unshortenit==0.4.0
 urllib3==1.26.18
