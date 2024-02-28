@@ -68,6 +68,10 @@ def process_articles(article, _publisher):  # noqa: C901
     else:
         return None  # skip (can't find link)
 
+    parsed_article_url = urlparse(out_article["link"])
+    if len(parsed_article_url.path) < 4:
+        return None  # skip (link is the same as the publisher's site URL)
+
     # Process published time
     if article.get("updated"):
         out_article["publish_time"] = dateparser.parse(article.get("updated"))
