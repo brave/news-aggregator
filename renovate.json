@@ -4,7 +4,7 @@
     "local>brave/renovate-config"
   ],
   "schedule": [
-    "every 7 days"
+    "every 7 day"
   ],
   "baseBranches": [
     "master"
@@ -13,11 +13,15 @@
     "enabled": true
   },
   "pip_requirements": {
-    "fileMatch": ["requirements.*"]
+    "fileMatch": [
+      "requirements.*"
+    ]
   },
   "packageRules": [
     {
-      "packagePatterns": ["^regex$"],
+      "matchPackagePatterns": [
+        "^regex$"
+      ],
       "enabled": false
     }
   ]
