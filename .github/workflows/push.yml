@@ -29,13 +29,13 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.dev.txt
       - name: Run pre-commit
-        uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 # v3.0.0
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
       - name: Run tests
         run: CONCURRENCY=4 LOG_LEVEL=INFO make test
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           role-to-assume: ${{ secrets.GDBP_AWS_IAM_ROLE_ARN }}
           aws-region: us-west-2
       - name: Generalized Deployments
-        uses: brave-intl/general-docker-build-pipeline-action@a5abec689bc65b6a985ed8527d741a130c1483af # v1.0.11
+        uses: brave-intl/general-docker-build-pipeline-action@535977191a2f69ade89e2140f8e554ec4573ac24 # v1.0.12

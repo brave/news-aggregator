@@ -41,7 +41,7 @@ if [[ "$task" = "run-all" ]]; then
 
   echo "Starting main script..."
   mkdir -p output/feed/cache
-  python -u src/feed_processor_multi.py
+  python -u src/main.py
 
 elif [[ "$task" = "favicon-covers" ]]; then
   if [[ ! -d "output/" ]]; then
