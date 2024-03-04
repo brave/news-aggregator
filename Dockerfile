@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.9-slim-bullseye@sha256:c59d6aaacd1e721ffebfa50ab8991625c10a10ca5d163d130218ff047d54c8fb
+FROM public.ecr.aws/docker/library/python:3.9-slim-bullseye
 
 RUN mkdir -p workspace
 WORKDIR /workspace
