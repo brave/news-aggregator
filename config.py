@@ -122,6 +122,8 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
+    db_url = ""
+
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)
