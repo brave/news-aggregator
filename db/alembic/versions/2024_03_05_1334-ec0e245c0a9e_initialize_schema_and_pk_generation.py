@@ -7,6 +7,7 @@ Create Date: 2024-03-05 13:34:37.480362+00:00
 """
 
 from alembic import op
+from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
 revision: str = "ec0e245c0a9e"
@@ -18,18 +19,19 @@ depends_on = None
 def upgrade() -> None:
     conn = op.get_bind()
     conn.execute(
-        """
+        text(
+            """
         -- sequence used by our id generation function
-        create sequence news.id_seq;
+        create sequence id_seq;
 
-        create or replace function news.id_gen(out result bigint) as $$
+        create or replace function id_gen(out result bigint) as $$
         declare
             id_epoch bigint := 1588283627191;
             seq_id bigint;
             now_millis bigint;
             app_db_id int := 20;
         begin
-            select nextval('news.id_seq') %% 16384 into seq_id;
+            select nextval('id_seq') %% 16384 into seq_id;
 
             select floor(extract(epoch from clock_timestamp()) * 1000) into now_millis;
 
@@ -50,13 +52,10 @@ def upgrade() -> None:
         end;
         $$ language plpgsql;
     """
+        )
     )
 
 
 def downgrade() -> None:
     conn = op.get_bind()
-    conn.execute(
-        """
-        DROP sequence news.id_seq;
-        """
-    )
+    conn.execute(text("DROP sequence id_seq;"))
