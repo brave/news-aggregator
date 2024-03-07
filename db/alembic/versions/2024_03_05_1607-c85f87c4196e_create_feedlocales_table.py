@@ -58,6 +58,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("fl_idx_feed_id", table_name="feedLocales")
-    op.drop_index("fl_idx_locale_id", table_name="feedLocales")
+    op.drop_index("fl_idx_feed_id", table_name="feed_locales", if_exists=True)
+    op.drop_index("fl_idx_locale_id", table_name="feed_locales", if_exists=True)
     op.drop_table("feed_locales")

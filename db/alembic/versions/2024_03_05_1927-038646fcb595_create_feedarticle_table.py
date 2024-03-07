@@ -59,6 +59,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("idx_article_id", table_name="feed_articles")
-    op.drop_index("idx_feed_id", table_name="feed_articles")
+    op.drop_index("idx_article_id", table_name="feed_articles", if_exists=True)
+    op.drop_index("idx_feed_id", table_name="feed_articles", if_exists=True)
     op.drop_table("feed_articles")

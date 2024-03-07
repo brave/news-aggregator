@@ -1,8 +1,8 @@
-"""create localeChannels table
+"""create feed lastbuild table
 
-Revision ID: 2a5a15c538e8
-Revises: 1f9b63c5cb07
-Create Date: 2024-03-05 16:02:51.770998+00:00
+Revision ID: b2d3f1f85e7d
+Revises: 038646fcb595
+Create Date: 2024-03-06 13:39:08.865390+00:00
 
 """
 
@@ -10,15 +10,15 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "2a5a15c538e8"
-down_revision = "1f9b63c5cb07"
+revision: str = "b2d3f1f85e7d"
+down_revision = "038646fcb595"
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
     op.create_table(
-        "locales_channels",
+        "feed_lastbuild",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -26,16 +26,12 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("id_gen()"),
         ),
+        sa.Column("feed_id", sa.BigInteger, sa.ForeignKey("feeds.id"), nullable=False),
+        sa.Column("last_build_timedate", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
-            "channel_id",
-            sa.BigInteger,
-            sa.ForeignKey("channels.id"),
-            nullable=False,
-        ),
-        sa.Column(
-            "locale_id",
-            sa.BigInteger,
-            sa.ForeignKey("locales.id"),
+            "last_build_timedalta",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
@@ -53,12 +49,12 @@ def upgrade() -> None:
         ),
     )
     op.create_index(
-        "lc_idx_channel_id", "locales_channels", ["channel_id"], unique=False
+        "feed_lastbuild_idx_feed_id", "feed_lastbuild", ["feed_id"], unique=True
     )
-    op.create_index("lc_idx_locale_id", "locales_channels", ["locale_id"], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index("lc_idx_locale_id", table_name="localeChannels", if_exists=True)
-    op.drop_index("lc_idx_channel_id", table_name="localeChannels", if_exists=True)
-    op.drop_table("locales_channels")
+    op.drop_index(
+        "feed_lastbuild_idx_feed_id", table_name="feed_lastbuild", if_exists=True
+    )
+    op.drop_table("feed_lastbuild")

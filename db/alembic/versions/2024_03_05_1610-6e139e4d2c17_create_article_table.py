@@ -29,7 +29,7 @@ def upgrade() -> None:
             server_default=sa.text("id_gen()"),
         ),
         sa.Column("title", sa.VARCHAR, nullable=False),
-        sa.Column("publish_time", sa.DateTime, nullable=False),
+        sa.Column("publish_time", sa.DateTime(True), nullable=False),
         sa.Column("img_url", sa.VARCHAR, default=""),
         sa.Column("category", sa.VARCHAR, nullable=False),
         sa.Column("description", sa.VARCHAR),
@@ -59,6 +59,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("idx_url", table_name="articles")
-    op.drop_index("idx_url_hash", table_name="articles")
+    op.drop_index("idx_url", table_name="articles", if_exists=True)
+    op.drop_index("idx_url_hash", table_name="articles", if_exists=True)
     op.drop_table("articles")

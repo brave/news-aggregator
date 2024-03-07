@@ -46,5 +46,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("idx_locale", table_name="locales")
+    op.drop_index("idx_locale", table_name="locales", if_exists=True)
     op.drop_table("locales")

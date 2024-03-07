@@ -45,5 +45,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ch_idx_name", table_name="channels")
+    op.drop_index("ch_idx_name", table_name="channels", if_exists=True)
     op.drop_table("channels")

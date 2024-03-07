@@ -58,4 +58,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    conn.execute(text("DROP sequence id_seq;"))
+    conn.execute(text("DROP SEQUENCE id_seq;"))

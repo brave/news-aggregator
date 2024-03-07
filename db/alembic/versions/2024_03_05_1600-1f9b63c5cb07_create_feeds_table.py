@@ -26,7 +26,6 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("id_gen()"),
         ),
-        sa.Column("name", sa.VARCHAR, nullable=False),
         sa.Column("url", sa.VARCHAR, nullable=False),
         sa.Column("url_hash", sa.VARCHAR, nullable=False),
         sa.Column(
@@ -61,8 +60,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("idx_locale_id", table_name="feeds")
-    op.drop_index("idx_publisher_id", table_name="feeds")
-    op.drop_index("feed_idx_url", table_name="feeds")
-    op.drop_index("feed_idx_url_hash", table_name="feeds")
+    op.drop_index("idx_locale_id", table_name="feeds", if_exists=True)
+    op.drop_index("idx_publisher_id", table_name="feeds", if_exists=True)
+    op.drop_index("feed_idx_url", table_name="feeds", if_exists=True)
+    op.drop_index("feed_idx_url_hash", table_name="feeds", if_exists=True)
     op.drop_table("feeds")
