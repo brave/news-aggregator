@@ -25,7 +25,7 @@ function die_usage() {
 if [[ "$task" = "run-all" ]]; then
   if [[ ! -d "output/" ]]; then
     echo "Error: output/ dir not found!"
-    echo "Are you in the from root directory?"
+    echo "Are you in the root directory?"
     exit 1
   fi
 
