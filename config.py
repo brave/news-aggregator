@@ -122,7 +122,10 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    db_url = "postgresql://localhost:5432"
+    db_url = "postgresql://localhost:5432/news"
+    db_username_password = None
+    schema_name = "news"
+    username = "news"
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:

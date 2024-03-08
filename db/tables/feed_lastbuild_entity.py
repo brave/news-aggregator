@@ -8,7 +8,7 @@ class FeedLastBuild(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False)
+    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False, unique=True)
     last_build_timedate = Column(DateTime(timezone=True), nullable=False)
     last_build_timedelta = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

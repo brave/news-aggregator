@@ -55,8 +55,10 @@ def run_migrations_online() -> None:
         """
         connection.execute(
             text(
-                """
+                f"""
                 CREATE SCHEMA IF NOT EXISTS news;
+                CREATE USER news WITH PASSWORD '{main_config.db_username_password}';
+                GRANT CONNECT ON DATABASE news TO news;
                 SET search_path TO news;
                 """
             )
