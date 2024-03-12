@@ -26,7 +26,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = main_config.db_url
+    url = main_config.database_url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -62,7 +62,7 @@ def run_migrations_online() -> None:
             )
         )
 
-    db_url = main_config.db_url
+    db_url = main_config.database_url
     config_ini_section = config.get_section(config.config_ini_section)
     config_ini_section["sqlalchemy.url"] = db_url
 
