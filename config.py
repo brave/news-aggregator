@@ -123,7 +123,7 @@ class Configuration(BaseSettings):
     )
 
     db_url = "postgresql://localhost:5432/news"
-    db_username_password: Optional[str] = "mypassword"
+    db_username_password: Optional[str] = ""
     schema_name = "news"
     db_username = "news"
 

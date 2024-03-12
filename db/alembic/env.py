@@ -56,8 +56,8 @@ def run_migrations_online() -> None:
         connection.execute(
             text(
                 f"""
-                CREATE SCHEMA IF NOT EXISTS news;
-                SET search_path TO news;
+                CREATE SCHEMA IF NOT EXISTS {main_config.schema_name};
+                SET search_path TO {main_config.schema_name};
                 """
             )
         )
