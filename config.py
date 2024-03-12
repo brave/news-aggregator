@@ -123,9 +123,9 @@ class Configuration(BaseSettings):
     )
 
     db_url = "postgresql://localhost:5432/news"
-    db_username_password = None
+    db_username_password: Optional[str] = "mypassword"
     schema_name = "news"
-    username = "news"
+    db_username = "news"
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
