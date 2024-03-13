@@ -8,12 +8,14 @@ class FeedEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    url = Column(String, nullable=False, unique=True)
-    url_hash = Column(String, nullable=False, unique=True)
-    publisher_id = Column(BigInteger, ForeignKey("publishers.id"), nullable=False)
+    url = Column(String, nullable=False, unique=True, index=True)
+    url_hash = Column(String, nullable=False, unique=True, index=True)
+    publisher_id = Column(
+        BigInteger, ForeignKey("publishers.id"), nullable=False, index=True
+    )
     category = Column(String, nullable=False)
     enabled = Column(Boolean, default=True)
-    locale_id = Column(BigInteger, ForeignKey("locales.id"), nullable=False)
+    locale_id = Column(BigInteger, ForeignKey("locales.id"), nullable=False, index=True)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()

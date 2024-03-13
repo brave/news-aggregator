@@ -8,7 +8,7 @@ class ChannelEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String, nullable=False, unique=True, index=True)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()

@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, String, func
+from sqlalchemy import BigInteger, Column, DateTime, func
 
 from db.tables.base import Base
 
@@ -8,8 +8,8 @@ class LocaleChannelEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    locale = Column(String, nullable=False)
-    channel_id = Column(BigInteger, nullable=False)
+    locale_id = Column(BigInteger, nullable=False, index=True)
+    channel_id = Column(BigInteger, nullable=False, index=True)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()

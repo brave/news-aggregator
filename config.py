@@ -122,7 +122,7 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url = "postgresql://localhost:5432/news"
+    database_url = "postgresql://localhost/news"
     schema_name = "news"
 
     @validator("img_cache_path")

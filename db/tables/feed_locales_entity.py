@@ -8,8 +8,8 @@ class FeedLocaleEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False)
-    locale_id = Column(BigInteger, ForeignKey("locales.id"), nullable=False)
+    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False, index=True)
+    locale_id = Column(BigInteger, ForeignKey("locales.id"), nullable=False, index=True)
     rank = Column(Integer, nullable=False)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
