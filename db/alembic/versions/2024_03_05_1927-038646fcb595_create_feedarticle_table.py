@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "feed_articles",
+        "feed_article",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -31,13 +31,13 @@ def upgrade() -> None:
         sa.Column(
             "feed_id",
             sa.BigInteger,
-            sa.ForeignKey("feeds.id"),
+            sa.ForeignKey("feed.id"),
             nullable=False,
         ),
         sa.Column(
             "article_id",
             sa.BigInteger,
-            sa.ForeignKey("articles.id"),
+            sa.ForeignKey("article.id"),
             nullable=False,
         ),
         sa.Column(
@@ -54,11 +54,11 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("idx_feed_id", "feed_articles", ["feed_id"], unique=False)
-    op.create_index("idx_article_id", "feed_articles", ["article_id"], unique=False)
+    op.create_index("idx_feed_id", "feed_article", ["feed_id"], unique=False)
+    op.create_index("idx_article_id", "feed_article", ["article_id"], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index("idx_article_id", table_name="feed_articles", if_exists=True)
-    op.drop_index("idx_feed_id", table_name="feed_articles", if_exists=True)
-    op.drop_table("feed_articles")
+    op.drop_index("idx_article_id", table_name="feed_article", if_exists=True)
+    op.drop_index("idx_feed_id", table_name="feed_article", if_exists=True)
+    op.drop_table("feed_article")

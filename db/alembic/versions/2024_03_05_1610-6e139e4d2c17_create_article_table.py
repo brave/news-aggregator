@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "articles",
+        "article",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -54,11 +54,11 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("idx_url_hash", "articles", ["url_hash"], unique=True)
-    op.create_index("idx_url", "articles", ["url"], unique=True)
+    op.create_index("idx_url_hash", "article", ["url_hash"], unique=True)
+    op.create_index("idx_url", "article", ["url"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("idx_url", table_name="articles", if_exists=True)
-    op.drop_index("idx_url_hash", table_name="articles", if_exists=True)
-    op.drop_table("articles")
+    op.drop_index("idx_url", table_name="article", if_exists=True)
+    op.drop_index("idx_url_hash", table_name="article", if_exists=True)
+    op.drop_table("article")

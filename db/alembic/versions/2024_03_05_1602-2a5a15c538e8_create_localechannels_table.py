@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "locales_channels",
+        "locale_channel",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -29,13 +29,13 @@ def upgrade() -> None:
         sa.Column(
             "channel_id",
             sa.BigInteger,
-            sa.ForeignKey("channels.id"),
+            sa.ForeignKey("channel.id"),
             nullable=False,
         ),
         sa.Column(
             "locale_id",
             sa.BigInteger,
-            sa.ForeignKey("locales.id"),
+            sa.ForeignKey("locale.id"),
             nullable=False,
         ),
         sa.Column(
@@ -52,13 +52,11 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index(
-        "lc_idx_channel_id", "locales_channels", ["channel_id"], unique=False
-    )
-    op.create_index("lc_idx_locale_id", "locales_channels", ["locale_id"], unique=False)
+    op.create_index("lc_idx_channel_id", "locale_channel", ["channel_id"], unique=False)
+    op.create_index("lc_idx_locale_id", "locale_channel", ["locale_id"], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index("lc_idx_locale_id", table_name="localeChannels", if_exists=True)
-    op.drop_index("lc_idx_channel_id", table_name="localeChannels", if_exists=True)
-    op.drop_table("locales_channels")
+    op.drop_index("lc_idx_locale_id", table_name="locale_channel", if_exists=True)
+    op.drop_index("lc_idx_channel_id", table_name="locale_channel", if_exists=True)
+    op.drop_table("locale_channel")

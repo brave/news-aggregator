@@ -4,36 +4,45 @@ from db.tables.base import Base
 
 
 class PublisherEntity(Base):
-    __tablename__ = "publishers"
+    __tablename__ = "publisher"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     name = Column(String, nullable=False)
     url = Column(String, nullable=False, unique=True, index=True)
-    favicon_url = Column(String, server_default="", nullable=True)
-    cover_url = Column(String, server_default="", nullable=True)
-    background_color = Column(String, server_default="", nullable=True)
+    favicon_url = Column(String, server_default=None, nullable=True)
+    cover_url = Column(String, server_default=None, nullable=True)
+    background_color = Column(String, server_default=None, nullable=True)
     enabled = Column(Boolean, default=True)
     score = Column(Float, default=0.0, nullable=False)
-    url_hash = Column(String, nullable=False, unique=True, index=True)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
 
-    def __repr__(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,
             "url": self.url,
-            "favicon": self.favicon,
-            "cover_image": self.cover_image,
+            "favicon_url": self.favicon_url,
+            "cover_url": self.cover_url,
             "background_color": self.background_color,
             "enabled": self.enabled,
             "score": self.score,
-            "url_hash": self.url_hash,
             "created": self.created,
             "modified": self.modified,
+        }
+
+    def to_insert(self) -> dict:
+        return {
+            "name": self.name,
+            "url": self.url,
+            "favicon_url": self.favicon_url,
+            "cover_url": self.cover_url,
+            "background_color": self.background_color,
+            "enabled": self.enabled,
+            "score": self.score,
         }
 
     def __str__(self) -> str:

@@ -9,8 +9,11 @@ import re
 import structlog
 from orjson import orjson
 from pydantic import ValidationError
+from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import insert
 
 from config import get_config
+from db.tables.publsiher_entity import PublisherEntity
 from models.publisher import LocaleModel, PublisherGlobal
 from utils import get_cover_infos_lookup, get_favicons_lookup, upload_file
 
@@ -115,6 +118,30 @@ def main():
 
     with open(f"{config.output_path / config.global_sources_file}", "wb") as f:
         f.write(orjson.dumps(publishers_data_as_list))
+
+    with config.get_db_session().begin() as session:
+        for publisher_data in publishers_data_as_list:
+            insert_publisher = PublisherEntity(
+                name=publisher_data["publisher_name"],
+                url=publisher_data["site_url"],
+                favicon_url=publisher_data["favicon_url"],
+                cover_url=publisher_data["cover_url"],
+                background_color=publisher_data["background_color"],
+                enabled=publisher_data["enabled"],
+                score=publisher_data["score"],
+                url_hash=publisher_data["publisher_id"],
+            )
+            session.execute(
+                insert(PublisherEntity)
+                .values(insert_publisher.to_insert())
+                .on_conflict_do_nothing()
+            )
+
+    with config.get_db_session().begin() as session:
+        role = session.execute(
+            text("SELECT 1 FROM pg_roles WHERE rolname = 'news1';")
+        ).first()
+        print(role)
 
     if not config.no_upload:
         upload_file(

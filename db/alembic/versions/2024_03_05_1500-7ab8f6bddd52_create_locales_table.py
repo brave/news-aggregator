@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "locales",
+        "locale",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -42,9 +42,9 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("idx_locale", "locales", ["locale"], unique=True)
+    op.create_index("idx_locale", "locale", ["locale"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("idx_locale", table_name="locales", if_exists=True)
-    op.drop_table("locales")
+    op.drop_index("idx_locale", table_name="locale", if_exists=True)
+    op.drop_table("locale")

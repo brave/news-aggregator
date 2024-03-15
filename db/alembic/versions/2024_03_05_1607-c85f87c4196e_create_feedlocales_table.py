@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "feed_locales",
+        "feed_locale",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -29,13 +29,13 @@ def upgrade() -> None:
         sa.Column(
             "feed_id",
             sa.BigInteger,
-            sa.ForeignKey("feeds.id"),
+            sa.ForeignKey("feed.id"),
             nullable=False,
         ),
         sa.Column(
             "locale_id",
             sa.BigInteger,
-            sa.ForeignKey("locales.id"),
+            sa.ForeignKey("locale.id"),
             nullable=False,
         ),
         sa.Column("rank", sa.Integer, nullable=False),
@@ -53,11 +53,11 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("fl_idx_feed_id", "feed_locales", ["feed_id"], unique=False)
-    op.create_index("fl_idx_locale_id", "feed_locales", ["locale_id"], unique=False)
+    op.create_index("fl_idx_feed_id", "feed_locale", ["feed_id"], unique=False)
+    op.create_index("fl_idx_locale_id", "feed_locale", ["locale_id"], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index("fl_idx_feed_id", table_name="feed_locales", if_exists=True)
-    op.drop_index("fl_idx_locale_id", table_name="feed_locales", if_exists=True)
-    op.drop_table("feed_locales")
+    op.drop_index("fl_idx_feed_id", table_name="feed_locale", if_exists=True)
+    op.drop_index("fl_idx_locale_id", table_name="feed_locale", if_exists=True)
+    op.drop_table("feed_locale")

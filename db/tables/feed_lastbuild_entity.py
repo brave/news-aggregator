@@ -23,7 +23,7 @@ class FeedLastBuild(Base):
         nullable=False,
     )
 
-    def __repr__(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "feed_id": self.feed_id,

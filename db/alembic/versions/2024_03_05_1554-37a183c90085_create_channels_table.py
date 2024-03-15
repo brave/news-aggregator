@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "channels",
+        "channel",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -41,9 +41,9 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("ch_idx_name", "channels", ["name"], unique=True)
+    op.create_index("ch_idx_name", "channel", ["name"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("ch_idx_name", table_name="channels", if_exists=True)
-    op.drop_table("channels")
+    op.drop_index("ch_idx_name", table_name="channel", if_exists=True)
+    op.drop_table("channel")

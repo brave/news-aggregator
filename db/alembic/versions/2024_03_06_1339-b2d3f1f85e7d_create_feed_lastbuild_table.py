@@ -26,7 +26,7 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("id_gen()"),
         ),
-        sa.Column("feed_id", sa.BigInteger, sa.ForeignKey("feeds.id"), nullable=False),
+        sa.Column("feed_id", sa.BigInteger, sa.ForeignKey("feed.id"), nullable=False),
         sa.Column("last_build_timedate", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
             "last_build_timedalta",

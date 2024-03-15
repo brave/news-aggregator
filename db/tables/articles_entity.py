@@ -4,7 +4,7 @@ from db.tables.base import Base
 
 
 class ArticleEntity(Base):
-    __tablename__ = "articles"
+    __tablename__ = "article"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
@@ -28,7 +28,7 @@ class ArticleEntity(Base):
         onupdate=func.now(),
     )
 
-    def __repr__(self):
+    def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,

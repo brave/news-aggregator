@@ -4,7 +4,7 @@ from db.tables.base import Base
 
 
 class FeedEntity(Base):
-    __tablename__ = "feeds"
+    __tablename__ = "feed"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
@@ -21,7 +21,7 @@ class FeedEntity(Base):
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
 
-    def __repr__(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "url": self.url,

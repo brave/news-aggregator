@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "publishers",
+        "publisher",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -28,12 +28,11 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.VARCHAR, nullable=False),
         sa.Column("url", sa.VARCHAR, nullable=False),
-        sa.Column("favicon_url", sa.VARCHAR, default=""),
-        sa.Column("cover_url", sa.VARCHAR, server_default="", nullable=True),
-        sa.Column("background_color", sa.VARCHAR, server_default="", nullable=True),
+        sa.Column("favicon_url", sa.VARCHAR, default=None, nullable=True),
+        sa.Column("cover_url", sa.VARCHAR, server_default=None, nullable=True),
+        sa.Column("background_color", sa.VARCHAR, server_default=None, nullable=True),
         sa.Column("enabled", sa.Boolean, default=True),
         sa.Column("score", sa.Float, default=0.0, nullable=False),
-        sa.Column("url_hash", sa.VARCHAR, nullable=False),
         sa.Column(
             "created",
             sa.DateTime(timezone=True),
@@ -48,11 +47,10 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("pub_idx_url_hash", "publishers", ["url_hash"], unique=True)
-    op.create_index("pub_idx_url", "publishers", ["url"], unique=True)
+    op.create_index("pub_idx_url", "publisher", ["url"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("pub_idx_url", table_name="publishers", if_exists=True)
-    op.drop_index("pub_idx_url_hash", table_name="publishers", if_exists=True)
-    op.drop_table("publishers")
+    op.drop_index("pub_idx_url", table_name="publisher", if_exists=True)
+    op.drop_index("pub_idx_url_hash", table_name="publisher", if_exists=True)
+    op.drop_table("publisher")
