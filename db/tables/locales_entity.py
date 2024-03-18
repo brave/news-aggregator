@@ -24,5 +24,11 @@ class LocaleEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "name": self.name,
+            "locale": self.locale,
+        }
+
     def __str__(self) -> str:
         return f"<LocaleEntity(id={self.id}, name={self.name}, locale={self.locale})>"

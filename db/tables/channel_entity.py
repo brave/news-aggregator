@@ -22,5 +22,10 @@ class ChannelEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "name": self.name,
+        }
+
     def __str__(self):
         return f"channel_entity(id={self.id!r}, name={self.name!r})"

@@ -26,5 +26,12 @@ class FeedLocaleEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "feed_id": self.feed_id,
+            "locale_id": self.locale_id,
+            "rank": self.rank,
+        }
+
     def __str__(self) -> str:
         return f"<FeedLocaleEntity(id={self.id}, feed_id={self.feed_id}, locale_id={self.locale_id}, rank={self.rank})>"

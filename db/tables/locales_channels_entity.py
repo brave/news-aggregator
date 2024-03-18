@@ -24,5 +24,11 @@ class LocaleChannelEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "locale_id": self.locale_id,
+            "channel_id": self.channel_id,
+        }
+
     def __str__(self):
         return f"locale: {self.locale}, channel_id: {self.channel_id}"

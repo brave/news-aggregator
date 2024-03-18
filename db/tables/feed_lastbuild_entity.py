@@ -33,6 +33,13 @@ class FeedLastBuild(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "feed_id": self.feed_id,
+            "last_build_timedate": self.last_build_timedate,
+            "last_build_timedelta": self.last_build_timedelta,
+        }
+
     def __str__(self) -> str:
         return (
             f"FeedLastBuild id={self.id} feed_id={self.feed_id} "

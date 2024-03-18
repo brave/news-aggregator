@@ -34,5 +34,15 @@ class FeedEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "url": self.url,
+            "url_hash": self.url_hash,
+            "publisher_id": self.publisher_id,
+            "category": self.category,
+            "enabled": self.enabled,
+            "locale_id": self.locale_id,
+        }
+
     def __str__(self):
         return f"<FeedEntity(id={self.id}, url={self.url}, publisher_id={self.publisher_id}, category={self.category})>"

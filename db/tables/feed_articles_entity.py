@@ -25,5 +25,11 @@ class FeedArticle(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "feed_id": self.feed_id,
+            "article_id": self.article_id,
+        }
+
     def __str__(self) -> str:
         return f"FeedArticle id={self.id} feed_id={self.feed_id} article_id={self.article_id}"

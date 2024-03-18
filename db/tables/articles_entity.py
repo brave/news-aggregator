@@ -47,5 +47,21 @@ class ArticleEntity(Base):
             "modified": self.modified,
         }
 
+    def to_insert(self) -> dict:
+        return {
+            "title": self.title,
+            "publish_time": self.publish_time,
+            "img_url": self.img_url,
+            "category": self.category,
+            "description": self.description,
+            "content_type": self.content_type,
+            "creative_instance_id": self.creative_instance_id,
+            "url": self.url,
+            "url_hash": self.url_hash,
+            "pop_score": self.pop_score,
+            "padded_img_url": self.padded_img_url,
+            "score": self.score,
+        }
+
     def __str__(self):
         return f"<ArticleEntity(id={self.id}, title={self.title}, url={self.url})>"
