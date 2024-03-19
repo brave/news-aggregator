@@ -1,6 +1,8 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, func
 
 from db.tables.base import Base
+from db.tables.feed_entity import FeedEntity
+from db.tables.locales_entity import LocaleEntity
 
 
 class FeedLocaleEntity(Base):
@@ -8,8 +10,10 @@ class FeedLocaleEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False, index=True)
-    locale_id = Column(BigInteger, ForeignKey("locales.id"), nullable=False, index=True)
+    feed_id = Column(BigInteger, ForeignKey(FeedEntity.id), nullable=False, index=True)
+    locale_id = Column(
+        BigInteger, ForeignKey(LocaleEntity.id), nullable=False, index=True
+    )
     rank = Column(Integer, nullable=False)
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(

@@ -1,6 +1,7 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
 
 from db.tables.base import Base
+from db.tables.feed_entity import FeedEntity
 
 
 class FeedLastBuild(Base):
@@ -9,7 +10,7 @@ class FeedLastBuild(Base):
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     feed_id = Column(
-        BigInteger, ForeignKey("feeds.id"), nullable=False, unique=True, index=True
+        BigInteger, ForeignKey(FeedEntity.id), nullable=False, unique=True, index=True
     )
     last_build_timedate = Column(DateTime(timezone=True), nullable=False)
     last_build_timedelta = Column(

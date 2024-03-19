@@ -1,15 +1,17 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
 
+from db.tables.articles_entity import ArticleEntity
 from db.tables.base import Base
+from db.tables.feed_entity import FeedEntity
 
 
 class FeedArticle(Base):
     __tablename__ = "feed_article"
     __table_args__ = {"schema": "news"}
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    feed_id = Column(BigInteger, ForeignKey("feeds.id"), nullable=False, index=True)
+    feed_id = Column(BigInteger, ForeignKey(FeedEntity.id), nullable=False, index=True)
     article_id = Column(
-        BigInteger, ForeignKey("articles.id"), nullable=False, index=True
+        BigInteger, ForeignKey(ArticleEntity.id), nullable=False, index=True
     )
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(

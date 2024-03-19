@@ -1,15 +1,21 @@
-from sqlalchemy import BigInteger, Column, DateTime, func
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
 
 from db.tables.base import Base
+from db.tables.channel_entity import ChannelEntity
+from db.tables.locales_entity import LocaleEntity
 
 
 class LocaleChannelEntity(Base):
-    __tablename__ = "locales_channel"
+    __tablename__ = "locale_channel"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    locale_id = Column(BigInteger, nullable=False, index=True)
-    channel_id = Column(BigInteger, nullable=False, index=True)
+    locale_id = Column(
+        BigInteger, ForeignKey(LocaleEntity.id), nullable=False, index=True
+    )
+    channel_id = Column(
+        BigInteger, ForeignKey(ChannelEntity.id), nullable=False, index=True
+    )
     created = Column(DateTime(timezone=True), server_default=func.now())
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
