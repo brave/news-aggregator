@@ -1,8 +1,8 @@
-"""create localeChannels table
+"""create FeedLocalesChannel table
 
-Revision ID: 2a5a15c538e8
-Revises: 1f9b63c5cb07
-Create Date: 2024-03-05 16:02:51.770998+00:00
+Revision ID: c85f87c4196e
+Revises: 2a5a15c538e8
+Create Date: 2024-03-05 16:07:43.099305+00:00
 
 """
 
@@ -10,15 +10,15 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "2a5a15c538e8"
-down_revision = "1f9b63c5cb07"
+revision = "c85f87c4196e"
+down_revision = "2a5a15c538e8"
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
     op.create_table(
-        "locale_channel",
+        "feed_locale_channel",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -33,9 +33,9 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column(
-            "locale_id",
+            "feed_locale_id",
             sa.BigInteger,
-            sa.ForeignKey("locale.id"),
+            sa.ForeignKey("feed_locale.id"),
             nullable=False,
         ),
         sa.Column(
@@ -52,11 +52,15 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    op.create_index("lc_idx_channel_id", "locale_channel", ["channel_id"], unique=False)
-    op.create_index("lc_idx_locale_id", "locale_channel", ["locale_id"], unique=False)
+    op.create_index(
+        "lc_idx_channel_id", "feed_locale_channel", ["channel_id"], unique=False
+    )
+    op.create_index(
+        "lc_idx_locale_id", "feed_locale_channel", ["feed_locale_id"], unique=False
+    )
 
 
 def downgrade() -> None:
-    op.drop_index("lc_idx_locale_id", table_name="locale_channel", if_exists=True)
-    op.drop_index("lc_idx_channel_id", table_name="locale_channel", if_exists=True)
-    op.drop_table("locale_channel")
+    op.drop_index("lc_idx_locale_id", table_name="feed_locale_channel", if_exists=True)
+    op.drop_index("lc_idx_channel_id", table_name="feed_locale_channel", if_exists=True)
+    op.drop_table("feed_locale_channel")

@@ -1,8 +1,8 @@
-"""create FeedLocales table
+"""create feed_locale table
 
-Revision ID: c85f87c4196e
-Revises: 2a5a15c538e8
-Create Date: 2024-03-05 16:07:43.099305+00:00
+Revision ID: 2a5a15c538e8
+Revises: 1f9b63c5cb07
+Create Date: 2024-03-05 16:02:51.770998+00:00
 
 """
 
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "c85f87c4196e"
-down_revision = "2a5a15c538e8"
+revision = "2a5a15c538e8"
+down_revision = "1f9b63c5cb07"
 branch_labels = None
 depends_on = None
 

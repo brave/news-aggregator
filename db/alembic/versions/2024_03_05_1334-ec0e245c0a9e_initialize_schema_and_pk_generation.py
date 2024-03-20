@@ -14,7 +14,7 @@ from config import get_config
 main_config = get_config()
 
 # revision identifiers, used by Alembic.
-revision: str = "ec0e245c0a9e"
+revision = "ec0e245c0a9e"
 down_revision = "0bbc2ba8f6b7"
 branch_labels = None
 depends_on = None

@@ -2,16 +2,16 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
 
 from db.tables.base import Base
 from db.tables.channel_entity import ChannelEntity
-from db.tables.locales_entity import LocaleEntity
+from db.tables.feed_locales_entity import FeedLocaleEntity
 
 
 class LocaleChannelEntity(Base):
-    __tablename__ = "locale_channel"
+    __tablename__ = "feed_locale_channel"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     locale_id = Column(
-        BigInteger, ForeignKey(LocaleEntity.id), nullable=False, index=True
+        BigInteger, ForeignKey(FeedLocaleEntity.id), nullable=False, index=True
     )
     channel_id = Column(
         BigInteger, ForeignKey(ChannelEntity.id), nullable=False, index=True
