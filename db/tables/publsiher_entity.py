@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, String, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
 
@@ -19,6 +20,8 @@ class PublisherEntity(Base):
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
+
+    feeds = relationship("FeedEntity", back_populates="publisher")
 
     def to_dict(self) -> dict:
         return {

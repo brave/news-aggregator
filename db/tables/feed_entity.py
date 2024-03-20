@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
 from db.tables.publsiher_entity import PublisherEntity
@@ -20,6 +21,12 @@ class FeedEntity(Base):
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
+
+    # define relationships
+    publisher = relationship("PublisherEntity", back_populates="feeds")
+    locales = relationship(
+        "FeedLocaleEntity", back_populates="feed"
+    )  # Add back_populates here
 
     def to_dict(self) -> dict:
         return {

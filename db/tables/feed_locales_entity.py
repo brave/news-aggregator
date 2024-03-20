@@ -1,6 +1,8 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, Table, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
+from db.tables.channel_entity import ChannelEntity
 from db.tables.feed_entity import FeedEntity
 from db.tables.locales_entity import LocaleEntity
 
@@ -19,6 +21,10 @@ class FeedLocaleEntity(Base):
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
+
+    feed = relationship("FeedEntity", back_populates="locales")
+    locale = relationship("LocaleEntity")
+    channels = relationship("ChannelEntity", secondary="feed_locale_channel")
 
     def to_dict(self) -> dict:
         return {
@@ -39,3 +45,11 @@ class FeedLocaleEntity(Base):
 
     def __str__(self) -> str:
         return f"<FeedLocaleEntity(id={self.id}, feed_id={self.feed_id}, locale_id={self.locale_id}, rank={self.rank})>"
+
+
+feed_locale_channel = Table(
+    "feed_locale_channel",
+    Base.metadata,
+    Column("feed_locale_id", BigInteger, ForeignKey(FeedLocaleEntity.id)),
+    Column("channel_id", BigInteger, ForeignKey(ChannelEntity.id)),
+)
