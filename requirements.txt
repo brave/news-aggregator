@@ -4,7 +4,7 @@ bleach==6.1.0
 boto3==1.34.51
 botocore==1.34.51
 dateparser==1.2.0
-fake-useragent==1.4.0
+fake-useragent==1.5.1
 feedparser==6.0.11
 html2text==2024.2.26
 metadata-parser==0.12.0
