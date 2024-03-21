@@ -2,7 +2,6 @@ from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
-from db.tables.publsiher_entity import PublisherEntity
 
 
 class FeedEntity(Base):
@@ -10,10 +9,10 @@ class FeedEntity(Base):
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    url = Column(String, nullable=False, unique=True, index=True)
+    url = Column(String, nullable=False, index=True)
     url_hash = Column(String, nullable=False, unique=True, index=True)
     publisher_id = Column(
-        BigInteger, ForeignKey(PublisherEntity.id), nullable=False, index=True
+        BigInteger, ForeignKey("publisher.id"), nullable=False, index=True
     )
     category = Column(String, nullable=False)
     enabled = Column(Boolean, default=True)
@@ -24,9 +23,7 @@ class FeedEntity(Base):
 
     # define relationships
     publisher = relationship("PublisherEntity", back_populates="feeds")
-    locales = relationship(
-        "FeedLocaleEntity", back_populates="feed"
-    )  # Add back_populates here
+    locales = relationship("FeedLocaleEntity", back_populates="feed")
 
     def to_dict(self) -> dict:
         return {

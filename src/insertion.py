@@ -1,12 +1,10 @@
-import json
-
 import orjson
 import structlog
 
 from config import get_config
+from db.tables.base import feed_locale_channel
 from db.tables.channel_entity import ChannelEntity
 from db.tables.feed_entity import FeedEntity
-from db.tables.feed_locale_channel_entity import FeedLocaleChannelEntity
 from db.tables.feed_locales_entity import FeedLocaleEntity
 from db.tables.locales_entity import LocaleEntity
 from db.tables.publsiher_entity import PublisherEntity
@@ -42,7 +40,7 @@ def insert_or_get_publisher(session, publisher):
         )
 
 
-def insert_or_get_locale_channels(session, locale):
+def insert_or_get_locale(session, locale):
     """
     Insert a new locale into the database
     """
@@ -127,94 +125,85 @@ def insert_feed_locale(session, feed_id, locale_id, rank):
         session.rollback()
 
 
-def insert_feed_locale_channel(session, feed_locale_id, channel_id):
-    """
-    Insert a new feed_locale_channel into the database
-    """
-    try:
-        new_feed_locale_channel = FeedLocaleChannelEntity(
-            feed_locale_id=feed_locale_id,
-            channel_id=channel_id,
-        )
-        session.add(new_feed_locale_channel)
-        session.commit()
-        session.refresh(new_feed_locale_channel)
-        return new_feed_locale_channel
-    except Exception as e:
-        logger.error(e)
-        session.rollback()
-
-
 def get_publisher(session, publisher_url: str):
     """
     Get a publisher from the database
     """
 
+    data = []
     publisher = session.query(PublisherEntity).filter_by(url=publisher_url).first()
+    if publisher:
+        publisher_data = {
+            "enabled": publisher.enabled,
+            "publisher_name": publisher.name,
+            "site_url": publisher.url,
+            "favicon_url": publisher.favicon_url,
+            "cover_url": publisher.cover_url,
+            "background_color": publisher.background_color,
+            "score": publisher.score,
+            "locales": [],
+        }
 
-    publisher_info = {
-        "enabled": publisher.feeds[0].enabled,
-        "publisher_name": publisher.name,
-        "category": publisher.feeds[0].category,
-        "site_url": publisher.url,
-        "feed_url": publisher.feeds[0].url,
-        "favicon_url": publisher.favicon_url,
-        "cover_url": publisher.cover_url,
-        "background_color": publisher.background_color,
-        "score": publisher.score,
-        "publisher_id": publisher.feeds[0].url_hash,
-        "locales": [],
-    }
+        feed = session.query(FeedEntity).filter_by(publisher_id=publisher.id).first()
+        publisher_data["feed_url"] = feed.url
+        publisher_data["category"] = feed.category
+        publisher_data["enabled"] = feed.enabled
+        publisher_data["publisher_id"] = feed.url_hash
 
-    for feed in publisher.feeds:
-        for feed_locale in feed.locales:
+        feed_locales = session.query(FeedLocaleEntity).filter_by(feed_id=feed.id).all()
+        for feed_locale in feed_locales:
+            locale = (
+                session.query(LocaleEntity).filter_by(id=feed_locale.locale_id).first()
+            )
+            channels = (
+                session.query(ChannelEntity)
+                .join(feed_locale_channel)
+                .filter_by(feed_locale_id=feed_locale.id)
+                .all()
+            )
+
             locale_data = {
-                "locale": feed_locale.locale.locale,
-                "channels": [channel.channel_name for channel in feed_locale.channels],
+                "locale": locale.locale,
+                "channels": [channel.name for channel in channels],
                 "rank": feed_locale.rank,
             }
-            publisher_info["locales"].append(locale_data)
+            publisher_data["locales"].append(locale_data)
 
-    json_result = json.dumps([publisher_info], indent=4)
-    print(json_result)
+        data.append(publisher_data)
+
+    return data
 
 
 if __name__ == "__main__":
     with config.get_db_session() as db_session:
-        publisher = get_publisher(db_session, "https://www.andpremium.jp")
         with open(f"{config.output_path / config.global_sources_file}") as f:
             try:
                 publishers_data_as_list = orjson.loads(f.read())
 
                 for publisher_data in publishers_data_as_list:
-                    print("=========================================================")
-                    print(publisher_data)
-                    print("=========================================================")
                     publisher = insert_or_get_publisher(db_session, publisher_data)
+
                     feed = insert_or_get_feed(
                         db_session,
                         publisher_data,
                         publisher_id=publisher.id,
                     )
-                    for locale_data in publisher_data["locales"]:
-                        locale = insert_or_get_locale_channels(
-                            db_session, locale_data["locale"]
-                        )
 
-                        # Insert the feed_locale_channel
+                    for locale_item in publisher_data["locales"]:
+                        locale = insert_or_get_locale(db_session, locale_item["locale"])
+
                         feed_locale = insert_feed_locale(
-                            db_session, feed.id, locale.id, locale_data["rank"]
+                            db_session, feed.id, locale.id, locale_item["rank"]
                         )
 
-                        channels = locale_data["channels"]
-                        if channels:
-                            for channel in channels:
-                                new_channel = insert_or_get_channel(db_session, channel)
-                                feed_locale_channel = insert_feed_locale_channel(
-                                    db_session, feed_locale.id, new_channel.id
-                                )
+                        for channel_name in locale_item["channels"]:
+                            channel = insert_or_get_channel(db_session, channel_name)
 
-                    1 == 1
+                            feed_locale.channels.append(channel)
+
+                            db_session.commit()
+
+                logger.info("Publisher data inserted successfully")
 
             except Exception as e:
                 logger.error(e)

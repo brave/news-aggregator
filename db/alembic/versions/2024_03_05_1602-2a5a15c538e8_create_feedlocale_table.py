@@ -38,7 +38,7 @@ def upgrade() -> None:
             sa.ForeignKey("locale.id"),
             nullable=False,
         ),
-        sa.Column("rank", sa.Integer, nullable=False),
+        sa.Column("rank", sa.Integer, nullable=False, default=0),
         sa.Column(
             "created",
             sa.DateTime(timezone=True),
