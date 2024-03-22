@@ -1,4 +1,12 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import relationship
 
 from db.tables.base import Base, feed_locale_channel
@@ -6,7 +14,7 @@ from db.tables.base import Base, feed_locale_channel
 
 class FeedLocaleEntity(Base):
     __tablename__ = "feed_locale"
-    __table_args__ = {"schema": "news"}
+    __table_args__ = (UniqueConstraint("feed_id", "locale_id", "rank"),)
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     feed_id = Column(BigInteger, ForeignKey("feed.id"), nullable=False, index=True)

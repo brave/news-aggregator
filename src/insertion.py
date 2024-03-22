@@ -144,6 +144,7 @@ def get_publisher(session, publisher_url: str):
             "locales": [],
         }
 
+        # TODO: Handle multiple feeds for a publisher like Business Insider
         feed = session.query(FeedEntity).filter_by(publisher_id=publisher.id).first()
         publisher_data["feed_url"] = feed.url
         publisher_data["category"] = feed.category
@@ -176,10 +177,16 @@ def get_publisher(session, publisher_url: str):
 
 if __name__ == "__main__":
     with config.get_db_session() as db_session:
+        # publisher = get_publisher(db_session, "https://www.9to5mac.com")
+        # print(orjson.dumps(publisher).decode())
+        # exit(0)
+
         with open(f"{config.output_path / config.global_sources_file}") as f:
             try:
-                publishers_data_as_list = orjson.loads(f.read())
+                logger.info("Inserting publisher data")
 
+                publishers_data_as_list = orjson.loads(f.read())
+                publishers_data_as_list = publishers_data_as_list
                 for publisher_data in publishers_data_as_list:
                     publisher = insert_or_get_publisher(db_session, publisher_data)
 
@@ -199,9 +206,13 @@ if __name__ == "__main__":
                         for channel_name in locale_item["channels"]:
                             channel = insert_or_get_channel(db_session, channel_name)
 
-                            feed_locale.channels.append(channel)
-
-                            db_session.commit()
+                            try:
+                                feed_locale.channels.append(channel)
+                                db_session.commit()
+                            except Exception:
+                                logger.error(
+                                    f"Channels data already inserted for {publisher.url}"
+                                )
 
                 logger.info("Publisher data inserted successfully")
 

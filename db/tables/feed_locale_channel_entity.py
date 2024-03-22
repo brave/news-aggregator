@@ -1,14 +1,11 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, UniqueConstraint, func
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
 
 from db.tables.base import Base
 
 
 class FeedLocaleChannelEntity(Base):
     __tablename__ = "feed_locale_channel"
-    __table_args__ = (
-        {"schema": "news"},
-        UniqueConstraint("feed_locale_id", "channel_id"),
-    )
+    __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     feed_locale_id = Column(

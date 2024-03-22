@@ -14,4 +14,5 @@ feed_locale_channel = Table(
     Base.metadata,
     Column("feed_locale_id", BigInteger, ForeignKey("feed_locale.id")),
     Column("channel_id", BigInteger, ForeignKey("channel.id")),
+    schema=config.schema_name,
 )
