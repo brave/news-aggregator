@@ -1,6 +1,7 @@
 from sqlalchemy import BigInteger, Column, DateTime, Float, String, func
+from sqlalchemy.orm import relationship
 
-from db.tables.base import Base
+from db.tables.base import Base, feed_article_association
 
 
 class ArticleEntity(Base):
@@ -9,7 +10,7 @@ class ArticleEntity(Base):
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     title = Column(String, nullable=False)
-    publish_time = Column(DateTime(True), nullable=False)
+    publish_time = Column(DateTime(timezone=True), nullable=False)
     img_url = Column(String, default="")
     category = Column(String, nullable=False)
     description = Column(String, nullable=True)
@@ -26,6 +27,10 @@ class ArticleEntity(Base):
         nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
+    )
+
+    feeds = relationship(
+        "FeedEntity", secondary=feed_article_association, back_populates="articles"
     )
 
     def to_dict(self):

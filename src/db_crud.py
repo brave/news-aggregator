@@ -4,6 +4,7 @@ import orjson
 import structlog
 
 from config import get_config
+from db.tables.articles_entity import ArticleEntity
 from db.tables.base import feed_locale_channel
 from db.tables.channel_entity import ChannelEntity
 from db.tables.feed_entity import FeedEntity
@@ -93,6 +94,8 @@ def insert_or_get_feed(session, feed_data, publisher_id):
             publisher_id=publisher_id,
             category=feed_data["category"],
             enabled=feed_data["enabled"],
+            og_images=False,
+            max_entries=20,
         )
         session.add(new_feed)
         session.commit()
@@ -170,13 +173,14 @@ def insert_or_update_all_publishers(db_session):
             logger.error(e)
 
 
-def get_publisher(session, publisher_url: str):
+def get_publisher_with_locale(session, publisher_url, locale):
     """
     Get a publisher from the database
     """
 
     data = []
     publisher = session.query(PublisherEntity).filter_by(url=publisher_url).first()
+    locale = session.query(LocaleEntity).filter_by(locale=locale).first()
     if publisher:
         publisher_data = {
             "enabled": publisher.enabled,
@@ -201,21 +205,17 @@ def get_publisher(session, publisher_url: str):
             feed_publisher_data["publisher_id"] = feed.url_hash
 
             feed_locales = (
-                session.query(FeedLocaleEntity).filter_by(feed_id=feed.id).all()
+                session.query(FeedLocaleEntity)
+                .filter_by(feed_id=feed.id, locale_id=locale.id)
+                .all()
             )
             for feed_locale in feed_locales:
-                locale = (
-                    session.query(LocaleEntity)
-                    .filter_by(id=feed_locale.locale_id)
-                    .first()
-                )
                 channels = (
                     session.query(ChannelEntity)
                     .join(feed_locale_channel)
                     .filter_by(feed_locale_id=feed_locale.id)
                     .all()
                 )
-
                 locale_data = {
                     "locale": locale.locale,
                     "channels": [channel.name for channel in channels],
@@ -228,8 +228,99 @@ def get_publisher(session, publisher_url: str):
     return data
 
 
+def get_publishers_based_on_locale(session, locale):
+    data = {}
+
+    feeds = (
+        session.query(FeedEntity)
+        .filter(FeedEntity.locales.any(FeedLocaleEntity.locale.has(locale=locale)))
+        .all()
+    )
+    locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+
+    for feed in feeds:
+        channels = []
+        feed_locales = (
+            session.query(FeedLocaleEntity)
+            .filter_by(feed_id=feed.id, locale_id=locale.id)
+            .all()
+        )
+        for feed_locale in feed_locales:
+            channels.extend(
+                session.query(ChannelEntity)
+                .join(feed_locale_channel)
+                .filter_by(feed_locale_id=feed_locale.id)
+                .all()
+            )
+
+        data[feed.url] = {
+            "publisher_name": feed.publisher.name,
+            "category": feed.category,
+            "site_url": feed.publisher.url,
+            "feed_url": feed.url,
+            "og_images": feed.og_images,
+            "max_entries": feed.max_entries,
+            "creative_instance_id": "",
+            "content_type": "article",
+            "publisher_id": feed.url_hash,
+            "channels": [channel.name for channel in set(channels)],
+        }
+
+    return data
+
+
+def insert_or_get_article(session, feed, article_data, locale):
+    try:
+        channels = []
+        feed = session.query(FeedEntity).filter_by(url_hash=feed.url_hash).first()
+        locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+        feed_locales = (
+            session.query(FeedLocaleEntity)
+            .filter_by(feed_id=feed.id, locale_id=locale.id)
+            .all()
+        )
+        for feed_locale in feed_locales:
+            channels.extend(
+                session.query(ChannelEntity)
+                .join(feed_locale_channel)
+                .filter_by(feed_locale_id=feed_locale.id)
+                .all()
+            )
+        article = ArticleEntity(
+            title=article_data["title"],
+            publish_time=article_data["publish_time"],
+            img_url=article_data["img_url"],
+            category=article_data["category"],
+            description=article_data["description"],
+            publisher_id=feed.url_hash,
+            publisher_name=feed.publisher.name,
+            channels=[channel.name for channel in set(channels)],
+            url=article_data["url"],
+            url_hash=article_data["url_hash"],
+            pop_score=article_data["pop_score"],
+            padded_img_url=article_data["padded_img_url"],
+            score=article_data["score"],
+        )
+        session.add(article)
+        session.commit()
+        session.refresh(article)
+        return article
+    except Exception as e:
+        logger.error(e)
+        session.rollback()
+        return (
+            session.query(ArticleEntity)
+            .filter_by(url_hash=article_data["url_hash"])
+            .first()
+        )
+
+
 if __name__ == "__main__":
     with config.get_db_session() as db_session:
-        insert_or_update_all_publishers(db_session)
-        # publisher = get_publisher(db_session, "https://www.businessinsider.com")
+        # print(orjson.dumps(get_publishers_based_on_locale(db_session, "en_US_2")))
+        insert_or_get_article(
+            db_session,
+        )
+        # insert_or_update_all_publishers(db_session)
+        # publisher = get_publisher(db_session, "https://www.brave.com")
         # print(orjson.dumps(publisher).decode())

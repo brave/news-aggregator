@@ -1,7 +1,16 @@
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String, func
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    func,
+)
 from sqlalchemy.orm import relationship
 
-from db.tables.base import Base
+from db.tables.base import Base, feed_article_association
 
 
 class FeedEntity(Base):
@@ -20,10 +29,15 @@ class FeedEntity(Base):
     modified = Column(
         DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
     )
+    og_images = Column(Boolean, nullable=False, default=False)
+    max_entries = Column(Integer, nullable=False, default=20)
 
     # define relationships
     publisher = relationship("PublisherEntity", back_populates="feeds")
     locales = relationship("FeedLocaleEntity", back_populates="feed")
+    articles = relationship(
+        "ArticleEntity", secondary=feed_article_association, back_populates="feeds"
+    )
 
     def to_dict(self) -> dict:
         return {

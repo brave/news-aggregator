@@ -36,6 +36,8 @@ def upgrade() -> None:
         ),
         sa.Column("enabled", sa.Boolean, default=True),
         sa.Column("category", sa.VARCHAR, nullable=False),
+        sa.Column("og_images", sa.Boolean, default=False),
+        sa.Column("max_entries", sa.Integer, default=20),
         sa.Column(
             "created",
             sa.DateTime(timezone=True),
