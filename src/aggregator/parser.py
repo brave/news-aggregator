@@ -174,6 +174,8 @@ def parse_rss(downloaded_feed):
 
     feed_cache = dict(feed_cache)  # bypass serialization issues
 
+    # TODO: insert feed updated into database in feed_lastbuild table
+
     if "bozo_exception" in feed_cache:
         del feed_cache["bozo_exception"]
 

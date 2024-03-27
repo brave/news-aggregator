@@ -134,6 +134,7 @@ class Aggregator:
         """
         raw_entries = []
         entries = []
+        processed_articles = []
         self.report["feed_stats"] = {}
 
         feed_cache = self.download_feeds()
@@ -159,10 +160,13 @@ class Aggregator:
 
         logger.info(f"Un-shorten the URL of {len(raw_entries)}")
         with ThreadPool(config.thread_pool_size) as pool:
-            for result in pool.imap_unordered(unshorten_url, raw_entries):
-                if not result:
-                    continue
-                entries.append(result)
+            for result, processed_article in pool.imap_unordered(
+                unshorten_url, raw_entries
+            ):
+                if result:
+                    entries.append(result)
+                if processed_article:
+                    processed_articles.append(processed_article)
 
         raw_entries.clear()
 
@@ -173,7 +177,8 @@ class Aggregator:
                     continue
                 raw_entries.append(result)
 
-        self.normalize_pop_score(raw_entries)
+        if raw_entries:
+            self.normalize_pop_score(raw_entries)
 
         if str(config.sources_file) == "sources.en_US":
             entries.clear()
@@ -183,9 +188,9 @@ class Aggregator:
                     if not result:
                         continue
                     entries.append(result)
-            return entries
+            return entries, processed_articles
 
-        return raw_entries
+        return raw_entries, processed_articles
 
     def aggregate_rss(self):
         """
@@ -200,9 +205,8 @@ class Aggregator:
 
         Returns a list of filtered entries.
         """
-        entries = []
         filtered_entries = []
-        entries += self.get_rss()
+        entries, processed_articles = self.get_rss()
 
         logger.info(f"Getting images for {len(entries)} items...")
         fixed_entries = self.check_images(entries)
@@ -214,6 +218,8 @@ class Aggregator:
                 filtered_entries.append(result)
         fixed_entries.clear()
 
+        # Add already processed articles
+        filtered_entries.extend(processed_articles)
         sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
 
         logger.info(f"Sorting for {len(sorted_entries)} items...")

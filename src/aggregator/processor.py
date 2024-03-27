@@ -27,6 +27,7 @@ from requests.exceptions import (
 
 from aggregator.image_fetcher import get_article_img
 from config import get_config
+from db_crud import get_article
 
 logger = structlog.getLogger(__name__)
 
@@ -176,7 +177,14 @@ def unshorten_url(out_article):
     out_article["url"] = encoded_url
     out_article["url_hash"] = url_hash
 
-    return out_article
+    processed_article = get_article(
+        url_hash, str(config.sources_file).replace("sources.", "")
+    )
+
+    if processed_article:
+        return None, processed_article
+
+    return out_article, None
 
 
 def scrub_html(feed: dict):
