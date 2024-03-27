@@ -1,7 +1,7 @@
-from sqlalchemy import BigInteger, Column, DateTime, Float, String, func
+from sqlalchemy import BigInteger, Column, DateTime, Float, ForeignKey, String, func
 from sqlalchemy.orm import relationship
 
-from db.tables.base import Base, feed_article_association
+from db.tables.base import Base
 
 
 class ArticleEntity(Base):
@@ -10,28 +10,27 @@ class ArticleEntity(Base):
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     title = Column(String, nullable=False)
-    publish_time = Column(DateTime(timezone=True), nullable=False)
-    img_url = Column(String, default="")
+    publish_time = Column(DateTime, nullable=False)
+    img = Column(String, default="", nullable=False)
     category = Column(String, nullable=False)
     description = Column(String, nullable=True)
     content_type = Column(String, nullable=False, default="article")
-    creative_instance_id = Column(String, default="")
-    url = Column(String, nullable=False, unique=True, index=True)
+    creative_instance_id = Column(String, default="", nullable=False)
+    url = Column(String, nullable=False)
     url_hash = Column(String, nullable=False, unique=True, index=True)
     pop_score = Column(Float, default=0.0, nullable=False)
-    padded_img_url = Column(String, default="")
+    padded_img = Column(String, default="", nullable=False)
     score = Column(Float, default=0.0, nullable=False)
-    created = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created = Column(DateTime, nullable=False, server_default=func.now())
     modified = Column(
-        DateTime(timezone=True),
+        DateTime,
         nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
     )
+    feed_id = Column(BigInteger, ForeignKey("feed.id"), nullable=False, index=True)
 
-    feeds = relationship(
-        "FeedEntity", secondary=feed_article_association, back_populates="articles"
-    )
+    feed = relationship("FeedEntity", back_populates="articles")
 
     def to_dict(self):
         return {

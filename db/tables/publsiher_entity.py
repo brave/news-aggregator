@@ -16,10 +16,8 @@ class PublisherEntity(Base):
     background_color = Column(String, server_default=None, nullable=True)
     enabled = Column(Boolean, default=True)
     score = Column(Float, default=0.0, nullable=False)
-    created = Column(DateTime(timezone=True), server_default=func.now())
-    modified = Column(
-        DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
-    )
+    created = Column(DateTime, server_default=func.now())
+    modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
 
     feeds = relationship("FeedEntity", back_populates="publisher")
 

@@ -1,4 +1,4 @@
-"""create feed lastbuild table
+"""create feed_update_record table
 
 Revision ID: b2d3f1f85e7d
 Revises: 038646fcb595
@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "feed_lastbuild",
+        "feed_update_record",
         sa.Column(
             "id",
             sa.BigInteger,
@@ -27,34 +27,36 @@ def upgrade() -> None:
             server_default=sa.text("id_gen()"),
         ),
         sa.Column("feed_id", sa.BigInteger, sa.ForeignKey("feed.id"), nullable=False),
-        sa.Column("last_build_timedate", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("last_build_time", sa.DateTime, nullable=False),
         sa.Column(
-            "last_build_timedalta",
-            sa.DateTime(timezone=True),
+            "last_build_timedelta",
+            sa.DateTime,
             server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
             "created",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
             "modified",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_onupdate=sa.func.now(),
             server_default=sa.func.now(),
             nullable=False,
         ),
     )
     op.create_index(
-        "feed_lastbuild_idx_feed_id", "feed_lastbuild", ["feed_id"], unique=True
+        "feed_update_record_idx_feed_id", "feed_update_record", ["feed_id"], unique=True
     )
 
 
 def downgrade() -> None:
     op.drop_index(
-        "feed_lastbuild_idx_feed_id", table_name="feed_lastbuild", if_exists=True
+        "feed_update_record_idx_feed_id",
+        table_name="feed_update_record",
+        if_exists=True,
     )
-    op.drop_table("feed_lastbuild")
+    op.drop_table("feed_update_record")

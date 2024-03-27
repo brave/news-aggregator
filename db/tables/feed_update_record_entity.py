@@ -1,27 +1,29 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
 
 
-class FeedLastBuild(Base):
-    __tablename__ = "feed_lastbuild"
+class FeedUpdateRecordEntity(Base):
+    __tablename__ = "feed_update_record"
     __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     feed_id = Column(
         BigInteger, ForeignKey("feed.id"), nullable=False, unique=True, index=True
     )
-    last_build_timedate = Column(DateTime(timezone=True), nullable=False)
-    last_build_timedelta = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    created = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    last_build_time = Column(DateTime, nullable=False)
+    last_build_timedelta = Column(DateTime, server_default=func.now(), nullable=False)
+    created = Column(DateTime, server_default=func.now(), nullable=False)
+
     modified = Column(
-        DateTime(timezone=True),
+        DateTime,
         server_onupdate=func.now(),
         server_default=func.now(),
         nullable=False,
     )
+
+    feed = relationship("FeedEntity", back_populates="update_records")
 
     def to_dict(self) -> dict:
         return {

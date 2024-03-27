@@ -30,13 +30,13 @@ def upgrade() -> None:
         sa.Column("locale", sa.VARCHAR, nullable=False),
         sa.Column(
             "created",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
             "modified",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_onupdate=sa.func.now(),
             server_default=sa.func.now(),
             nullable=False,

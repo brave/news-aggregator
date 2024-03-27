@@ -20,10 +20,8 @@ class FeedLocaleEntity(Base):
     feed_id = Column(BigInteger, ForeignKey("feed.id"), nullable=False, index=True)
     locale_id = Column(BigInteger, ForeignKey("locale.id"), nullable=False, index=True)
     rank = Column(Integer, nullable=False, default=0)
-    created = Column(DateTime(timezone=True), server_default=func.now())
-    modified = Column(
-        DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
-    )
+    created = Column(DateTime, server_default=func.now())
+    modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
 
     feed = relationship("FeedEntity", back_populates="locales")
     locale = relationship("LocaleEntity")

@@ -6,6 +6,7 @@ import structlog
 
 from aggregator.aggregate import Aggregator
 from config import get_config
+from db_crud import insert_articles
 from utils import upload_file
 
 config = get_config()
@@ -39,5 +40,12 @@ if __name__ == "__main__":
             config.pub_s3_bucket,
             f"brave-today/{config.feed_path}{str(config.sources_file).replace('sources', '')}json",
         )
+
+    with open(config.output_feed_path / f"{config.feed_path}.json", "r") as f:
+        articles = orjson.loads(f.read())
+        logger.info(f"Feed has {len(articles)} items to insert.")
+        insert_articles(articles)
+        logger.info("Inserted articles into the database.")
+
     with open(config.output_path / "report.json", "w") as f:
         f.write(json.dumps(fp.report))

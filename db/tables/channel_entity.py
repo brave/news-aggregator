@@ -9,10 +9,8 @@ class ChannelEntity(Base):
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     name = Column(String, nullable=False, unique=True, index=True)
-    created = Column(DateTime(timezone=True), server_default=func.now())
-    modified = Column(
-        DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
-    )
+    created = Column(DateTime, server_default=func.now())
+    modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
 
     def to_dict(self) -> dict:
         return {

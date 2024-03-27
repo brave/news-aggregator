@@ -16,10 +16,3 @@ feed_locale_channel = Table(
     Column("channel_id", BigInteger, ForeignKey("channel.id")),
     schema=config.schema_name,
 )
-
-feed_article_association = Table(
-    "feed_article",
-    Base.metadata,
-    Column("feed_id", BigInteger, ForeignKey("feed.id")),
-    Column("article_id", BigInteger, ForeignKey("article.id")),
-)

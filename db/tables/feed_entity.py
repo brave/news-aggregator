@@ -10,7 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from db.tables.base import Base, feed_article_association
+from db.tables.base import Base
 
 
 class FeedEntity(Base):
@@ -25,19 +25,16 @@ class FeedEntity(Base):
     )
     category = Column(String, nullable=False)
     enabled = Column(Boolean, default=True)
-    created = Column(DateTime(timezone=True), server_default=func.now())
-    modified = Column(
-        DateTime(timezone=True), server_onupdate=func.now(), server_default=func.now()
-    )
+    created = Column(DateTime, server_default=func.now())
+    modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
     og_images = Column(Boolean, nullable=False, default=False)
     max_entries = Column(Integer, nullable=False, default=20)
 
     # define relationships
     publisher = relationship("PublisherEntity", back_populates="feeds")
     locales = relationship("FeedLocaleEntity", back_populates="feed")
-    articles = relationship(
-        "ArticleEntity", secondary=feed_article_association, back_populates="feeds"
-    )
+    articles = relationship("ArticleEntity", back_populates="feed")
+    update_records = relationship("FeedUpdateRecordEntity", back_populates="feed")
 
     def to_dict(self) -> dict:
         return {

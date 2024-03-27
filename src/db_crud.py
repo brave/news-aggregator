@@ -1,6 +1,8 @@
 from copy import deepcopy
+from datetime import datetime
 
 import orjson
+import pytz
 import structlog
 
 from config import get_config
@@ -9,6 +11,7 @@ from db.tables.base import feed_locale_channel
 from db.tables.channel_entity import ChannelEntity
 from db.tables.feed_entity import FeedEntity
 from db.tables.feed_locales_entity import FeedLocaleEntity
+from db.tables.feed_update_record_entity import FeedUpdateRecordEntity
 from db.tables.locales_entity import LocaleEntity
 from db.tables.publsiher_entity import PublisherEntity
 
@@ -228,7 +231,7 @@ def get_publisher_with_locale(session, publisher_url, locale):
     return data
 
 
-def get_publishers_based_on_locale(session, locale):
+def get_feeds_based_on_locale(session, locale):
     data = {}
 
     feeds = (
@@ -269,58 +272,189 @@ def get_publishers_based_on_locale(session, locale):
     return data
 
 
-def insert_or_get_article(session, feed, article_data, locale):
+def insert_articles(articles):
     try:
-        channels = []
-        feed = session.query(FeedEntity).filter_by(url_hash=feed.url_hash).first()
-        locale = session.query(LocaleEntity).filter_by(locale=locale).first()
-        feed_locales = (
-            session.query(FeedLocaleEntity)
-            .filter_by(feed_id=feed.id, locale_id=locale.id)
-            .all()
-        )
-        for feed_locale in feed_locales:
-            channels.extend(
-                session.query(ChannelEntity)
-                .join(feed_locale_channel)
-                .filter_by(feed_locale_id=feed_locale.id)
+        with config.get_db_session() as db_session:
+            for article in articles:
+                try:
+                    feed = (
+                        db_session.query(FeedEntity)
+                        .filter(FeedEntity.url_hash == article.get("publisher_id"))
+                        .first()
+                    )
+                    new_article = ArticleEntity(
+                        title=article.get("title"),
+                        publish_time=article.get("publish_time"),
+                        img=article.get("img"),
+                        category=article.get("category"),
+                        description=article.get("description"),
+                        content_type=article.get("content_type"),
+                        creative_instance_id=article.get("creative_instance_id"),
+                        url=article.get("url"),
+                        url_hash=article.get("url_hash"),
+                        pop_score=article.get("pop_score"),
+                        padded_img=article.get("padded_img"),
+                        score=article.get("score"),
+                        feed_id=feed.id,
+                    )
+                    db_session.add(new_article)
+                    db_session.commit()
+                    db_session.refresh(new_article)
+
+                except Exception as e:
+                    logger.error(f"Error saving articles to database: {e}")
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def get_article(url_hash, locale):
+    try:
+        with config.get_db_session() as session:
+            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            if article:
+                channels = []
+                locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+                feed_locales = (
+                    session.query(FeedLocaleEntity)
+                    .filter_by(feed_id=article.feed.id, locale_id=locale.id)
+                    .all()
+                )
+                for feed_locale in feed_locales:
+                    channels.extend(
+                        session.query(ChannelEntity)
+                        .join(feed_locale_channel)
+                        .filter_by(feed_locale_id=feed_locale.id)
+                        .all()
+                    )
+                article_data = {
+                    "title": article.title,
+                    "publish_time": article.publish_time.astimezone(pytz.utc).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "img": article.img,
+                    "category": article.category,
+                    "description": article.description,
+                    "content_type": article.content_type,
+                    "publisher_id": article.feed.url_hash,
+                    "publisher_name": article.feed.publisher.name,
+                    "channels": [channel.name for channel in set(channels)],
+                    "creative_instance_id": article.creative_instance_id,
+                    "url": article.url,
+                    "url_hash": article.url_hash,
+                    "pop_score": article.pop_score,
+                    "padded_img": article.padded_img,
+                    "score": article.score,
+                }
+                return article_data
+            else:
+                return None
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+        return None
+
+
+def get_remaining_articles(feed_url_hashes):
+    try:
+        articles = []
+        with config.get_db_session() as session:
+            remaining_articles = (
+                session.query(ArticleEntity)
+                .join(FeedEntity)
+                .filter(~FeedEntity.url_hash.in_(feed_url_hashes))
                 .all()
             )
-        article = ArticleEntity(
-            title=article_data["title"],
-            publish_time=article_data["publish_time"],
-            img_url=article_data["img_url"],
-            category=article_data["category"],
-            description=article_data["description"],
-            publisher_id=feed.url_hash,
-            publisher_name=feed.publisher.name,
-            channels=[channel.name for channel in set(channels)],
-            url=article_data["url"],
-            url_hash=article_data["url_hash"],
-            pop_score=article_data["pop_score"],
-            padded_img_url=article_data["padded_img_url"],
-            score=article_data["score"],
-        )
-        session.add(article)
-        session.commit()
-        session.refresh(article)
-        return article
+            for article in remaining_articles:
+                channels = []
+                feed_locales = (
+                    session.query(FeedLocaleEntity)
+                    .filter_by(feed_id=article.feed.id)
+                    .all()
+                )
+                for feed_locale in feed_locales:
+                    channels.extend(
+                        session.query(ChannelEntity)
+                        .join(feed_locale_channel)
+                        .filter_by(feed_locale_id=feed_locale.id)
+                        .all()
+                    )
+                article_data = {
+                    "title": article.title,
+                    "publish_time": article.publish_time.astimezone(pytz.utc).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "img": article.img,
+                    "category": article.category,
+                    "description": article.description,
+                    "content_type": article.content_type,
+                    "publisher_id": article.feed.url_hash,
+                    "publisher_name": article.feed.publisher.name,
+                    "channels": [channel.name for channel in set(channels)],
+                    "creative_instance_id": article.creative_instance_id,
+                    "url": article.url,
+                    "url_hash": article.url_hash,
+                    "pop_score": article.pop_score,
+                    "padded_img": article.padded_img,
+                    "score": article.score,
+                }
+                article.append(article_data)
+            return articles
     except Exception as e:
-        logger.error(e)
-        session.rollback()
-        return (
-            session.query(ArticleEntity)
-            .filter_by(url_hash=article_data["url_hash"])
-            .first()
-        )
+        logger.error(f"Error Connecting to database: {e}")
+        return []
+
+
+def insert_feed_lastbuild(url_hash, last_build_time):
+    try:
+        with config.get_db_session() as session:
+            feed = (
+                session.query(FeedEntity)
+                .filter(FeedEntity.url_hash == url_hash)
+                .first()
+            )
+            if feed:
+                last_record = (
+                    session.query(FeedUpdateRecordEntity)
+                    .filter(feed_id=feed.id)
+                    .order_by(last_build_time.desc())
+                    .first()
+                )
+                if last_record:
+                    if last_build_time > last_record.last_build_time:
+                        last_build_timedelta = datetime.utcnow() - last_build_time
+                        last_record.last_build_time = last_build_time
+                        last_record.last_build_timedelta = (
+                            last_build_timedelta.total_seconds()
+                        )
+                        session.commit()
+                        print("Feed update record updated successfully.")
+                        return True
+                    else:
+                        print(
+                            "New last_build_time is not greater than the previously inserted one."
+                        )
+                        return False
+                else:
+                    last_build_timedelta = datetime.utcnow() - last_build_time
+                    new_record = FeedUpdateRecordEntity(
+                        feed_id=feed.id,
+                        last_build_time=last_build_time,
+                        last_build_timedelta=last_build_timedelta.total_seconds(),
+                    )
+                    session.add(new_record)
+                    session.commit()
+                    print("Feed update record inserted successfully.")
+                    return True
+            else:
+                print("Feed with URL hash {} not found.".format(url_hash))
+                return False
+
+    except Exception as e:
+        logger.error(f"Error saving feed last build to database: {e}")
 
 
 if __name__ == "__main__":
     with config.get_db_session() as db_session:
-        # print(orjson.dumps(get_publishers_based_on_locale(db_session, "en_US_2")))
-        insert_or_get_article(
-            db_session,
-        )
-        # insert_or_update_all_publishers(db_session)
+        insert_or_update_all_publishers(db_session)
+        # print(orjson.dumps(get_feeds_based_on_locale(db_session, "en_US_2")).decode())
         # publisher = get_publisher(db_session, "https://www.brave.com")
         # print(orjson.dumps(publisher).decode())

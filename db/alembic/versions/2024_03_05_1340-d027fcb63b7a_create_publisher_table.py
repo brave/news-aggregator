@@ -35,13 +35,13 @@ def upgrade() -> None:
         sa.Column("score", sa.Float, default=0.0, nullable=False),
         sa.Column(
             "created",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
             "modified",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_onupdate=sa.func.now(),
             server_default=sa.func.now(),
             nullable=False,

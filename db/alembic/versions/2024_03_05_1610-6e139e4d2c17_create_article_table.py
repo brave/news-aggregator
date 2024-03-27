@@ -29,36 +29,42 @@ def upgrade() -> None:
             server_default=sa.text("id_gen()"),
         ),
         sa.Column("title", sa.VARCHAR, nullable=False),
-        sa.Column("publish_time", sa.DateTime(True), nullable=False),
-        sa.Column("img_url", sa.VARCHAR, default=""),
+        sa.Column("publish_time", sa.DateTime, nullable=False),
+        sa.Column("img", sa.VARCHAR, default="", nullable=False),
         sa.Column("category", sa.VARCHAR, nullable=False),
         sa.Column("description", sa.VARCHAR),
         sa.Column("content_type", sa.VARCHAR, nullable=False, default="article"),
-        sa.Column("creative_instance_id", sa.VARCHAR, default=""),
+        sa.Column("creative_instance_id", sa.VARCHAR, default="", nullable=False),
         sa.Column("url", sa.VARCHAR, nullable=False),
         sa.Column("url_hash", sa.VARCHAR, nullable=False),
         sa.Column("pop_score", sa.Float, default=0.0, nullable=False),
-        sa.Column("padded_img_url", sa.VARCHAR, default=""),
+        sa.Column("padded_img", sa.VARCHAR, default="", nullable=False),
         sa.Column("score", sa.Float, default=0.0, nullable=False),
         sa.Column(
+            "feed_id",
+            sa.BigInteger,
+            sa.ForeignKey("feed.id"),
+            nullable=False,
+        ),
+        sa.Column(
             "created",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_default=sa.func.now(),
             nullable=False,
         ),
         sa.Column(
             "modified",
-            sa.DateTime(timezone=True),
+            sa.DateTime,
             server_onupdate=sa.func.now(),
             server_default=sa.func.now(),
             nullable=False,
         ),
     )
+    op.create_index("idx_article_feed_id", "article", ["feed_id"], unique=False)
     op.create_index("idx_url_hash", "article", ["url_hash"], unique=True)
-    op.create_index("idx_url", "article", ["url"], unique=True)
 
 
 def downgrade() -> None:
-    op.drop_index("idx_url", table_name="article", if_exists=True)
     op.drop_index("idx_url_hash", table_name="article", if_exists=True)
+    op.drop_index("idx_article_feed_id", table_name="article", if_exists=True)
     op.drop_table("article")
