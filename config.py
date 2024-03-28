@@ -124,8 +124,8 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url = "postgresql://localhost/news"
-    schema_name = "news"
+    database_url: Optional[str] = None
+    schema_name: Optional[str] = None
 
     def get_db_session(self) -> Session:
         """

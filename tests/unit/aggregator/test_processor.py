@@ -121,7 +121,7 @@ class TestUnshortenUrl:
         }
 
         # Call the function under test
-        result = unshorten_url(out_article)
+        result, _ = unshorten_url(out_article)
 
         # Assert the unshortened URL is correct
         assert result["url"] == "https://example.com"

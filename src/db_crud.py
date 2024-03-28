@@ -133,143 +133,165 @@ def insert_feed_locale(session, feed_id, locale_id, rank):
         session.rollback()
 
 
-def insert_or_update_all_publishers(db_session):
+def insert_or_update_all_publishers():
     """
     Insert or update all publishers in the database
     """
-    with open(f"{config.output_path / config.global_sources_file}") as f:
-        try:
-            logger.info("Inserting publisher data")
+    try:
+        with config.get_db_session() as db_session:
+            with open(f"{config.output_path / config.global_sources_file}") as f:
+                try:
+                    logger.info("Inserting publisher data")
 
-            publishers_data_as_list = orjson.loads(f.read())
-            publishers_data_as_list = publishers_data_as_list
-            for publisher_data in publishers_data_as_list:
-                publisher = insert_or_get_publisher(db_session, publisher_data)
+                    publishers_data_as_list = orjson.loads(f.read())
+                    publishers_data_as_list = publishers_data_as_list
+                    for publisher_data in publishers_data_as_list:
+                        publisher = insert_or_get_publisher(db_session, publisher_data)
 
-                feed = insert_or_get_feed(
-                    db_session,
-                    publisher_data,
-                    publisher_id=publisher.id,
-                )
+                        feed = insert_or_get_feed(
+                            db_session,
+                            publisher_data,
+                            publisher_id=publisher.id,
+                        )
 
-                for locale_item in publisher_data["locales"]:
-                    locale = insert_or_get_locale(db_session, locale_item["locale"])
-
-                    feed_locale = insert_feed_locale(
-                        db_session, feed.id, locale.id, locale_item["rank"]
-                    )
-
-                    for channel_name in locale_item["channels"]:
-                        channel = insert_or_get_channel(db_session, channel_name)
-
-                        try:
-                            feed_locale.channels.append(channel)
-                            db_session.commit()
-                        except Exception:
-                            logger.error(
-                                f"Channels data already inserted for {publisher.url}"
+                        for locale_item in publisher_data["locales"]:
+                            locale = insert_or_get_locale(
+                                db_session, locale_item["locale"]
                             )
 
-            logger.info("Publisher data inserted successfully")
+                            feed_locale = insert_feed_locale(
+                                db_session, feed.id, locale.id, locale_item["rank"]
+                            )
 
-        except Exception as e:
-            logger.error(e)
+                            for channel_name in locale_item["channels"]:
+                                channel = insert_or_get_channel(
+                                    db_session, channel_name
+                                )
+
+                                try:
+                                    feed_locale.channels.append(channel)
+                                    db_session.commit()
+                                except Exception:
+                                    logger.error(
+                                        f"Channels data already inserted for {publisher.url}"
+                                    )
+
+                    logger.info("Publisher data inserted successfully")
+
+                except Exception as e:
+                    logger.error(f"loading json data failed with {e}")
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
 
 
-def get_publisher_with_locale(session, publisher_url, locale):
+def get_publisher_with_locale(publisher_url, locale):
     """
     Get a publisher from the database
     """
+    try:
+        with config.get_db_session() as session:
+            data = []
+            publisher = (
+                session.query(PublisherEntity).filter_by(url=publisher_url).first()
+            )
+            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+            if publisher:
+                publisher_data = {
+                    "enabled": publisher.enabled,
+                    "publisher_name": publisher.name,
+                    "site_url": publisher.url,
+                    "feed_url": "",
+                    "category": "",
+                    "favicon_url": publisher.favicon_url,
+                    "cover_url": publisher.cover_url,
+                    "background_color": publisher.background_color,
+                    "score": publisher.score,
+                    "publisher_id": "",
+                    "locales": [],
+                }
 
-    data = []
-    publisher = session.query(PublisherEntity).filter_by(url=publisher_url).first()
-    locale = session.query(LocaleEntity).filter_by(locale=locale).first()
-    if publisher:
-        publisher_data = {
-            "enabled": publisher.enabled,
-            "publisher_name": publisher.name,
-            "site_url": publisher.url,
-            "feed_url": "",
-            "category": "",
-            "favicon_url": publisher.favicon_url,
-            "cover_url": publisher.cover_url,
-            "background_color": publisher.background_color,
-            "score": publisher.score,
-            "publisher_id": "",
-            "locales": [],
-        }
+                feeds = (
+                    session.query(FeedEntity).filter_by(publisher_id=publisher.id).all()
+                )
+                for feed in feeds:
+                    feed_publisher_data = deepcopy(publisher_data)
+                    feed_publisher_data["feed_url"] = feed.url
+                    feed_publisher_data["category"] = feed.category
+                    feed_publisher_data["enabled"] = feed.enabled
+                    feed_publisher_data["publisher_id"] = feed.url_hash
 
-        feeds = session.query(FeedEntity).filter_by(publisher_id=publisher.id).all()
-        for feed in feeds:
-            feed_publisher_data = deepcopy(publisher_data)
-            feed_publisher_data["feed_url"] = feed.url
-            feed_publisher_data["category"] = feed.category
-            feed_publisher_data["enabled"] = feed.enabled
-            feed_publisher_data["publisher_id"] = feed.url_hash
+                    feed_locales = (
+                        session.query(FeedLocaleEntity)
+                        .filter_by(feed_id=feed.id, locale_id=locale.id)
+                        .all()
+                    )
+                    for feed_locale in feed_locales:
+                        channels = (
+                            session.query(ChannelEntity)
+                            .join(feed_locale_channel)
+                            .filter_by(feed_locale_id=feed_locale.id)
+                            .all()
+                        )
+                        locale_data = {
+                            "locale": locale.locale,
+                            "channels": [channel.name for channel in channels],
+                            "rank": feed_locale.rank,
+                        }
+                        feed_publisher_data["locales"].append(locale_data)
 
-            feed_locales = (
-                session.query(FeedLocaleEntity)
-                .filter_by(feed_id=feed.id, locale_id=locale.id)
+                    data.append(feed_publisher_data)
+
+            return data
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+        return []
+
+
+def get_feeds_based_on_locale(locale):
+    data = {}
+    try:
+        with config.get_db_session() as session:
+            feeds = (
+                session.query(FeedEntity)
+                .filter(
+                    FeedEntity.locales.any(FeedLocaleEntity.locale.has(locale=locale))
+                )
                 .all()
             )
-            for feed_locale in feed_locales:
-                channels = (
-                    session.query(ChannelEntity)
-                    .join(feed_locale_channel)
-                    .filter_by(feed_locale_id=feed_locale.id)
+            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+
+            for feed in feeds:
+                channels = []
+                feed_locales = (
+                    session.query(FeedLocaleEntity)
+                    .filter_by(feed_id=feed.id, locale_id=locale.id)
                     .all()
                 )
-                locale_data = {
-                    "locale": locale.locale,
-                    "channels": [channel.name for channel in channels],
-                    "rank": feed_locale.rank,
+                for feed_locale in feed_locales:
+                    channels.extend(
+                        session.query(ChannelEntity)
+                        .join(feed_locale_channel)
+                        .filter_by(feed_locale_id=feed_locale.id)
+                        .all()
+                    )
+
+                data[feed.url] = {
+                    "publisher_name": feed.publisher.name,
+                    "category": feed.category,
+                    "site_url": feed.publisher.url,
+                    "feed_url": feed.url,
+                    "og_images": feed.og_images,
+                    "max_entries": feed.max_entries,
+                    "creative_instance_id": "",
+                    "content_type": "article",
+                    "publisher_id": feed.url_hash,
+                    "channels": [channel.name for channel in set(channels)],
                 }
-                feed_publisher_data["locales"].append(locale_data)
 
-            data.append(feed_publisher_data)
-
-    return data
-
-
-def get_feeds_based_on_locale(session, locale):
-    data = {}
-
-    feeds = (
-        session.query(FeedEntity)
-        .filter(FeedEntity.locales.any(FeedLocaleEntity.locale.has(locale=locale)))
-        .all()
-    )
-    locale = session.query(LocaleEntity).filter_by(locale=locale).first()
-
-    for feed in feeds:
-        channels = []
-        feed_locales = (
-            session.query(FeedLocaleEntity)
-            .filter_by(feed_id=feed.id, locale_id=locale.id)
-            .all()
-        )
-        for feed_locale in feed_locales:
-            channels.extend(
-                session.query(ChannelEntity)
-                .join(feed_locale_channel)
-                .filter_by(feed_locale_id=feed_locale.id)
-                .all()
-            )
-
-        data[feed.url] = {
-            "publisher_name": feed.publisher.name,
-            "category": feed.category,
-            "site_url": feed.publisher.url,
-            "feed_url": feed.url,
-            "og_images": feed.og_images,
-            "max_entries": feed.max_entries,
-            "creative_instance_id": "",
-            "content_type": "article",
-            "publisher_id": feed.url_hash,
-            "channels": [channel.name for channel in set(channels)],
-        }
-
-    return data
+            return data
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+        return data
 
 
 def insert_articles(articles):
@@ -453,8 +475,7 @@ def insert_feed_lastbuild(url_hash, last_build_time):
 
 
 if __name__ == "__main__":
-    with config.get_db_session() as db_session:
-        insert_or_update_all_publishers(db_session)
-        # print(orjson.dumps(get_feeds_based_on_locale(db_session, "en_US_2")).decode())
-        # publisher = get_publisher(db_session, "https://www.brave.com")
-        # print(orjson.dumps(publisher).decode())
+    insert_or_update_all_publishers()
+    # print(orjson.dumps(get_feeds_based_on_locale("en_US_2")).decode())
+    # publisher = get_publisher_with_locale("https://www.brave.com", "en_US_2")
+    # print(orjson.dumps(publisher).decode())
