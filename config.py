@@ -125,7 +125,7 @@ class Configuration(BaseSettings):
     )
 
     database_url: Optional[str] = None
-    schema_name: Optional[str] = None
+    schema_name: Optional[str] = "news"
 
     def get_db_session(self) -> Session:
         """
