@@ -476,6 +476,3 @@ def insert_feed_lastbuild(url_hash, last_build_time):
 
 if __name__ == "__main__":
     insert_or_update_all_publishers()
-    # print(orjson.dumps(get_feeds_based_on_locale("en_US_2")).decode())
-    # publisher = get_publisher_with_locale("https://www.brave.com", "en_US_2")
-    # print(orjson.dumps(publisher).decode())
