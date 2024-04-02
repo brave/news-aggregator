@@ -139,6 +139,12 @@ class Configuration(BaseSettings):
         v.mkdir(parents=True, exist_ok=True)
         return v
 
+    @validator("database_url")
+    def get_database_url(cls, v) -> str:
+        if v and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://")
+        return v
+
     @validator("prometheus_multiproc_dir")
     def create_prometheus_multiproc_dir(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)
