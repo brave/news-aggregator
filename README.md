@@ -41,12 +41,15 @@ This service organizes as follows:
 ```
 news_aggregator/
 ├── bin/                # This dir contains the helping shell scripts for Dockerfile.
+├── db/                 # This dir contains the database schema.
 ├── lib/                # This dir contains the utility modules.
 ├── models/             # This dir contains the dataclasses.
 ├── sources/            # This dir contains the sources files.
 ├── src/                # This dir contains all the python script to run the new aggregator.
 ├── tests/              # This dir contains the tests.
 ```
+
+Detailed DB README: [db/README.md](db/README.md)
 
 ### Contribution
 

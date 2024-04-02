@@ -13,6 +13,8 @@ from typing import Optional
 import structlog
 from pydantic import BaseSettings, Field, validator
 from pytz import timezone
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 logger = structlog.getLogger(__name__)
 
@@ -121,6 +123,16 @@ class Configuration(BaseSettings):
         ".swf",
         ".vob",
     )
+
+    database_url: Optional[str] = None
+    schema_name: Optional[str] = "news"
+
+    def get_db_session(self) -> Session:
+        """
+        Get a database session
+        """
+        engine = create_engine(self.database_url)
+        return sessionmaker(bind=engine)()
 
     @validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:

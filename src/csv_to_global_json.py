@@ -116,6 +116,7 @@ def main():
     with open(f"{config.output_path / config.global_sources_file}", "wb") as f:
         f.write(orjson.dumps(publishers_data_as_list))
 
+    logger.info(f"Generated {config.global_sources_file}")
     if not config.no_upload:
         upload_file(
             config.output_path / config.global_sources_file,
