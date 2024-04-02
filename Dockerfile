@@ -4,8 +4,7 @@ RUN mkdir -p workspace
 WORKDIR /workspace
 
 RUN apt update
-RUN apt install ffmpeg libsm6 libxext6 libxml2-dev libxslt-dev gcc  -y
-RUN apk add postgresql-dev gcc python3-dev musl-dev
+RUN apt install ffmpeg libsm6 libxext6 libxml2-dev libxslt-dev gcc postgresql postgresql-client -y
 
 ENV REQUIREMENTS_FILE=requirements.txt
 
