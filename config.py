@@ -141,7 +141,7 @@ class Configuration(BaseSettings):
 
     @validator("database_url")
     def get_database_url(cls, v) -> str:
-        if v.startswith("postgres://"):
+        if v and v.startswith("postgres://"):
             return v.replace("postgres://", "postgresql://")
         return v
 
