@@ -38,4 +38,4 @@ jobs:
           role-to-assume: ${{ secrets.GDBP_AWS_IAM_ROLE_ARN }}
           aws-region: us-west-2
       - name: Generalized Deployments
-        uses: brave-intl/general-docker-build-pipeline-action@535977191a2f69ade89e2140f8e554ec4573ac24 # v1.0.12
+        uses: brave-intl/general-docker-build-pipeline-action@8477565c102235218b21589aca129debbc67daa2 # v1.0.13
