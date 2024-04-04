@@ -144,7 +144,7 @@ class TestUnshortenUrl:
         out_article = {"link": None, "title": "Example Article", "author": "John Doe"}
 
         # Call the function under test
-        result = unshorten_url(out_article)
+        result, _ = unshorten_url(out_article)
 
         # Assert the result is None
         assert result is None

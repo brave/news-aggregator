@@ -165,10 +165,10 @@ def unshorten_url(out_article):
         SSLError,
         TooManyRedirects,
     ):
-        return None  # skip (unshortener failed)
+        return None, None  # skip (unshortener failed)
     except Exception as e:
         logger.error(f"unshortener failed [{out_article.get('link')}]: {e}")
-        return None  # skip (unshortener failed)
+        return None, None  # skip (unshortener failed)
 
     url_hash = hashlib.sha256(out_article["url"].encode("utf-8")).hexdigest()
     parts = urlparse(out_article["url"])
