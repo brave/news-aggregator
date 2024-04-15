@@ -321,19 +321,25 @@ def insert_articles(articles):
                     )
                     db_session.add(new_article)
                     db_session.commit()
-                    db_session.refresh(new_article)
 
+                    logger.info(f"Saved article {article.get('title')} to database")
                 except Exception as e:
                     logger.error(f"Error saving articles to database: {e}")
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_article(url_hash, locale):
+def get_article(url_hash, article_data, locale):
     try:
         with config.get_db_session() as session:
             article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
             if article:
+                setattr(article, "publish_time", article_data.get("publish_time"))
+                setattr(article, "description", article_data.get("description"))
+
+                session.commit()
+                session.refresh(article)
+
                 channels = []
                 locale = session.query(LocaleEntity).filter_by(locale=locale).first()
                 feed_locales = (
@@ -348,26 +354,30 @@ def get_article(url_hash, locale):
                         .filter_by(feed_locale_id=feed_locale.id)
                         .all()
                     )
-                article_data = {
-                    "title": article.title,
-                    "publish_time": article.publish_time.astimezone(pytz.utc).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    ),
-                    "img": article.img,
-                    "category": article.category,
-                    "description": article.description,
-                    "content_type": article.content_type,
-                    "publisher_id": article.feed.url_hash,
-                    "publisher_name": article.feed.publisher.name,
-                    "channels": [channel.name for channel in set(channels)],
-                    "creative_instance_id": article.creative_instance_id,
-                    "url": article.url,
-                    "url_hash": article.url_hash,
-                    "pop_score": article.pop_score,
-                    "padded_img": article.padded_img,
-                    "score": article.score,
-                }
-                return article_data
+
+                if article.img:
+                    article_data = {
+                        "title": article.title,
+                        "publish_time": article.publish_time.astimezone(
+                            pytz.utc
+                        ).strftime("%Y-%m-%d %H:%M:%S"),
+                        "img": article.img,
+                        "category": article.category,
+                        "description": article.description,
+                        "content_type": article.content_type,
+                        "publisher_id": article.feed.url_hash,
+                        "publisher_name": article.feed.publisher.name,
+                        "channels": [channel.name for channel in set(channels)],
+                        "creative_instance_id": article.creative_instance_id,
+                        "url": article.url,
+                        "url_hash": article.url_hash,
+                        "pop_score": article.pop_score,
+                        "padded_img": article.padded_img,
+                        "score": article.score,
+                    }
+                    return article_data
+                else:
+                    return None
             else:
                 return None
     except Exception as e:
