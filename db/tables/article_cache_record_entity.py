@@ -11,8 +11,13 @@ class ArticleCacheRecordEntity(Base):
         BigInteger, ForeignKey("article.id"), nullable=False, index=True
     )
     cache_hit = Column(String, nullable=False)
-    created = Column(DateTime, server_default=func.now())
-    modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
+    created = Column(DateTime, nullable=False, server_default=func.now())
+    modified = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
     def to_dict(self):
         return {
