@@ -1,16 +1,18 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, func
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
 
 
 class ArticleCacheRecordEntity(Base):
-    __tablename__ = "article_cache_record_entity"
+    __tablename__ = "article_cache_record"
+    __table_args__ = {"schema": "news"}
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     article_id = Column(
-        BigInteger, ForeignKey("article.id"), nullable=False, index=True
+        BigInteger, ForeignKey("article.id"), nullable=False, index=True, unique=True
     )
-    cache_hit = Column(String, nullable=False)
+    cache_hit = Column(Integer, nullable=False, default=0)
     created = Column(DateTime, nullable=False, server_default=func.now())
     modified = Column(
         DateTime,
@@ -18,6 +20,8 @@ class ArticleCacheRecordEntity(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+    article = relationship("ArticleEntity", back_populates="cache_record")
 
     def to_dict(self):
         return {

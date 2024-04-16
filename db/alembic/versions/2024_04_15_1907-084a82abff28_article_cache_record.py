@@ -27,9 +27,13 @@ def upgrade() -> None:
             server_default=sa.text("id_gen()"),
         ),
         sa.Column(
-            "article_id", sa.BigInteger, sa.ForeignKey("article.id"), nullable=False
+            "article_id",
+            sa.BigInteger,
+            sa.ForeignKey("article.id"),
+            nullable=False,
+            default=0,
         ),
-        sa.Column("cache_hit", sa.Text, nullable=False),
+        sa.Column("cache_hit", sa.Integer, nullable=False),
         sa.Column(
             "created",
             sa.DateTime,
