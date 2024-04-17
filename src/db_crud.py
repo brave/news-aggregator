@@ -6,6 +6,7 @@ import pytz
 import structlog
 
 from config import get_config
+from db.tables.article_cache_record_entity import ArticleCacheRecordEntity
 from db.tables.articles_entity import ArticleEntity
 from db.tables.base import feed_locale_channel
 from db.tables.channel_entity import ChannelEntity
@@ -294,37 +295,43 @@ def get_feeds_based_on_locale(locale):
         return data
 
 
-def insert_articles(articles):
+def insert_articles(article):
     try:
         with config.get_db_session() as db_session:
-            for article in articles:
-                try:
-                    feed = (
-                        db_session.query(FeedEntity)
-                        .filter(FeedEntity.url_hash == article.get("publisher_id"))
-                        .first()
-                    )
-                    new_article = ArticleEntity(
-                        title=article.get("title"),
-                        publish_time=article.get("publish_time"),
-                        img=article.get("img"),
-                        category=article.get("category"),
-                        description=article.get("description"),
-                        content_type=article.get("content_type"),
-                        creative_instance_id=article.get("creative_instance_id"),
-                        url=article.get("url"),
-                        url_hash=article.get("url_hash"),
-                        pop_score=article.get("pop_score"),
-                        padded_img=article.get("padded_img"),
-                        score=article.get("score"),
-                        feed_id=feed.id,
-                    )
-                    db_session.add(new_article)
-                    db_session.commit()
+            try:
+                feed = (
+                    db_session.query(FeedEntity)
+                    .filter(FeedEntity.url_hash == article.get("publisher_id"))
+                    .first()
+                )
+                new_article = ArticleEntity(
+                    title=article.get("title"),
+                    publish_time=article.get("publish_time"),
+                    img=article.get("img"),
+                    category=article.get("category"),
+                    description=article.get("description"),
+                    content_type=article.get("content_type"),
+                    creative_instance_id=article.get("creative_instance_id"),
+                    url=article.get("url"),
+                    url_hash=article.get("url_hash"),
+                    pop_score=article.get("pop_score"),
+                    padded_img=article.get("padded_img"),
+                    score=article.get("score"),
+                    feed_id=feed.id,
+                )
+                db_session.add(new_article)
+                db_session.commit()
+                db_session.refresh(new_article)
 
-                    logger.info(f"Saved article {article.get('title')} to database")
-                except Exception as e:
-                    logger.error(f"Error saving articles to database: {e}")
+                article_cache_record = ArticleCacheRecordEntity(
+                    article_id=new_article.id
+                )
+                db_session.add(article_cache_record)
+                db_session.commit()
+
+                logger.info(f"Saved article {article.get('title')} to database")
+            except Exception as e:
+                logger.error(f"Error saving articles to database: {e}")
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
 
@@ -375,6 +382,17 @@ def get_article(url_hash, article_data, locale):
                         "padded_img": article.padded_img,
                         "score": article.score,
                     }
+
+                    article_cache_record = (
+                        session.query(ArticleCacheRecordEntity)
+                        .filter_by(article_id=article.id)
+                        .first()
+                    )
+                    if article_cache_record:
+                        article_cache_record.cache_hit += 1
+                        session.commit()
+                        session.refresh(article_cache_record)
+
                     return article_data
                 else:
                     return None
@@ -428,7 +446,7 @@ def get_remaining_articles(feed_url_hashes):
                     "padded_img": article.padded_img,
                     "score": article.score,
                 }
-                article.append(article_data)
+                articles.append(article_data)
             return articles
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")

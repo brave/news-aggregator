@@ -32,12 +32,14 @@ class ArticleEntity(Base):
 
     feed = relationship("FeedEntity", back_populates="articles")
 
+    cache_record = relationship("ArticleCacheRecordEntity", back_populates="article")
+
     def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,
             "publish_time": self.publish_time,
-            "img_url": self.img_url,
+            "img_url": self.img,
             "category": self.category,
             "description": self.description,
             "content_type": self.content_type,
@@ -45,7 +47,7 @@ class ArticleEntity(Base):
             "url": self.url,
             "url_hash": self.url_hash,
             "pop_score": self.pop_score,
-            "padded_img_url": self.padded_img_url,
+            "padded_img_url": self.padded_img,
             "score": self.score,
             "created": self.created,
             "modified": self.modified,
@@ -55,7 +57,7 @@ class ArticleEntity(Base):
         return {
             "title": self.title,
             "publish_time": self.publish_time,
-            "img_url": self.img_url,
+            "img_url": self.img,
             "category": self.category,
             "description": self.description,
             "content_type": self.content_type,
@@ -63,7 +65,7 @@ class ArticleEntity(Base):
             "url": self.url,
             "url_hash": self.url_hash,
             "pop_score": self.pop_score,
-            "padded_img_url": self.padded_img_url,
+            "padded_img_url": self.padded_img,
             "score": self.score,
         }
 

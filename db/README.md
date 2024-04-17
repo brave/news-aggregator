@@ -77,7 +77,7 @@ alembic upgrade head
 ```
 - **Rollback Migrations:**
 ```
-alembic upgrade head
+alembic downgrade base
 ```
 - **View Migration History:**
 ```
