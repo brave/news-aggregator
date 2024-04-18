@@ -68,6 +68,11 @@ elif [[ "$task" = "healthcheck" ]]; then
   echo "Starting health check job..."
   python -u src/healthcheck.py
 
+elif [[ "$task" = "purge-old-articles" ]]; then
+  set -x
+  echo "Purging articles older than 7 days..."
+  python -u src/purge_old_articles.py
+
 elif [[ "$task" = "shell" ]]; then
   set -x
   bpython
