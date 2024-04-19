@@ -32,7 +32,7 @@ class ArticleEntity(Base):
 
     feed = relationship("FeedEntity", back_populates="articles")
 
-    relationship(
+    cache_record = relationship(
         "ArticleCacheRecordEntity",
         uselist=False,
         back_populates="article",
