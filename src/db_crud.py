@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import orjson
 import pytz
@@ -500,6 +500,25 @@ def insert_feed_lastbuild(url_hash, last_build_time):
 
     except Exception as e:
         logger.error(f"Error saving feed last build to database: {e}")
+
+
+def delete_old_articles():
+    try:
+        with config.get_db_session() as session:
+            seven_days_ago = datetime.utcnow() - timedelta(days=7)
+            abc = (
+                session.query(ArticleEntity)
+                .filter(
+                    ArticleEntity.created < seven_days_ago.strftime("%Y-%m-%d %H:%M:%S")
+                )
+                .delete()
+            )
+
+            logger.info(f"Deleted {abc} old articles.")
+
+            session.commit()
+    except Exception as e:
+        logger.error(e)
 
 
 if __name__ == "__main__":

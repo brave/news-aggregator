@@ -32,7 +32,12 @@ class ArticleEntity(Base):
 
     feed = relationship("FeedEntity", back_populates="articles")
 
-    cache_record = relationship("ArticleCacheRecordEntity", back_populates="article")
+    cache_record = relationship(
+        "ArticleCacheRecordEntity",
+        uselist=False,
+        back_populates="article",
+        cascade="all, delete-orphan",
+    )
 
     def to_dict(self):
         return {
