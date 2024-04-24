@@ -412,6 +412,7 @@ def get_article(url_hash, article_data, locale):
                     article_cache_record = (
                         session.query(ArticleCacheRecordEntity)
                         .filter_by(article_id=article.id)
+                        .filter(ArticleCacheRecordEntity.locale_id.in_([locale.id]))
                         .first()
                     )
                     if article_cache_record:

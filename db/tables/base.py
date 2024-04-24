@@ -3,7 +3,7 @@ import re
 from sqlalchemy import BigInteger, Column, ForeignKey, MetaData, Table
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.schema import CreateTable
+from sqlalchemy.schema import CreateTable, DropTable
 
 from config import get_config
 
@@ -27,4 +27,12 @@ def _add_if_not_exists(element, compiler, **kw):
     output = compiler.visit_create_table(element, **kw)
     if element.element.info.get("ifexists"):
         output = re.sub("^\\s*CREATE TABLE", "CREATE TABLE IF NOT EXISTS", output, re.S)
+    return output
+
+
+@compiles(DropTable)
+def _add_if_not_exists_drop(element, compiler, **kw):
+    output = compiler.visit_drop_table(element, **kw)
+    if element.element.info.get("ifexists"):
+        output = re.sub("^\\s*DROP TABLE", "DROP TABLE IF EXISTS", output, re.S)
     return output

@@ -56,7 +56,7 @@ def upgrade() -> None:
         "article_cache_record_idx_article_id",
         "article_cache_record",
         ["article_id"],
-        unique=True,
+        unique=False,
         if_not_exists=True,
     )
     op.create_index(
@@ -66,9 +66,15 @@ def upgrade() -> None:
         unique=False,
         if_not_exists=True,
     )
+    op.create_unique_constraint(
+        "uq_arc_locale",
+        "article_cache_record",
+        ["article_id", "locale_id"],
+    )
 
 
 def downgrade() -> None:
+    op.drop_constraint("uq_arc_locale", "article_cache_record", type_="unique")
     op.drop_index(
         "article_cache_record_idx_locale_id",
         table_name="article_cache_record",
@@ -79,4 +85,7 @@ def downgrade() -> None:
         table_name="article_cache_record",
         if_exists=True,
     )
-    op.drop_table("article_cache_record", if_exists=True)
+    op.drop_table(
+        "article_cache_record",
+        info={"ifexists": True},
+    )

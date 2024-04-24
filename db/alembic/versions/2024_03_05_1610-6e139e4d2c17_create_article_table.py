@@ -72,4 +72,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_index("idx_url_hash", table_name="article", if_exists=True)
     op.drop_index("idx_article_feed_id", table_name="article", if_exists=True)
-    op.drop_table("article", if_exists=True)
+    op.drop_table(
+        "article",
+        info={"ifexists": True},
+    )

@@ -69,7 +69,6 @@ def upgrade() -> None:
         "uq_feed_locale",
         "feed_locale",
         ["feed_id", "locale_id", "rank"],
-        info={"ifexistsconstraint": True},
     )
 
 
@@ -77,4 +76,7 @@ def downgrade() -> None:
     op.drop_constraint("uq_feed_locale", "feed_locale", type_="unique")
     op.drop_index("fl_idx_feed_id", table_name="feed_locale", if_exists=True)
     op.drop_index("fl_idx_locale_id", table_name="feed_locale", if_exists=True)
-    op.drop_table("feed_locale", if_exists=True)
+    op.drop_table(
+        "feed_locale",
+        info={"ifexists": True},
+    )

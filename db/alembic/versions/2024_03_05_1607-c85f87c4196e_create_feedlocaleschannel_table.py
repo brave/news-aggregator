@@ -73,4 +73,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_index("lc_idx_locale_id", table_name="feed_locale_channel", if_exists=True)
     op.drop_index("lc_idx_channel_id", table_name="feed_locale_channel", if_exists=True)
-    op.drop_table("feed_locale_channel", if_exists=True)
+    op.drop_table(
+        "feed_locale_channel",
+        info={"ifexists": True},
+    )

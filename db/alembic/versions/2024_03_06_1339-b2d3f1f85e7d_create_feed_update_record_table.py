@@ -64,4 +64,7 @@ def downgrade() -> None:
         table_name="feed_update_record",
         if_exists=True,
     )
-    op.drop_table("feed_update_record", if_exists=True)
+    op.drop_table(
+        "feed_update_record",
+        info={"ifexists": True},
+    )
