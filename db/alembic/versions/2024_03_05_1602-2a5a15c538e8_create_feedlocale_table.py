@@ -52,11 +52,23 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
-    op.create_index("fl_idx_feed_id", "feed_locale", ["feed_id"], unique=False)
-    op.create_index("fl_idx_locale_id", "feed_locale", ["locale_id"], unique=False)
+    op.create_index(
+        "fl_idx_feed_id", "feed_locale", ["feed_id"], unique=False, if_not_exists=True
+    )
+    op.create_index(
+        "fl_idx_locale_id",
+        "feed_locale",
+        ["locale_id"],
+        unique=False,
+        if_not_exists=True,
+    )
+
     op.create_unique_constraint(
-        "uq_feed_locale", "feed_locale", ["feed_id", "locale_id", "rank"]
+        "uq_feed_locale",
+        "feed_locale",
+        ["feed_id", "locale_id", "rank"],
     )
 
 
@@ -64,4 +76,7 @@ def downgrade() -> None:
     op.drop_constraint("uq_feed_locale", "feed_locale", type_="unique")
     op.drop_index("fl_idx_feed_id", table_name="feed_locale", if_exists=True)
     op.drop_index("fl_idx_locale_id", table_name="feed_locale", if_exists=True)
-    op.drop_table("feed_locale")
+    op.drop_table(
+        "feed_locale",
+        info={"ifexists": True},
+    )

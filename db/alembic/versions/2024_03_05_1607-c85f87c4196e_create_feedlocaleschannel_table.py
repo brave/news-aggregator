@@ -51,16 +51,29 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
+    )
+
+    op.create_index(
+        "lc_idx_channel_id",
+        "feed_locale_channel",
+        ["channel_id"],
+        unique=False,
+        if_not_exists=True,
     )
     op.create_index(
-        "lc_idx_channel_id", "feed_locale_channel", ["channel_id"], unique=False
-    )
-    op.create_index(
-        "lc_idx_locale_id", "feed_locale_channel", ["feed_locale_id"], unique=False
+        "lc_idx_locale_id",
+        "feed_locale_channel",
+        ["feed_locale_id"],
+        unique=False,
+        if_not_exists=True,
     )
 
 
 def downgrade() -> None:
     op.drop_index("lc_idx_locale_id", table_name="feed_locale_channel", if_exists=True)
     op.drop_index("lc_idx_channel_id", table_name="feed_locale_channel", if_exists=True)
-    op.drop_table("feed_locale_channel")
+    op.drop_table(
+        "feed_locale_channel",
+        info={"ifexists": True},
+    )

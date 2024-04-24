@@ -59,12 +59,20 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
-    op.create_index("idx_article_feed_id", "article", ["feed_id"], unique=False)
-    op.create_index("idx_url_hash", "article", ["url_hash"], unique=True)
+    op.create_index(
+        "idx_article_feed_id", "article", ["feed_id"], unique=False, if_not_exists=True
+    )
+    op.create_index(
+        "idx_url_hash", "article", ["url_hash"], unique=True, if_not_exists=True
+    )
 
 
 def downgrade() -> None:
     op.drop_index("idx_url_hash", table_name="article", if_exists=True)
     op.drop_index("idx_article_feed_id", table_name="article", if_exists=True)
-    op.drop_table("article")
+    op.drop_table(
+        "article",
+        info={"ifexists": True},
+    )

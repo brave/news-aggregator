@@ -40,10 +40,14 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
-    op.create_index("ch_idx_name", "channel", ["name"], unique=True)
+    op.create_index("ch_idx_name", "channel", ["name"], unique=True, if_not_exists=True)
 
 
 def downgrade() -> None:
     op.drop_index("ch_idx_name", table_name="channel", if_exists=True)
-    op.drop_table("channel")
+    op.drop_table(
+        "channel",
+        info={"ifexists": True},
+    )

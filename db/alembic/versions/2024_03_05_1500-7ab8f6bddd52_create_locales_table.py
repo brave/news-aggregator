@@ -41,10 +41,14 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
-    op.create_index("idx_locale", "locale", ["locale"], unique=True)
+    op.create_index("idx_locale", "locale", ["locale"], unique=True, if_not_exists=True)
 
 
 def downgrade() -> None:
     op.drop_index("idx_locale", table_name="locale", if_exists=True)
-    op.drop_table("locale")
+    op.drop_table(
+        "locale",
+        info={"ifexists": True},
+    )

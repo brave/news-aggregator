@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Column, DateTime, String, func
+from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
 
@@ -12,6 +13,8 @@ class LocaleEntity(Base):
     locale = Column(String(2), nullable=False, unique=True, index=True)
     created = Column(DateTime, server_default=func.now())
     modified = Column(DateTime, server_onupdate=func.now(), server_default=func.now())
+
+    cache_record = relationship("ArticleCacheRecordEntity", back_populates="locale")
 
     def to_dict(self) -> dict:
         return {

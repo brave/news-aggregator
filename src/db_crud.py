@@ -1,9 +1,10 @@
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, time
 
 import orjson
 import pytz
 import structlog
+from sqlalchemy import func
 
 from config import get_config
 from db.tables.article_cache_record_entity import ArticleCacheRecordEntity
@@ -295,7 +296,27 @@ def get_feeds_based_on_locale(locale):
         return data
 
 
-def insert_articles(article):
+def insert_cache_record(article_id, locale):
+    try:
+        with config.get_db_session() as session:
+            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+            db_article_cache_record = (
+                session.query(ArticleCacheRecordEntity)
+                .filter_by(article_id=article_id, locale_id=locale.id)
+                .first()
+            )
+            if not db_article_cache_record:
+                article_cache_record = ArticleCacheRecordEntity(
+                    article_id=article_id, locale_id=locale.id
+                )
+                session.add(article_cache_record)
+                session.commit()
+
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def insert_articles(article, locale_name):
     try:
         with config.get_db_session() as db_session:
             try:
@@ -304,30 +325,35 @@ def insert_articles(article):
                     .filter(FeedEntity.url_hash == article.get("publisher_id"))
                     .first()
                 )
-                new_article = ArticleEntity(
-                    title=article.get("title"),
-                    publish_time=article.get("publish_time"),
-                    img=article.get("img"),
-                    category=article.get("category"),
-                    description=article.get("description"),
-                    content_type=article.get("content_type"),
-                    creative_instance_id=article.get("creative_instance_id"),
-                    url=article.get("url"),
-                    url_hash=article.get("url_hash"),
-                    pop_score=article.get("pop_score"),
-                    padded_img=article.get("padded_img"),
-                    score=article.get("score"),
-                    feed_id=feed.id,
-                )
-                db_session.add(new_article)
-                db_session.commit()
-                db_session.refresh(new_article)
 
-                article_cache_record = ArticleCacheRecordEntity(
-                    article_id=new_article.id
+                db_article = (
+                    db_session.query(ArticleEntity)
+                    .filter_by(url_hash=article.get("url_hash"))
+                    .first()
                 )
-                db_session.add(article_cache_record)
-                db_session.commit()
+                if db_article:
+                    insert_cache_record(db_article.id, locale_name)
+                else:
+                    new_article = ArticleEntity(
+                        title=article.get("title"),
+                        publish_time=article.get("publish_time"),
+                        img=article.get("img"),
+                        category=article.get("category"),
+                        description=article.get("description"),
+                        content_type=article.get("content_type"),
+                        creative_instance_id=article.get("creative_instance_id"),
+                        url=article.get("url"),
+                        url_hash=article.get("url_hash"),
+                        pop_score=article.get("pop_score"),
+                        padded_img=article.get("padded_img"),
+                        score=article.get("score"),
+                        feed_id=feed.id,
+                    )
+                    db_session.add(new_article)
+                    db_session.commit()
+                    db_session.refresh(new_article)
+
+                    insert_cache_record(new_article.id, locale_name)
 
                 logger.info(f"Saved article {article.get('title')} to database")
             except Exception as e:
@@ -386,6 +412,7 @@ def get_article(url_hash, article_data, locale):
                     article_cache_record = (
                         session.query(ArticleCacheRecordEntity)
                         .filter_by(article_id=article.id)
+                        .filter(ArticleCacheRecordEntity.locale_id.in_([locale.id]))
                         .first()
                     )
                     if article_cache_record:
@@ -502,5 +529,96 @@ def insert_feed_lastbuild(url_hash, last_build_time):
         logger.error(f"Error saving feed last build to database: {e}")
 
 
+def get_locale_average_cache_hits(locale_name):
+    try:
+        one_day_ago = datetime.combine(datetime.utcnow(), time.min)
+        with config.get_db_session() as session:
+            locale = session.query(LocaleEntity).filter_by(locale=locale_name).first()
+            feeds = (
+                session.query(FeedEntity)
+                .filter(
+                    FeedEntity.locales.any(
+                        FeedLocaleEntity.locale.has(locale=locale_name)
+                    )
+                )
+                .all()
+            )
+
+            feed_articles = (
+                session.query(ArticleEntity)
+                .filter(
+                    ArticleEntity.created >= one_day_ago.strftime("%Y-%m-%d %H:%M:%S"),
+                    ArticleEntity.feed_id.in_([feed.id for feed in feeds]),
+                )
+                .all()
+            )
+
+            cache_hits = (
+                session.query(func.count(ArticleCacheRecordEntity.cache_hit))
+                .filter(
+                    ArticleCacheRecordEntity.article_id.in_(
+                        [article.id for article in feed_articles]
+                    ),
+                    ArticleCacheRecordEntity.locale_id.in_([locale.id]),
+                )
+                .first()
+            )
+
+            cache_hits = cache_hits[0] if cache_hits[0] else 0
+            total_articles = len(feed_articles)
+
+            logger.info(f"Total articles: {total_articles}")
+            logger.info(f"Cache hits: {cache_hits}")
+
+            cache_hit_percentage = (cache_hits / total_articles) * 100
+
+            logger.info(f"Average cache hits: {cache_hit_percentage}")
+
+            return cache_hit_percentage
+
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def get_global_average_cache_hits():
+    try:
+        one_day_ago = datetime.combine(datetime.utcnow(), time.min)
+        with config.get_db_session() as session:
+            articles = (
+                session.query(ArticleEntity)
+                .filter(
+                    ArticleEntity.created >= one_day_ago.strftime("%Y-%m-%d %H:%M:%S")
+                )
+                .all()
+            )
+
+            cache_hits = (
+                session.query(func.count(ArticleCacheRecordEntity.cache_hit))
+                .filter(
+                    ArticleCacheRecordEntity.article_id.in_(
+                        [article.id for article in articles]
+                    )
+                )
+                .first()
+            )
+
+            cache_hits = cache_hits[0] if cache_hits[0] else 0
+            total_articles = len(articles)
+
+            logger.info(f"Total articles: {total_articles}")
+            logger.info(f"Cache hits: {cache_hits}")
+
+            cache_hit_percentage = (cache_hits / total_articles) * 100
+
+            logger.info(f"Average cache hits: {cache_hit_percentage}")
+
+            return cache_hit_percentage
+
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
 if __name__ == "__main__":
     insert_or_update_all_publishers()
+    # get_locale_average_cache_hits("en_GB_2")
+    # get_global_average_cache_hits()

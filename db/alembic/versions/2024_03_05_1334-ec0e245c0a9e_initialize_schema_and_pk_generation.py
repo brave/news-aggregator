@@ -26,7 +26,7 @@ def upgrade() -> None:
         text(
             f"""
                 -- sequence used by our id generation function
-                create sequence {main_config.schema_name}.id_seq;
+                create sequence if not exists {main_config.schema_name}.id_seq;
 
                 create or replace function {main_config.schema_name}.id_gen(out result bigint) as $$
                 declare
