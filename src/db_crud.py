@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 
 import orjson
 import pytz
@@ -529,44 +529,17 @@ def insert_feed_lastbuild(url_hash, last_build_time):
         logger.error(f"Error saving feed last build to database: {e}")
 
 
-def get_article_based_on_locale(locale):
-    try:
-        two_hours_ago = datetime.utcnow() - timedelta(hours=2)
-        with config.get_db_session() as session:
-            feeds = (
-                session.query(FeedEntity)
-                .filter(
-                    FeedEntity.locales.any(FeedLocaleEntity.locale.has(locale=locale))
-                )
-                .all()
-            )
-
-            feed_articles = (
-                session.query(ArticleEntity)
-                .filter(
-                    ArticleEntity.created
-                    >= two_hours_ago.strftime("%Y-%m-%d %H:%M:%S"),
-                    ArticleEntity.feed_id.in_([feed.id for feed in feeds]),
-                )
-                .all()
-            )
-
-            logger.info(f"Articles: {len(feed_articles)}")
-
-            return feed_articles
-
-    except Exception as e:
-        logger.error(f"Error Connecting to database: {e}")
-
-
-def get_average_cache_hits(locale):
+def get_locale_average_cache_hits(locale_name):
     try:
         one_day_ago = datetime.combine(datetime.utcnow(), time.min)
         with config.get_db_session() as session:
+            locale = session.query(LocaleEntity).filter_by(locale=locale_name).first()
             feeds = (
                 session.query(FeedEntity)
                 .filter(
-                    FeedEntity.locales.any(FeedLocaleEntity.locale.has(locale=locale))
+                    FeedEntity.locales.any(
+                        FeedLocaleEntity.locale.has(locale=locale_name)
+                    )
                 )
                 .all()
             )
@@ -580,26 +553,66 @@ def get_average_cache_hits(locale):
                 .all()
             )
 
-            # now sum the cache hits from ArticleCacheRecordEntity of the above articles
-            cache_sum = (
-                session.query(func.sum(ArticleCacheRecordEntity.cache_hit))
+            cache_hits = (
+                session.query(func.count(ArticleCacheRecordEntity.cache_hit))
                 .filter(
-                    ArticleCacheRecordEntity.modified
-                    >= one_day_ago.strftime("%Y-%m-%d %H:%M:%S"),
                     ArticleCacheRecordEntity.article_id.in_(
                         [article.id for article in feed_articles]
                     ),
+                    ArticleCacheRecordEntity.locale_id.in_([locale.id]),
                 )
                 .first()
             )
 
-            cache_hits = cache_sum[0] if cache_sum[0] else 0
+            cache_hits = cache_hits[0] if cache_hits[0] else 0
             total_articles = len(feed_articles)
 
             logger.info(f"Total articles: {total_articles}")
             logger.info(f"Cache hits: {cache_hits}")
 
-            logger.info(f"Average cache hits: {(cache_hits / total_articles) * 100}")
+            cache_hit_percentage = (cache_hits / total_articles) * 100
+
+            logger.info(f"Average cache hits: {cache_hit_percentage}")
+
+            return cache_hit_percentage
+
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def get_global_average_cache_hits():
+    try:
+        one_day_ago = datetime.combine(datetime.utcnow(), time.min)
+        with config.get_db_session() as session:
+            articles = (
+                session.query(ArticleEntity)
+                .filter(
+                    ArticleEntity.created >= one_day_ago.strftime("%Y-%m-%d %H:%M:%S")
+                )
+                .all()
+            )
+
+            cache_hits = (
+                session.query(func.count(ArticleCacheRecordEntity.cache_hit))
+                .filter(
+                    ArticleCacheRecordEntity.article_id.in_(
+                        [article.id for article in articles]
+                    )
+                )
+                .first()
+            )
+
+            cache_hits = cache_hits[0] if cache_hits[0] else 0
+            total_articles = len(articles)
+
+            logger.info(f"Total articles: {total_articles}")
+            logger.info(f"Cache hits: {cache_hits}")
+
+            cache_hit_percentage = (cache_hits / total_articles) * 100
+
+            logger.info(f"Average cache hits: {cache_hit_percentage}")
+
+            return cache_hit_percentage
 
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
@@ -607,5 +620,5 @@ def get_average_cache_hits(locale):
 
 if __name__ == "__main__":
     insert_or_update_all_publishers()
-    # get_article_based_on_locale("fr_FR")
-    # get_average_cache_hits("en_US")
+    # get_locale_average_cache_hits("en_GB_2")
+    # get_global_average_cache_hits()
