@@ -13,6 +13,7 @@ class ArticleCacheRecordEntity(Base):
         BigInteger, ForeignKey("article.id"), nullable=False, index=True, unique=True
     )
     cache_hit = Column(Integer, nullable=False, default=0)
+    locale_id = Column(BigInteger, ForeignKey("locale.id"), nullable=False)
     created = Column(DateTime, nullable=False, server_default=func.now())
     modified = Column(
         DateTime,
@@ -22,6 +23,7 @@ class ArticleCacheRecordEntity(Base):
     )
 
     article = relationship("ArticleEntity", back_populates="cache_record")
+    locale = relationship("LocaleEntity")
 
     def to_dict(self):
         return {

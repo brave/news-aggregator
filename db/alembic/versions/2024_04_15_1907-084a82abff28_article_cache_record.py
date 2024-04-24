@@ -33,6 +33,9 @@ def upgrade() -> None:
             nullable=False,
             default=0,
         ),
+        sa.Column(
+            "locale_id", sa.BigInteger, sa.ForeignKey("locale.id"), nullable=False
+        ),
         sa.Column("cache_hit", sa.Integer, nullable=False),
         sa.Column(
             "created",
@@ -47,19 +50,33 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
     op.create_index(
         "article_cache_record_idx_article_id",
         "article_cache_record",
         ["article_id"],
         unique=True,
+        if_not_exists=True,
+    )
+    op.create_index(
+        "article_cache_record_idx_locale_id",
+        "article_cache_record",
+        ["locale_id"],
+        unique=False,
+        if_not_exists=True,
     )
 
 
 def downgrade() -> None:
     op.drop_index(
+        "article_cache_record_idx_locale_id",
+        table_name="article_cache_record",
+        if_exists=True,
+    )
+    op.drop_index(
         "article_cache_record_idx_article_id",
         table_name="article_cache_record",
         if_exists=True,
     )
-    op.drop_table("article_cache_record")
+    op.drop_table("article_cache_record", if_exists=True)

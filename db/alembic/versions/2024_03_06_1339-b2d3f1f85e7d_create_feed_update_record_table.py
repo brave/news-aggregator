@@ -47,9 +47,14 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
+        info={"ifexists": True},
     )
     op.create_index(
-        "feed_update_record_idx_feed_id", "feed_update_record", ["feed_id"], unique=True
+        "feed_update_record_idx_feed_id",
+        "feed_update_record",
+        ["feed_id"],
+        unique=True,
+        if_not_exists=True,
     )
 
 
@@ -59,4 +64,4 @@ def downgrade() -> None:
         table_name="feed_update_record",
         if_exists=True,
     )
-    op.drop_table("feed_update_record")
+    op.drop_table("feed_update_record", if_exists=True)

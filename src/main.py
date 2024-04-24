@@ -1,5 +1,6 @@
 import json
 import shutil
+from functools import partial
 from multiprocessing.pool import ThreadPool
 
 import orjson
@@ -44,9 +45,10 @@ if __name__ == "__main__":
 
     with open(config.output_feed_path / f"{config.feed_path}.json", "r") as f:
         articles = orjson.loads(f.read())
+        locale_name = str(config.sources_file).replace("sources.", "")
         logger.info(f"Feed has {len(articles)} items to insert.")
         with ThreadPool(config.thread_pool_size) as pool:
-            pool.map(insert_articles, articles)
+            pool.map(partial(insert_articles, locale_name=locale_name), articles)
         logger.info("Inserted articles into the database.")
 
     with open(config.output_path / "report.json", "w") as f:
