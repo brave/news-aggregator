@@ -1,9 +1,14 @@
 import orjson
 import requests
 import structlog
+from google.cloud import language_v1
 
 from aggregator.parser import get_with_max_size
 from config import get_config
+from ext_article_categorization.taxonomy_mapping import get_channels_for_classification
+
+client = language_v1.LanguageServiceClient()
+
 
 config = get_config()
 logger = structlog.getLogger(__name__)
@@ -106,3 +111,43 @@ def get_predicted_channels(_article):
     except Exception as e:
         logger.error(f"Unable to get predicted category for {_article} due to {e}")
         return _article
+
+
+def classify_text(text_content, language="en"):
+    """
+    Classifying Content in a String
+
+    Args:
+      text_content The text content to analyze.
+    """
+
+    # Available types: PLAIN_TEXT, HTML
+    type_ = language_v1.Document.Type.PLAIN_TEXT
+
+    document = {"content": text_content, "type_": type_, "language": language}
+
+    content_categories_version = (
+        language_v1.ClassificationModelOptions.V2Model.ContentCategoriesVersion.V2
+    )
+    try:
+        response = client.classify_text(
+            request={
+                "document": document,
+                "classification_model_options": {
+                    "v2_model": {
+                        "content_categories_version": content_categories_version
+                    }
+                },
+            }
+        )
+    except Exception as e:
+        print(e)
+        return []
+
+    return response.categories
+
+
+def get_channels_for_article_text(article):
+    categories = classify_text(article["description"] + " " + article["title"])
+
+    return get_channels_for_classification(categories)
