@@ -113,7 +113,7 @@ def get_predicted_channels(_article):
         return _article
 
 
-def classify_text(text_content, language="en"):
+def get_external_predicted_channels(text_content, language="en"):
     """
     Classifying Content in a String
 
@@ -147,7 +147,9 @@ def classify_text(text_content, language="en"):
     return response.categories
 
 
-def get_channels_for_article_text(article):
-    categories = classify_text(article["description"] + " " + article["title"])
+def get_external_channels_for_article(article):
+    raw_data = get_external_predicted_channels(
+        article["description"] + " " + article["title"]
+    )
 
-    return get_channels_for_classification(categories)
+    return get_channels_for_classification(raw_data)

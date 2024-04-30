@@ -1,4 +1,5 @@
 from sqlalchemy import ARRAY, BigInteger, Column, DateTime, ForeignKey, String, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from db.tables.base import Base
@@ -10,6 +11,7 @@ class ExternalArticleClassificationEntity(Base):
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     article_id = Column(BigInteger, ForeignKey("external_article.id"))
     channels = Column(ARRAY(String), nullable=False)
+    raw_data = Column(JSONB, nullable=True)
     created = Column(DateTime, nullable=False, server_default=func.now())
     modified = Column(
         DateTime,

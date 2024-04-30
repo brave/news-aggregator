@@ -1,4 +1,11 @@
-brave_v1_to_external_taxonomy = {
+from functools import lru_cache
+
+from config import get_config
+
+config = get_config()
+
+
+BRAVE_V1_TO_EXTERNAL_TAXONOMY = {
     "Business": [
         "/Business & Industrial/Business*",
         "/Finance*",
@@ -74,43 +81,49 @@ brave_v1_to_external_taxonomy = {
     "*Religion": ["/People & Society/Religion & Belief"],
 }
 
-augment = ["Crypto", "Culture", "Brave", "Top News", "Top Sources"]
-default = ["Fun"]
+AUGMENT = ["Crypto", "Culture", "Brave", "Top News", "Top Sources"]
+DEFAULT = ["Fun"]
 
-with open("taxonomy.txt", "r") as f:
-    gcloud_taxonomy = f.readlines()
 
-# Invert and expand mapping
-gcloud_to_brave_v1_taxonomy = {}
-for b_channel, g_categories in brave_v1_to_external_taxonomy.items():
-    for g_category in g_categories:
-        if g_category.startswith("~"):
-            # TODO: support importing entire channels here
-            continue
+@lru_cache(maxsize=None)
+def get_external_to_brave_v1_taxonomy():
+    with open(config.taxonomy_v1_file, "r") as f:
+        gcloud_taxonomy = f.readlines()
 
-        if g_category.endswith("*"):
-            # find all categories that start with this
-            g_category = g_category[:-1]
-            for category in gcloud_taxonomy:
-                category = category.strip()
-                if category.startswith(g_category):
-                    if g_category not in gcloud_to_brave_v1_taxonomy:
-                        gcloud_to_brave_v1_taxonomy[category] = []
-                    gcloud_to_brave_v1_taxonomy[category].append(b_channel)
-        else:
-            if g_category not in gcloud_to_brave_v1_taxonomy:
-                gcloud_to_brave_v1_taxonomy[g_category] = []
-            gcloud_to_brave_v1_taxonomy[g_category].append(b_channel)
+    # Invert and expand mapping
+    external_to_brave_v1_taxonomy = {}
+    for b_channel, g_categories in BRAVE_V1_TO_EXTERNAL_TAXONOMY.items():
+        for g_category in g_categories:
+            if g_category.startswith("~"):
+                # TODO: support importing entire channels here
+                continue
+
+            if g_category.endswith("*"):
+                # find all categories that start with this
+                g_category = g_category[:-1]
+                for category in gcloud_taxonomy:
+                    category = category.strip()
+                    if category.startswith(g_category):
+                        if g_category not in external_to_brave_v1_taxonomy:
+                            external_to_brave_v1_taxonomy[category] = []
+                        external_to_brave_v1_taxonomy[category].append(b_channel)
+            else:
+                if g_category not in external_to_brave_v1_taxonomy:
+                    external_to_brave_v1_taxonomy[g_category] = []
+                external_to_brave_v1_taxonomy[g_category].append(b_channel)
+
+    return external_to_brave_v1_taxonomy
 
 
 def get_channels_for_classification(categories):
+    external_to_brave_v1_taxonomy = get_external_to_brave_v1_taxonomy()
     channels = []
     for category in categories:
         if category.confidence < 0.2:
             continue
 
         g_category = category.name.strip()
-        if g_category in gcloud_to_brave_v1_taxonomy:
-            channels.extend(gcloud_to_brave_v1_taxonomy[g_category])
+        if g_category in external_to_brave_v1_taxonomy:
+            channels.extend(external_to_brave_v1_taxonomy[g_category])
 
     return list(set(channels))

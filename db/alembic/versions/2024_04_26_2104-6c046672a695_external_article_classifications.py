@@ -34,6 +34,7 @@ def upgrade() -> None:
         ),
         # col for channels text array
         sa.Column("channels", sa.ARRAY(sa.Text), nullable=False),
+        sa.Column("raw_data", sa.JSONB, nullable=False),
         sa.Column(
             "created",
             sa.DateTime,
