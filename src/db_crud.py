@@ -11,6 +11,9 @@ from db.tables.article_cache_record_entity import ArticleCacheRecordEntity
 from db.tables.articles_entity import ArticleEntity
 from db.tables.base import feed_locale_channel
 from db.tables.channel_entity import ChannelEntity
+from db.tables.external_article_classification_entity import (
+    ExternalArticleClassificationEntity,
+)
 from db.tables.feed_entity import FeedEntity
 from db.tables.feed_locales_entity import FeedLocaleEntity
 from db.tables.feed_update_record_entity import FeedUpdateRecordEntity
@@ -614,6 +617,23 @@ def get_global_average_cache_hits():
 
             return cache_hit_percentage
 
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def insert_external_channels(url_hash, external_channels, raw_data):
+    try:
+        with config.get_db_session() as session:
+            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            if article:
+                new_external_channel = ExternalArticleClassificationEntity(
+                    article_id=article.id,
+                    channels=external_channels,
+                    raw_data=raw_data,
+                )
+                session.add(new_external_channel)
+                session.commit()
+                session.refresh(new_external_channel)
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
 

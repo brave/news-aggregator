@@ -2,7 +2,7 @@ import re
 
 from sqlalchemy import BigInteger, Column, ForeignKey, MetaData, Table
 from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.schema import CreateTable, DropTable
 
 from config import get_config

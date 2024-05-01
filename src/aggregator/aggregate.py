@@ -8,7 +8,11 @@ from pathlib import Path
 import orjson
 import structlog
 
-from aggregator.external_services import get_popularity_score, get_predicted_channels
+from aggregator.external_services import (
+    get_external_channels_for_article,
+    get_popularity_score,
+    get_predicted_channels,
+)
 from aggregator.image_fetcher import (
     check_images_in_item,
     check_small_image,
@@ -18,6 +22,7 @@ from aggregator.image_processor_sandboxed import get_image_with_max_size
 from aggregator.parser import download_feed, parse_rss, score_entries
 from aggregator.processor import process_articles, scrub_html, unshorten_url
 from config import get_config
+from db_crud import insert_external_channels
 
 config = get_config()
 logger = structlog.get_logger()
@@ -189,6 +194,15 @@ class Aggregator:
                         continue
                     entries.append(result)
             return entries, processed_articles
+
+        # Getting external channels for articles
+        if str(config.sources_file) == "sources.en_US":
+            logger.info(f"Getting the Predicted Channel the API of {len(raw_entries)}")
+            with ThreadPool(config.thread_pool_size) as pool:
+                for article, channels, raw_data in pool.imap_unordered(
+                    get_external_channels_for_article, raw_entries
+                ):
+                    insert_external_channels(article["url_hash"], channels, raw_data)
 
         return raw_entries, processed_articles
 

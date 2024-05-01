@@ -81,8 +81,8 @@ BRAVE_V1_TO_EXTERNAL_TAXONOMY = {
     "*Religion": ["/People & Society/Religion & Belief"],
 }
 
-AUGMENT = ["Crypto", "Culture", "Brave", "Top News", "Top Sources"]
-DEFAULT = ["Fun"]
+EXTERNAL_AUGMENT_CHANNELS = ["Crypto", "Culture", "Brave", "Top News", "Top Sources"]
+EXTERNAL_DEFAULT_CHANNELS = ["Fun"]
 
 
 @lru_cache(maxsize=None)

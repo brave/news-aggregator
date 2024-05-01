@@ -5,7 +5,11 @@ from google.cloud import language_v1
 
 from aggregator.parser import get_with_max_size
 from config import get_config
-from ext_article_categorization.taxonomy_mapping import get_channels_for_classification
+from ext_article_categorization.taxonomy_mapping import (
+    EXTERNAL_AUGMENT_CHANNELS,
+    EXTERNAL_DEFAULT_CHANNELS,
+    get_channels_for_classification,
+)
 
 client = language_v1.LanguageServiceClient()
 
@@ -121,15 +125,16 @@ def get_external_predicted_channels(text_content, language="en"):
       text_content The text content to analyze.
     """
 
-    # Available types: PLAIN_TEXT, HTML
-    type_ = language_v1.Document.Type.PLAIN_TEXT
-
-    document = {"content": text_content, "type_": type_, "language": language}
-
-    content_categories_version = (
-        language_v1.ClassificationModelOptions.V2Model.ContentCategoriesVersion.V2
-    )
     try:
+        # Available types: PLAIN_TEXT, HTML
+        type_ = language_v1.Document.Type.PLAIN_TEXT
+
+        document = {"content": text_content, "type_": type_, "language": language}
+
+        content_categories_version = (
+            language_v1.ClassificationModelOptions.V2Model.ContentCategoriesVersion.V2
+        )
+
         response = client.classify_text(
             request={
                 "document": document,
@@ -141,15 +146,30 @@ def get_external_predicted_channels(text_content, language="en"):
             }
         )
     except Exception as e:
-        print(e)
+        logger.info(e)
         return []
 
     return response.categories
 
 
 def get_external_channels_for_article(article):
+    # Skip article if in default channels or if description + title is less than 20 characters
+    if (
+        bool(set(article["channels"]).intersection(EXTERNAL_DEFAULT_CHANNELS))
+        or len(article.get("description") + article.get("title")) < 20
+    ):
+        return article, "", ""
+
     raw_data = get_external_predicted_channels(
         article["description"] + " " + article["title"]
     )
 
-    return get_channels_for_classification(raw_data)
+    channels = get_channels_for_classification(raw_data)
+
+    # If article in augmented channels, only replace non-augmented channels with predicted channel
+    to_augment = list(set(article["channels"]).intersection(EXTERNAL_AUGMENT_CHANNELS))
+    if to_augment:
+        return article, channels + to_augment, raw_data
+
+    # otherwise return the predicted channel
+    return article, channels, raw_data
