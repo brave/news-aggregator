@@ -38,6 +38,10 @@ if [[ "$task" = "run-all" ]]; then
     echo "Generating sources.global.json"
     python -u src/csv_to_global_json.py
   fi
+  echo "Apply DB migrations"
+  alembic upgrade head
+  echo "Inserting publisher in DB"
+  python -u src/db_crud.py
 
   echo "Starting main script..."
   mkdir -p output/feed/cache
