@@ -178,7 +178,7 @@ def unshorten_url(out_article):
     out_article["url_hash"] = url_hash
 
     processed_article = get_article(
-        url_hash, out_article, str(config.sources_file).replace("sources.", "")
+        out_article, str(config.sources_file).replace("sources.", "")
     )
 
     if processed_article:

@@ -8,6 +8,7 @@ Create Date: 2024-04-26 21:04:42.816062+00:00
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
 revision: str = "6c046672a695"
@@ -34,7 +35,7 @@ def upgrade() -> None:
         ),
         # col for channels text array
         sa.Column("channels", sa.ARRAY(sa.Text), nullable=False),
-        sa.Column("raw_data", sa.JSONB, nullable=False),
+        sa.Column("raw_data", JSONB, nullable=False),
         sa.Column(
             "created",
             sa.DateTime,
@@ -52,7 +53,7 @@ def upgrade() -> None:
     )
     op.create_index(
         "external_article_classifications_idx_article_id",
-        "external_article_classifications",
+        "external_article_classification",
         ["article_id"],
         unique=False,
         if_not_exists=True,
@@ -62,7 +63,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_index(
         "external_article_classifications_idx_article_id",
-        table_name="external_article_classifications",
+        table_name="external_article_classification",
         if_exists=True,
     )
-    op.drop_table("external_article_classifications", info={"ifexists": True})
+    op.drop_table("external_article_classification", info={"ifexists": True})

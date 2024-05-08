@@ -25,7 +25,7 @@ class Configuration(BaseSettings):
     }
 
     tz = timezone("UTC")
-    request_timeout = 30
+    request_timeout = 30.0
     max_content_size = 10000000
 
     output_feed_path: Path = Field(default=Path(__file__).parent / "output/feed")
@@ -66,7 +66,9 @@ class Configuration(BaseSettings):
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
     tests_data_dir: Path = Field(default=Path(__file__).parent / "tests/tests_data")
-    taxonomy_v1_file: Path = Field(default=Path(__file__).parent / "taxonomy_v1.txt")
+    taxonomy_v1_file: Path = Field(
+        default=Path(__file__).parent / "src/ext_article_categorization/taxonomy_v1.txt"
+    )
 
     sentry_dsn: str = ""
 
@@ -107,6 +109,8 @@ class Configuration(BaseSettings):
     nu_confidence_threshold = 0.9
     nu_excluded_channels = ["Crime"]
 
+    google_api_key: Optional[str] = ""
+
     video_extensions = (
         ".mp4",
         ".avi",
@@ -125,7 +129,7 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url: Optional[str] = None
+    database_url: Optional[str] = "postgresql://postgres:postgres@localhost:5432/news"
     schema_name: Optional[str] = "news"
 
     def get_db_session(self) -> Session:

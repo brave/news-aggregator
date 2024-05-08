@@ -9,7 +9,7 @@ class ExternalArticleClassificationEntity(Base):
     __tablename__ = "external_article_classification"
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
-    article_id = Column(BigInteger, ForeignKey("external_article.id"))
+    article_id = Column(BigInteger, ForeignKey("article.id"))
     channels = Column(ARRAY(String), nullable=False)
     raw_data = Column(JSONB, nullable=True)
     created = Column(DateTime, nullable=False, server_default=func.now())
@@ -20,7 +20,7 @@ class ExternalArticleClassificationEntity(Base):
         onupdate=func.now(),
     )
 
-    article = relationship("ExternalArticleEntity", back_populates="classification")
+    article = relationship("ArticleEntity", back_populates="external_channels")
 
     def to_dict(self) -> dict:
         return {

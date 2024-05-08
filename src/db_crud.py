@@ -319,7 +319,7 @@ def insert_cache_record(article_id, locale):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def insert_articles(article, locale_name):
+def insert_article(article, locale_name):
     try:
         with config.get_db_session() as db_session:
             try:
@@ -365,17 +365,15 @@ def insert_articles(article, locale_name):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_article(url_hash, article_data, locale):
+def get_article(article_data, locale):
     try:
         with config.get_db_session() as session:
-            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            article = (
+                session.query(ArticleEntity)
+                .filter_by(url_hash=article_data.get("url_hash"))
+                .first()
+            )
             if article:
-                setattr(article, "publish_time", article_data.get("publish_time"))
-                setattr(article, "description", article_data.get("description"))
-
-                session.commit()
-                session.refresh(article)
-
                 channels = []
                 locale = session.query(LocaleEntity).filter_by(locale=locale).first()
                 feed_locales = (
@@ -428,6 +426,35 @@ def get_article(url_hash, article_data, locale):
                     return None
             else:
                 return None
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+        return None
+
+
+def update_or_insert_article(article_data, locale):
+    try:
+        with config.get_db_session() as session:
+            article = (
+                session.query(ArticleEntity)
+                .filter_by(url_hash=article_data.get("url_hash"))
+                .first()
+            )
+            if article:
+                setattr(article, "publish_time", article_data.get("publish_time"))
+                setattr(article, "description", article_data.get("description"))
+                setattr(article, "pop_score", article_data.get("pop_score"))
+                setattr(article, "score", article_data.get("score"))
+
+                if article_data.get("img"):
+                    setattr(article, "img", article_data.get("img"))
+                    setattr(article, "padded_img", article_data.get("padded_img"))
+
+                session.commit()
+                session.refresh(article)
+
+            else:
+                insert_article(article_data, locale)
+
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
         return None

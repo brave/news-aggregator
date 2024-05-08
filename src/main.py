@@ -8,7 +8,7 @@ import structlog
 
 from aggregator.aggregate import Aggregator
 from config import get_config
-from db_crud import insert_articles
+from db_crud import insert_article
 from utils import upload_file
 
 config = get_config()
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         locale_name = str(config.sources_file).replace("sources.", "")
         logger.info(f"Feed has {len(articles)} items to insert.")
         with ThreadPool(config.thread_pool_size) as pool:
-            pool.map(partial(insert_articles, locale_name=locale_name), articles)
+            pool.map(partial(insert_article, locale_name=locale_name), articles)
         logger.info("Inserted articles into the database.")
 
     with open(config.output_path / "report.json", "w") as f:

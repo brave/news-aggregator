@@ -11,11 +11,12 @@ from ext_article_categorization.taxonomy_mapping import (
     get_channels_for_classification,
 )
 
-client = language_v1.LanguageServiceClient()
-
-
 config = get_config()
 logger = structlog.getLogger(__name__)
+
+client = language_v1.LanguageServiceClient(
+    client_options={"api_key": config.google_api_key}
+)
 
 
 def get_popularity_score(_article):
@@ -48,7 +49,9 @@ def get_popularity_score(_article):
         logger.error(f"Request to {url} failed with error: {req_exc}")
         return {**_article, "pop_score": 1.0}
     except orjson.JSONDecodeError as json_exc:
-        logger.error(f"Failed to decode JSON response for {url} with error: {json_exc}")
+        logger.error(
+            f"Failed to decode JSON response for {url} with error in Popularity: {json_exc}"
+        )
         return {**_article, "pop_score": 1.0}
     except Exception as e:
         logger.error(f"An unexpected error occurred for {url}: {e}")
@@ -143,7 +146,8 @@ def get_external_predicted_channels(text_content, language="en"):
                         "content_categories_version": content_categories_version
                     }
                 },
-            }
+            },
+            timeout=config.request_timeout,
         )
     except Exception as e:
         logger.info(e)
@@ -164,7 +168,10 @@ def get_external_channels_for_article(article):
         article["description"] + " " + article["title"]
     )
 
-    channels = get_channels_for_classification(raw_data)
+    if raw_data:
+        channels = get_channels_for_classification(raw_data)
+    else:
+        channels = []
 
     # If article in augmented channels, only replace non-augmented channels with predicted channel
     to_augment = list(set(article["channels"]).intersection(EXTERNAL_AUGMENT_CHANNELS))
