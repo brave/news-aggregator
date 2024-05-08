@@ -55,7 +55,7 @@ def upgrade() -> None:
         "external_article_classifications_idx_article_id",
         "external_article_classification",
         ["article_id"],
-        unique=False,
+        unique=True,
         if_not_exists=True,
     )
 

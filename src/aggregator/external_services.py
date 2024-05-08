@@ -14,10 +14,6 @@ from ext_article_categorization.taxonomy_mapping import (
 config = get_config()
 logger = structlog.getLogger(__name__)
 
-client = language_v1.LanguageServiceClient(
-    client_options={"api_key": config.google_api_key}
-)
-
 
 def get_popularity_score(_article):
     """
@@ -116,7 +112,9 @@ def get_predicted_channels(_article):
         return _article
 
     except Exception as e:
-        logger.error(f"Unable to get predicted category for {_article} due to {e}")
+        logger.error(
+            f"Unable to get predicted category for {_article['url']} due to {e}"
+        )
         return _article
 
 
@@ -138,7 +136,7 @@ def get_external_predicted_channels(text_content, language="en"):
             language_v1.ClassificationModelOptions.V2Model.ContentCategoriesVersion.V2
         )
 
-        response = client.classify_text(
+        response = config.gcp_client().classify_text(
             request={
                 "document": document,
                 "classification_model_options": {

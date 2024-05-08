@@ -140,8 +140,6 @@ class Aggregator:
         raw_entries = []
         entries = []
         processed_articles = []
-        filtered_entries = []
-
         self.report["feed_stats"] = {}
 
         feed_cache = self.download_feeds()
@@ -187,51 +185,17 @@ class Aggregator:
         if raw_entries:
             self.normalize_pop_score(raw_entries)
 
-        logger.info(f"Getting images for {len(raw_entries)} items...")
-        fixed_entries = self.check_images(raw_entries)
-
-        logger.info(f"Scrubbing {len(fixed_entries)} items...")
-        with ProcessPool(config.concurrency) as pool:
-            for result in pool.imap_unordered(scrub_html, fixed_entries):
-                filtered_entries.append(result)
-
-        logger.info("Insert articles into the database.")
-        locale_name = str(config.sources_file).replace("sources.", "")
-        with ThreadPool(config.thread_pool_size) as pool:
-            pool.map(
-                partial(update_or_insert_article, locale_name=locale_name),
-                filtered_entries + processed_article,
-            )
-
-        # Getting predicted channels for articles
         if str(config.sources_file) == "sources.en_US":
             entries.clear()
-            logger.info(
-                f"Getting the Predicted Channel the API of {len(filtered_entries)}"
-            )
+            logger.info(f"Getting the Predicted Channel the API of {len(raw_entries)}")
             with ThreadPool(config.thread_pool_size) as pool:
-                for result in pool.imap_unordered(
-                    get_predicted_channels, filtered_entries
-                ):
+                for result in pool.imap_unordered(get_predicted_channels, raw_entries):
                     if not result:
                         continue
                     entries.append(result)
             return entries, processed_articles
 
-        # Getting external channels for articles
-        if str(config.sources_file) == "sources.en_GB_2":
-            logger.info(
-                f"Getting the External Predicted Channel the API of {len(filtered_entries)}"
-            )
-            with ThreadPool(config.thread_pool_size) as pool:
-                for article, ext_channels, api_raw_data in pool.imap_unordered(
-                    get_external_channels_for_article, filtered_entries
-                ):
-                    insert_external_channels(
-                        article["url_hash"], ext_channels, api_raw_data
-                    )
-
-        return filtered_entries, processed_articles
+        return raw_entries, processed_articles
 
     def aggregate_rss(self):
         """
@@ -249,6 +213,16 @@ class Aggregator:
         filtered_entries = []
         entries, processed_articles = self.get_rss()
 
+        logger.info(f"Getting images for {len(entries)} items...")
+        fixed_entries = self.check_images(entries)
+        entries.clear()
+
+        logger.info(f"Scrubbing {len(fixed_entries)} items...")
+        with ProcessPool(config.concurrency) as pool:
+            for result in pool.imap_unordered(scrub_html, fixed_entries):
+                filtered_entries.append(result)
+        fixed_entries.clear()
+
         # Add already processed articles
         filtered_entries.extend(processed_articles)
         sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
@@ -259,6 +233,28 @@ class Aggregator:
         filtered_entries.clear()
 
         filtered_entries = score_entries(sorted_entries)
+
+        logger.info("Insert articles into the database.")
+        locale_name = str(config.sources_file).replace("sources.", "")
+        with ThreadPool(config.thread_pool_size) as pool:
+            pool.map(
+                partial(update_or_insert_article, locale=locale_name),
+                filtered_entries,
+            )
+
+        # Getting external channels for articles
+        if str(config.sources_file) == "sources.en_GB_2":
+            logger.info(
+                f"Getting the External Predicted Channel the API of {len(filtered_entries)}"
+            )
+            with ThreadPool(config.thread_pool_size) as pool:
+                for article, ext_channels, api_raw_data in pool.imap_unordered(
+                    get_external_channels_for_article, filtered_entries
+                ):
+                    insert_external_channels(
+                        article["url_hash"], ext_channels, api_raw_data
+                    )
+
         return filtered_entries
 
     def aggregate(self):

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 import structlog
+from google.cloud import language_v1
 from pydantic import BaseSettings, Field, validator
 from pytz import timezone
 from sqlalchemy import create_engine
@@ -129,8 +130,13 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url: Optional[str] = "postgresql://postgres:postgres@localhost:5432/news"
+    database_url: Optional[str] = None
     schema_name: Optional[str] = "news"
+
+    def gcp_client(self):
+        return language_v1.LanguageServiceClient(
+            client_options={"api_key": self.google_api_key}
+        )
 
     def get_db_session(self) -> Session:
         """
