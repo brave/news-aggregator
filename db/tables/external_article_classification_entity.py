@@ -10,7 +10,7 @@ class ExternalArticleClassificationEntity(Base):
 
     id = Column(BigInteger, primary_key=True, server_default=func.id_gen())
     article_id = Column(BigInteger, ForeignKey("article.id"))
-    channels = Column(ARRAY(String), nullable=False)
+    channels = Column(ARRAY(String), nullable=True)
     raw_data = Column(JSONB, nullable=True)
     created = Column(DateTime, nullable=False, server_default=func.now())
     modified = Column(

@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 from datetime import datetime, time
 
@@ -656,7 +657,7 @@ def insert_external_channels(url_hash, external_channels, raw_data):
                 new_external_channel = ExternalArticleClassificationEntity(
                     article_id=article.id,
                     channels=external_channels,
-                    raw_data=raw_data,
+                    raw_data=json.dumps([{i.name: i.confidence} for i in raw_data]),
                 )
                 session.add(new_external_channel)
                 session.commit()
