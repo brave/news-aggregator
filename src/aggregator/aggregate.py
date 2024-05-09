@@ -243,7 +243,7 @@ class Aggregator:
             )
 
         # Getting external channels for articles
-        if str(config.sources_file) == "sources.en_GB_2":
+        if str(config.sources_file) == "sources.en_US":
             logger.info(
                 f"Getting the External Predicted Channel the API of {len(filtered_entries)}"
             )

@@ -366,14 +366,10 @@ def insert_article(article, locale_name):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_article(article_data, locale):
+def get_article(url_hash, locale):
     try:
         with config.get_db_session() as session:
-            article = (
-                session.query(ArticleEntity)
-                .filter_by(url_hash=article_data.get("url_hash"))
-                .first()
-            )
+            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
             if article:
                 channels = []
                 locale = session.query(LocaleEntity).filter_by(locale=locale).first()
@@ -662,6 +658,28 @@ def insert_external_channels(url_hash, external_channels, raw_data):
                 session.add(new_external_channel)
                 session.commit()
                 session.refresh(new_external_channel)
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+
+
+def get_article_with_external_channels(url_hash, locale):
+    try:
+        with config.get_db_session() as session:
+            article_from_db = (
+                session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            )
+            article = get_article(url_hash, locale)
+            if article:
+                external_channels = (
+                    session.query(ExternalArticleClassificationEntity)
+                    .filter_by(article_id=article_from_db.id)
+                    .first()
+                )
+                article.update({"external_channels": external_channels.channels})
+                article.update({"raw_data": external_channels.raw_data})
+                return article
+            else:
+                return None
     except Exception as e:
         logger.error(f"Error Connecting to database: {e}")
 
