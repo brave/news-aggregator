@@ -1,9 +1,15 @@
 import orjson
 import requests
 import structlog
+from google.cloud import language_v1
 
 from aggregator.parser import get_with_max_size
 from config import get_config
+from ext_article_categorization.taxonomy_mapping import (
+    EXTERNAL_AUGMENT_CHANNELS,
+    EXTERNAL_DEFAULT_CHANNELS,
+    get_channels_for_classification,
+)
 
 config = get_config()
 logger = structlog.getLogger(__name__)
@@ -39,7 +45,9 @@ def get_popularity_score(_article):
         logger.error(f"Request to {url} failed with error: {req_exc}")
         return {**_article, "pop_score": 1.0}
     except orjson.JSONDecodeError as json_exc:
-        logger.error(f"Failed to decode JSON response for {url} with error: {json_exc}")
+        logger.error(
+            f"Failed to decode JSON response for {url} with error in Popularity: {json_exc}"
+        )
         return {**_article, "pop_score": 1.0}
     except Exception as e:
         logger.error(f"An unexpected error occurred for {url}: {e}")
@@ -104,5 +112,69 @@ def get_predicted_channels(_article):
         return _article
 
     except Exception as e:
-        logger.error(f"Unable to get predicted category for {_article} due to {e}")
+        logger.error(
+            f"Unable to get predicted category for {_article['url']} due to {e}"
+        )
         return _article
+
+
+def get_external_predicted_channels(text_content, language="en"):
+    """
+    Classifying Content in a String
+
+    Args:
+      text_content The text content to analyze.
+    """
+
+    try:
+        # Available types: PLAIN_TEXT, HTML
+        type_ = language_v1.Document.Type.PLAIN_TEXT
+
+        document = {"content": text_content, "type_": type_, "language": language}
+
+        content_categories_version = (
+            language_v1.ClassificationModelOptions.V2Model.ContentCategoriesVersion.V2
+        )
+
+        response = config.gcp_client().classify_text(
+            request={
+                "document": document,
+                "classification_model_options": {
+                    "v2_model": {
+                        "content_categories_version": content_categories_version
+                    }
+                },
+            },
+            timeout=config.request_timeout,
+        )
+    except Exception as e:
+        logger.info(e)
+        return []
+
+    return response.categories
+
+
+def get_external_channels_for_article(article):
+    # Skip article if in default channels or if description + title is less than 20 characters
+    if (
+        bool(set(article["channels"]).intersection(EXTERNAL_DEFAULT_CHANNELS))
+        or len(article.get("description") + article.get("title")) < 20
+    ):
+        return article, "", ""
+
+    raw_data = get_external_predicted_channels(
+        article["description"] + " " + article["title"]
+    )
+
+    if raw_data:
+        channels = get_channels_for_classification(raw_data)
+    else:
+        channels = []
+
+    # If article in augmented channels, only replace non-augmented channels with predicted channel
+    to_augment = list(set(article["channels"]).intersection(EXTERNAL_AUGMENT_CHANNELS))
+    if to_augment:
+        return article, channels + to_augment, raw_data
+
+    # otherwise return the predicted channel
+    return article, channels, raw_data
