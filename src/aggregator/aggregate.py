@@ -213,27 +213,6 @@ class Aggregator:
         filtered_entries = []
         entries, processed_articles = self.get_rss()
 
-        logger.info("Insert articles into the database.")
-        locale_name = str(config.sources_file).replace("sources.", "")
-        with ThreadPool(config.thread_pool_size) as pool:
-            pool.map(
-                partial(update_or_insert_article, locale=locale_name),
-                entries,
-            )
-
-        # Getting external channels for articles
-        if str(config.sources_file) == "sources.en_US":
-            logger.info(
-                f"Getting the External Predicted Channel the API of {len(entries)}"
-            )
-            with ThreadPool(config.thread_pool_size) as pool:
-                for article, ext_channels, api_raw_data in pool.imap_unordered(
-                    get_external_channels_for_article, entries
-                ):
-                    insert_external_channels(
-                        article["url_hash"], ext_channels, api_raw_data
-                    )
-
         logger.info(f"Getting images for {len(entries)} items...")
         fixed_entries = self.check_images(entries)
         entries.clear()
@@ -243,6 +222,27 @@ class Aggregator:
             for result in pool.imap_unordered(scrub_html, fixed_entries):
                 filtered_entries.append(result)
         fixed_entries.clear()
+
+        logger.info("Insert articles into the database.")
+        locale_name = str(config.sources_file).replace("sources.", "")
+        with ThreadPool(config.thread_pool_size) as pool:
+            pool.map(
+                partial(update_or_insert_article, locale=locale_name),
+                filtered_entries,
+            )
+
+        # Getting external channels for articles
+        if str(config.sources_file) == "sources.en_US":
+            logger.info(
+                f"Getting the External Predicted Channel the API of {len(filtered_entries)}"
+            )
+            with ThreadPool(config.thread_pool_size) as pool:
+                for article, ext_channels, api_raw_data in pool.imap_unordered(
+                    get_external_channels_for_article, filtered_entries
+                ):
+                    insert_external_channels(
+                        article["url_hash"], ext_channels, api_raw_data
+                    )
 
         # Add already processed articles
         filtered_entries.extend(processed_articles)
