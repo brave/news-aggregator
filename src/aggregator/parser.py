@@ -179,6 +179,9 @@ def parse_rss(downloaded_feed):
     if "bozo_exception" in feed_cache:
         del feed_cache["bozo_exception"]
 
+    if "bozo" in feed_cache:
+        del feed_cache["bozo"]
+
     return {"report": report, "feed_cache": feed_cache, "key": url}
 
 

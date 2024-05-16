@@ -223,17 +223,6 @@ class Aggregator:
                 filtered_entries.append(result)
         fixed_entries.clear()
 
-        # Add already processed articles
-        filtered_entries.extend(processed_articles)
-        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
-
-        logger.info(f"Sorting for {len(sorted_entries)} items...")
-        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
-        sorted_entries.reverse()
-        filtered_entries.clear()
-
-        filtered_entries = score_entries(sorted_entries)
-
         logger.info("Insert articles into the database.")
         locale_name = str(config.sources_file).replace("sources.", "")
         with ThreadPool(config.thread_pool_size) as pool:
@@ -254,6 +243,17 @@ class Aggregator:
                     insert_external_channels(
                         article["url_hash"], ext_channels, api_raw_data
                     )
+
+        # Add already processed articles
+        filtered_entries.extend(processed_articles)
+        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
+
+        logger.info(f"Sorting for {len(sorted_entries)} items...")
+        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
+        sorted_entries.reverse()
+        filtered_entries.clear()
+
+        filtered_entries = score_entries(sorted_entries)
 
         return filtered_entries
 
