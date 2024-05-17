@@ -221,7 +221,17 @@ class Aggregator:
         with ProcessPool(config.concurrency) as pool:
             for result in pool.imap_unordered(scrub_html, fixed_entries):
                 filtered_entries.append(result)
-        fixed_entries.clear()
+
+        # Add already processed articles
+        filtered_entries.extend(processed_articles)
+        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
+
+        logger.info(f"Sorting for {len(sorted_entries)} items...")
+        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
+        sorted_entries.reverse()
+        filtered_entries.clear()
+
+        filtered_entries = score_entries(sorted_entries)
 
         logger.info("Insert articles into the database.")
         locale_name = str(config.sources_file).replace("sources.", "")
@@ -234,26 +244,15 @@ class Aggregator:
         # Getting external channels for articles
         if str(config.sources_file) == "sources.en_US":
             logger.info(
-                f"Getting the External Predicted Channel the API of {len(filtered_entries)}"
+                f"Getting the External Predicted Channel the API of {len(fixed_entries)}"
             )
             with ThreadPool(config.thread_pool_size) as pool:
                 for article, ext_channels, api_raw_data in pool.imap_unordered(
-                    get_external_channels_for_article, filtered_entries
+                    get_external_channels_for_article, fixed_entries
                 ):
                     insert_external_channels(
                         article["url_hash"], ext_channels, api_raw_data
                     )
-
-        # Add already processed articles
-        filtered_entries.extend(processed_articles)
-        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
-
-        logger.info(f"Sorting for {len(sorted_entries)} items...")
-        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
-        sorted_entries.reverse()
-        filtered_entries.clear()
-
-        filtered_entries = score_entries(sorted_entries)
 
         return filtered_entries
 
