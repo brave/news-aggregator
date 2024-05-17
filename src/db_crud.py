@@ -440,6 +440,7 @@ def update_or_insert_article(article_data, locale):
                 setattr(article, "publish_time", article_data.get("publish_time"))
                 setattr(article, "description", article_data.get("description"))
                 setattr(article, "pop_score", article_data.get("pop_score"))
+                setattr(article, "score", article_data.get("score", 0))
 
                 if article_data.get("img"):
                     setattr(article, "img", article_data.get("img"))
