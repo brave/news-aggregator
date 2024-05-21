@@ -6,6 +6,6 @@ flake8==7.0.0
 isort==5.13.2
 pip-check-reqs==2.5.3
 pre-commit==3.7.0
-pylint==3.1.0
+pylint==3.2.0
 pytest==8.2.0
 pytest-mock==3.14.0
