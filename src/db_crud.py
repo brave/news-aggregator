@@ -437,6 +437,7 @@ def update_or_insert_article(article_data, locale):
                 .first()
             )
             if article:
+                setattr(article, "title", article_data.get("title"))
                 setattr(article, "publish_time", article_data.get("publish_time"))
                 setattr(article, "description", article_data.get("description"))
                 setattr(article, "pop_score", article_data.get("pop_score"))
