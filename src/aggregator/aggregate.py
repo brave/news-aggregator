@@ -224,20 +224,12 @@ class Aggregator:
 
         # Add already processed articles
         filtered_entries.extend(processed_articles)
-        unique_entries = {}
-        for d in filtered_entries:
-            url_hash = d["url_hash"]
-            if url_hash in unique_entries:
-                if "img" in d and "img" not in unique_entries[url_hash]:
-                    unique_entries[url_hash] = d
-            else:
-                unique_entries[url_hash] = d
 
-        sorted_entries = list(unique_entries.values())
-
-        logger.info(f"Sorting for {len(sorted_entries)} items...")
-        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
-        sorted_entries.reverse()
+        logger.info(f"Sorting for {len(filtered_entries)} items...")
+        filtered_entries = sorted(
+            filtered_entries, key=lambda entry: entry["publish_time"], reverse=True
+        )
+        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
         filtered_entries.clear()
 
         filtered_entries = score_entries(sorted_entries)
