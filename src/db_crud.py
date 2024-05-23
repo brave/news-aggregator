@@ -330,15 +330,15 @@ def insert_article(article, locale_name):
                     .filter(FeedEntity.url_hash == article.get("publisher_id"))
                     .first()
                 )
-
+                article_hash = (
+                    article.get("url_hash")
+                    + hashlib.sha256(
+                        article.get("title").strip().encode("utf-8")
+                    ).hexdigest()
+                )
                 db_article = (
                     db_session.query(ArticleEntity)
-                    .filter_by(
-                        url_hash=article.get("url_hash")
-                        + hashlib.sha256(
-                            article.get("title").strip().encode("utf-8")
-                        ).hexdigest()
-                    )
+                    .filter_by(url_hash=article_hash)
                     .first()
                 )
                 if db_article:
@@ -353,10 +353,7 @@ def insert_article(article, locale_name):
                         content_type=article.get("content_type"),
                         creative_instance_id=article.get("creative_instance_id"),
                         url=article.get("url"),
-                        url_hash=article.get("url_hash")
-                        + hashlib.sha256(
-                            article.get("title").strip().encode("utf-8")
-                        ).hexdigest(),
+                        url_hash=article_hash,
                         pop_score=article.get("pop_score"),
                         padded_img=article.get("padded_img"),
                         score=article.get("score"),
