@@ -104,7 +104,7 @@ def get_external_to_brave_v1_taxonomy():
                 for category in gcloud_taxonomy:
                     category = category.strip()
                     if category.startswith(g_category):
-                        if g_category not in external_to_brave_v1_taxonomy:
+                        if category not in external_to_brave_v1_taxonomy:
                             external_to_brave_v1_taxonomy[category] = []
                         external_to_brave_v1_taxonomy[category].append(b_channel)
             else:
