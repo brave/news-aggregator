@@ -224,11 +224,12 @@ class Aggregator:
 
         # Add already processed articles
         filtered_entries.extend(processed_articles)
-        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
 
-        logger.info(f"Sorting for {len(sorted_entries)} items...")
-        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
-        sorted_entries.reverse()
+        logger.info(f"Sorting for {len(filtered_entries)} items...")
+        filtered_entries = sorted(
+            filtered_entries, key=lambda entry: entry["publish_time"], reverse=True
+        )
+        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
         filtered_entries.clear()
 
         filtered_entries = score_entries(sorted_entries)
@@ -251,7 +252,10 @@ class Aggregator:
                     get_external_channels_for_article, fixed_entries
                 ):
                     insert_external_channels(
-                        article["url_hash"], ext_channels, api_raw_data
+                        article["url_hash"],
+                        article["title"],
+                        ext_channels,
+                        api_raw_data,
                     )
 
         return filtered_entries

@@ -1,3 +1,4 @@
+import hashlib
 import json
 from copy import deepcopy
 from datetime import datetime, time
@@ -329,10 +330,15 @@ def insert_article(article, locale_name):
                     .filter(FeedEntity.url_hash == article.get("publisher_id"))
                     .first()
                 )
-
+                article_hash = (
+                    article.get("url_hash")
+                    + hashlib.sha256(
+                        article.get("title").strip().encode("utf-8")
+                    ).hexdigest()
+                )
                 db_article = (
                     db_session.query(ArticleEntity)
-                    .filter_by(url_hash=article.get("url_hash"))
+                    .filter_by(url_hash=article_hash)
                     .first()
                 )
                 if db_article:
@@ -347,7 +353,7 @@ def insert_article(article, locale_name):
                         content_type=article.get("content_type"),
                         creative_instance_id=article.get("creative_instance_id"),
                         url=article.get("url"),
-                        url_hash=article.get("url_hash"),
+                        url_hash=article_hash,
                         pop_score=article.get("pop_score"),
                         padded_img=article.get("padded_img"),
                         score=article.get("score"),
@@ -366,10 +372,15 @@ def insert_article(article, locale_name):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_article(url_hash, locale):
+def get_article(url_hash, title, locale):
     try:
         with config.get_db_session() as session:
-            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            article_hash = (
+                url_hash + hashlib.sha256(title.strip().encode("utf-8")).hexdigest()
+            )
+            article = (
+                session.query(ArticleEntity).filter_by(url_hash=article_hash).first()
+            )
             if article:
                 channels = []
                 locale = session.query(LocaleEntity).filter_by(locale=locale).first()
@@ -431,10 +442,14 @@ def get_article(url_hash, locale):
 def update_or_insert_article(article_data, locale):
     try:
         with config.get_db_session() as session:
+            article_hash = (
+                article_data.get("url_hash")
+                + hashlib.sha256(
+                    article_data.get("title").strip().encode("utf-8")
+                ).hexdigest()
+            )
             article = (
-                session.query(ArticleEntity)
-                .filter_by(url_hash=article_data.get("url_hash"))
-                .first()
+                session.query(ArticleEntity).filter_by(url_hash=article_hash).first()
             )
             if article:
                 setattr(article, "title", article_data.get("title"))
@@ -646,10 +661,15 @@ def get_global_average_cache_hits():
         logger.error(f"Error Connecting to database: {e}")
 
 
-def insert_external_channels(url_hash, external_channels, raw_data):
+def insert_external_channels(url_hash, title, external_channels, raw_data):
     try:
         with config.get_db_session() as session:
-            article = session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            article_hash = (
+                url_hash + hashlib.sha256(title.strip().encode("utf-8")).hexdigest()
+            )
+            article = (
+                session.query(ArticleEntity).filter_by(url_hash=article_hash).first()
+            )
             if article:
                 new_external_channel = ExternalArticleClassificationEntity(
                     article_id=article.id,
@@ -663,13 +683,16 @@ def insert_external_channels(url_hash, external_channels, raw_data):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_article_with_external_channels(url_hash, locale):
+def get_article_with_external_channels(url_hash, title, locale):
     try:
         with config.get_db_session() as session:
-            article_from_db = (
-                session.query(ArticleEntity).filter_by(url_hash=url_hash).first()
+            article_hash = (
+                url_hash + hashlib.sha256(title.strip().encode("utf-8")).hexdigest()
             )
-            article = get_article(url_hash, locale)
+            article_from_db = (
+                session.query(ArticleEntity).filter_by(url_hash=article_hash).first()
+            )
+            article = get_article(url_hash, title, locale)
             if article:
                 external_channels = (
                     session.query(ExternalArticleClassificationEntity)
