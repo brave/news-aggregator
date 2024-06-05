@@ -5,6 +5,7 @@
 
 import logging
 import os
+from datetime import tzinfo
 from functools import lru_cache
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -12,7 +13,8 @@ from typing import Optional
 
 import structlog
 from google.cloud import language_v1
-from pydantic import BaseSettings, Field, validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 from pytz import timezone
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -21,13 +23,13 @@ logger = structlog.getLogger(__name__)
 
 
 class Configuration(BaseSettings):
-    default_headers = {
+    default_headers: dict = {
         "Accept": "*/*",
     }
 
-    tz = timezone("UTC")
-    request_timeout = 30.0
-    max_content_size = 10000000
+    tz: tzinfo = timezone("UTC")
+    request_timeout: float = 30.0
+    max_content_size: int = 10000000
 
     output_feed_path: Path = Field(default=Path(__file__).parent / "output/feed")
     output_path: Path = Field(default=Path(__file__).parent / "output")
@@ -35,17 +37,17 @@ class Configuration(BaseSettings):
         default=Path(__file__).parent / "wasm_thumbnail.wasm"
     )
     img_cache_path: Path = Field(default=Path(__file__).parent / "output/feed/cache")
-    feed_path = "feed"
-    feed_sources_path = "feed_source.json"
+    feed_path: str = "feed"
+    feed_sources_path: str = "feed_source.json"
 
     # Set the number of processes to spawn for all multiprocessing tasks.
     concurrency: int = cpu_count() - 1
     thread_pool_size: int = cpu_count() * 5
 
     # Disable uploads and downloads to S3. Useful when running locally or in CI.
-    no_upload: Optional[str] = None
-    no_download: Optional[str] = None
-    min_image_size = 400
+    no_upload: Optional[int] = None
+    no_download: Optional[int] = None
+    min_image_size: int = 400
 
     pcdn_url_base: str = Field(default="https://pcdn.brave.software")
 
@@ -93,26 +95,26 @@ class Configuration(BaseSettings):
     )
 
     bs_pop_endpoint: str = ""
-    pop_score_cutoff = 300
-    pop_score_exponent = 2 / 3
-    pop_score_range = 100
+    pop_score_cutoff: int = 300
+    pop_score_exponent: float = 2 / 3
+    pop_score_range: int = 100
 
     nu_api_url: str = ""
     nu_api_token: str = ""
-    nu_default_channels = ["Fun"]
-    nu_augment_channels = [
+    nu_default_channels: list = ["Fun"]
+    nu_augment_channels: list = [
         "Top Sources",
         "Top News",
         "World News",
         "US News",
         "Culture",
     ]
-    nu_confidence_threshold = 0.9
-    nu_excluded_channels = ["Crime"]
+    nu_confidence_threshold: float = 0.9
+    nu_excluded_channels: list = ["Crime"]
 
     google_api_key: Optional[str] = ""
 
-    video_extensions = (
+    video_extensions: tuple = (
         ".mp4",
         ".avi",
         ".mov",
@@ -130,7 +132,7 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url: Optional[str] = None
+    database_url: Optional[str] = "postgresql://localhost:5432/news"
     schema_name: Optional[str] = "news"
 
     def gcp_client(self):
@@ -145,18 +147,18 @@ class Configuration(BaseSettings):
         engine = create_engine(self.database_url)
         return sessionmaker(bind=engine)()
 
-    @validator("img_cache_path")
+    @field_validator("img_cache_path")
     def create_img_cache_path(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)
         return v
 
-    @validator("database_url")
+    @field_validator("database_url")
     def get_database_url(cls, v) -> str:
         if v and v.startswith("postgres://"):
             return v.replace("postgres://", "postgresql://")
         return v
 
-    @validator("prometheus_multiproc_dir")
+    @field_validator("prometheus_multiproc_dir")
     def create_prometheus_multiproc_dir(cls, v: Path) -> Path:
         v.mkdir(parents=True, exist_ok=True)
         os.environ["PROMETHEUS_MULTIPROC_DIR"] = str(v)

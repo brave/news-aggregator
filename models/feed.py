@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Optional
 
 import bleach
-from pydantic import HttpUrl, root_validator
+from pydantic import HttpUrl, model_validator
 
 from models.base import Model
 
@@ -16,18 +16,19 @@ class FeedBase(Model):
     category: str
     publish_time: datetime
     url: str
-    img: Optional[HttpUrl]
+    img: Optional[HttpUrl] = None
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
     content_type: str
     publisher_id: str
     publisher_name: str
     creative_instance_id: str = ""
     url_hash: str
-    padded_img: Optional[HttpUrl]
+    padded_img: Optional[HttpUrl] = None
     score: float
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def bleach_each_value(cls, values: dict) -> dict[str, Any]:
         for k, v in values.items():
             if isinstance(v, str):
