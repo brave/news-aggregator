@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 import structlog
+from google.cloud import language_v1
 from pydantic import BaseSettings, Field, validator
 from pytz import timezone
 from sqlalchemy import create_engine
@@ -25,7 +26,7 @@ class Configuration(BaseSettings):
     }
 
     tz = timezone("UTC")
-    request_timeout = 30
+    request_timeout = 30.0
     max_content_size = 10000000
 
     output_feed_path: Path = Field(default=Path(__file__).parent / "output/feed")
@@ -66,6 +67,9 @@ class Configuration(BaseSettings):
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
     tests_data_dir: Path = Field(default=Path(__file__).parent / "tests/tests_data")
+    taxonomy_v1_file: Path = Field(
+        default=Path(__file__).parent / "src/ext_article_categorization/taxonomy_v1.txt"
+    )
 
     sentry_dsn: str = ""
 
@@ -106,6 +110,8 @@ class Configuration(BaseSettings):
     nu_confidence_threshold = 0.9
     nu_excluded_channels = ["Crime"]
 
+    google_api_key: Optional[str] = ""
+
     video_extensions = (
         ".mp4",
         ".avi",
@@ -126,6 +132,11 @@ class Configuration(BaseSettings):
 
     database_url: Optional[str] = None
     schema_name: Optional[str] = "news"
+
+    def gcp_client(self):
+        return language_v1.LanguageServiceClient(
+            client_options={"api_key": self.google_api_key}
+        )
 
     def get_db_session(self) -> Session:
         """

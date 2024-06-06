@@ -8,7 +8,11 @@ from pathlib import Path
 import orjson
 import structlog
 
-from aggregator.external_services import get_popularity_score, get_predicted_channels
+from aggregator.external_services import (
+    get_external_channels_for_article,
+    get_popularity_score,
+    get_predicted_channels,
+)
 from aggregator.image_fetcher import (
     check_images_in_item,
     check_small_image,
@@ -18,6 +22,7 @@ from aggregator.image_processor_sandboxed import get_image_with_max_size
 from aggregator.parser import download_feed, parse_rss, score_entries
 from aggregator.processor import process_articles, scrub_html, unshorten_url
 from config import get_config
+from db_crud import insert_external_channels, update_or_insert_article
 
 config = get_config()
 logger = structlog.get_logger()
@@ -216,18 +221,43 @@ class Aggregator:
         with ProcessPool(config.concurrency) as pool:
             for result in pool.imap_unordered(scrub_html, fixed_entries):
                 filtered_entries.append(result)
-        fixed_entries.clear()
 
         # Add already processed articles
         filtered_entries.extend(processed_articles)
-        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
 
-        logger.info(f"Sorting for {len(sorted_entries)} items...")
-        sorted_entries = sorted(sorted_entries, key=lambda entry: entry["publish_time"])
-        sorted_entries.reverse()
+        logger.info(f"Sorting for {len(filtered_entries)} items...")
+        filtered_entries = sorted(
+            filtered_entries, key=lambda entry: entry["publish_time"], reverse=True
+        )
+        sorted_entries = list({d["url_hash"]: d for d in filtered_entries}.values())
         filtered_entries.clear()
 
         filtered_entries = score_entries(sorted_entries)
+
+        logger.info("Insert articles into the database.")
+        locale_name = str(config.sources_file).replace("sources.", "")
+        with ThreadPool(config.thread_pool_size) as pool:
+            pool.map(
+                partial(update_or_insert_article, locale=locale_name),
+                filtered_entries,
+            )
+
+        # Getting external channels for articles
+        if str(config.sources_file) == "sources.en_US":
+            logger.info(
+                f"Getting the External Predicted Channel the API of {len(fixed_entries)}"
+            )
+            with ThreadPool(config.thread_pool_size) as pool:
+                for article, ext_channels, api_raw_data in pool.imap_unordered(
+                    get_external_channels_for_article, fixed_entries
+                ):
+                    insert_external_channels(
+                        article["url_hash"],
+                        article["title"],
+                        ext_channels,
+                        api_raw_data,
+                    )
+
         return filtered_entries
 
     def aggregate(self):

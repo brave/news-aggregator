@@ -34,6 +34,10 @@ class ArticleEntity(Base):
 
     cache_record = relationship("ArticleCacheRecordEntity", back_populates="article")
 
+    external_channels = relationship(
+        "ExternalArticleClassificationEntity", back_populates="article"
+    )
+
     def to_dict(self):
         return {
             "id": self.id,
