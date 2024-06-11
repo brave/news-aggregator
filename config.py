@@ -70,6 +70,7 @@ class Configuration(BaseSettings):
     taxonomy_v1_file: Path = Field(
         default=Path(__file__).parent / "src/ext_article_categorization/taxonomy_v1.txt"
     )
+    channel_file: Path = Field(default="channels.global.json")
 
     sentry_dsn: str = ""
 

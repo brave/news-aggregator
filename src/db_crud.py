@@ -708,6 +708,13 @@ def get_article_with_external_channels(url_hash, title, locale):
         logger.error(f"Error Connecting to database: {e}")
 
 
+def get_channels():
+    with config.get_db_session() as session:
+        channels = session.query(ChannelEntity.name).distinct().all()
+
+        return sorted([channel.name for channel in channels])
+
+
 if __name__ == "__main__":
     insert_or_update_all_publishers()
     # get_locale_average_cache_hits("en_GB_2")
