@@ -6,7 +6,7 @@ from datetime import datetime, time
 import orjson
 import pytz
 import structlog
-from sqlalchemy import and_, func
+from sqlalchemy import func
 
 from config import get_config
 from db.tables.article_cache_record_entity import ArticleCacheRecordEntity
@@ -708,74 +708,7 @@ def get_article_with_external_channels(url_hash, title, locale):
         logger.error(f"Error Connecting to database: {e}")
 
 
-def external_channel_stats(locale):
-    try:
-        with config.get_db_session() as session:
-            data = []
-            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
-            articles = (
-                session.query(
-                    ArticleEntity,
-                    func.array_agg(ChannelEntity.name).label("channels"),
-                )
-                .join(
-                    ExternalArticleClassificationEntity,
-                    ArticleEntity.id == ExternalArticleClassificationEntity.article_id,
-                )
-                .join(
-                    FeedLocaleEntity,
-                    ArticleEntity.feed_id == FeedLocaleEntity.feed_id,
-                )
-                .join(
-                    feed_locale_channel,
-                    FeedLocaleEntity.id == feed_locale_channel.c.feed_locale_id,
-                )
-                .join(
-                    ChannelEntity, feed_locale_channel.c.channel_id == ChannelEntity.id
-                )
-                .filter(
-                    and_(
-                        func.array_length(
-                            ExternalArticleClassificationEntity.channels, 1
-                        )
-                        > 0,
-                        # Check that array length is greater than 0
-                        ExternalArticleClassificationEntity.channels.isnot(
-                            None
-                        ),  # Ensure channels is not NULL
-                        FeedLocaleEntity.locale_id == locale.id,
-                    )
-                )
-                .order_by(ArticleEntity.created.desc())
-                .group_by(ArticleEntity.id)
-                # .first()
-                .limit(100000)
-                .all()
-            )
-
-            for result in articles:
-                article, channels = result
-
-                article_data = {
-                    "publisher": article.feed.publisher.name,
-                    "title": article.title,
-                    "description": article.description,
-                    "channels": channels,
-                    "external_channels": article.external_channels[0].channels,
-                    "raw_data": article.external_channels[0].raw_data,
-                }
-
-                data.append(article_data)
-
-            return data
-
-    except Exception as e:
-        logger.error(f"Error Connecting to database: {e}")
-
-
 if __name__ == "__main__":
-    # insert_or_update_all_publishers()
-    with open("ext_channel_stats.json", "w") as f:
-        f.write(json.dumps(external_channel_stats("en_GB")))
+    insert_or_update_all_publishers()
     # get_locale_average_cache_hits("en_GB_2")
     # get_global_average_cache_hits()
