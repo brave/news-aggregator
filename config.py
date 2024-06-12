@@ -114,6 +114,8 @@ class Configuration(BaseSettings):
 
     google_api_key: Optional[str] = ""
 
+    news_data_api_token: Optional[str] = ""
+
     video_extensions: tuple = (
         ".mp4",
         ".avi",

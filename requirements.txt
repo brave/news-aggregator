@@ -17,6 +17,7 @@ metadata-parser==0.12.1
 numpy==1.22.2
 orjson==3.10.3
 Pillow==10.3.0
+prometheus-fastapi-instrumentator==7.0.0
 prometheus_client==0.20.0
 psycopg2==2.9.9
 pydantic==2.7.3
