@@ -8,7 +8,7 @@ import structlog
 
 from aggregator.aggregate import Aggregator
 from config import get_config
-from db_crud import insert_article
+from db_crud import get_channels, insert_article
 from utils import upload_file
 
 config = get_config()
@@ -27,6 +27,9 @@ if __name__ == "__main__":
         config.output_feed_path / f"{config.feed_path}.json-tmp",
         config.output_feed_path / f"{config.feed_path}.json",
     )
+    with open(config.output_path / config.channel_file, "w") as f:
+        channels = get_channels()
+        f.write(json.dumps(channels))
 
     if not config.no_upload:
         upload_file(
@@ -41,6 +44,11 @@ if __name__ == "__main__":
             config.output_feed_path / f"{config.feed_path}.json",
             config.pub_s3_bucket,
             f"brave-today/{config.feed_path}{str(config.sources_file).replace('sources', '')}json",
+        )
+        upload_file(
+            config.output_path / config.channel_file,
+            config.pub_s3_bucket,
+            f"brave-today/{config.channel_file}",
         )
 
     with open(config.output_feed_path / f"{config.feed_path}.json", "r") as f:
