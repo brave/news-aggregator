@@ -1,5 +1,5 @@
 -r requirements.txt
-bandit==1.7.8
+bandit==1.7.9
 black==24.4.2
 bpython==0.24
 flake8==7.0.0
