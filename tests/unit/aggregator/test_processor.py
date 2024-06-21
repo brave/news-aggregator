@@ -34,8 +34,9 @@ class TestProcessArticles:
             "channels": ["Top News"],
             "site_url": "https://brave.com/",
         }
+        feed_info = {}
 
-        processed_article = process_articles(article, _publisher)
+        processed_article = process_articles(article, _publisher, feed_info)
 
         assert processed_article is not None
         assert processed_article["title"] == "Example Article"
@@ -69,8 +70,9 @@ class TestProcessArticles:
             "category": "example_category",
             "content_type": "text",
         }
+        feed_info = {}
 
-        processed_article = process_articles(article, _publisher)
+        processed_article = process_articles(article, _publisher, feed_info)
 
         assert processed_article is None
 
@@ -98,7 +100,8 @@ class TestProcessArticles:
             "content_type": "text",
         }
 
-        processed_article = process_articles(article, _publisher)
+        feed_info = {}
+        processed_article = process_articles(article, _publisher, feed_info)
 
         assert processed_article is None
 

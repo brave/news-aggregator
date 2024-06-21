@@ -152,7 +152,11 @@ class Aggregator:
             start_time = time.time()
             with ProcessPool(config.concurrency) as pool:
                 for out_item in pool.imap_unordered(
-                    partial(process_articles, _publisher=self.publishers[key]),
+                    partial(
+                        process_articles,
+                        _publisher=self.publishers[key],
+                        feed_info=feed_cache[key]["feed"],
+                    ),
                     feed_cache[key]["entries"][: self.publishers[key]["max_entries"]],
                 ):
                     if out_item:
