@@ -32,13 +32,13 @@ class Locale(LocaleBase):
         from_attributes = True
 
 
-@router.get("/api/locales", response_model=List[Locale])
+@router.get("/api/locale", response_model=List[Locale])
 async def get_locales(db: Session = Depends(get_db)):
     locales = db.query(LocaleEntity).all()
     return locales
 
 
-@router.post("/api/locales", response_model=Locale)
+@router.post("/api/locale", response_model=Locale)
 async def create_locale(locale: LocaleCreate, db: Session = Depends(get_db)):
     db_locale = LocaleEntity(**locale.dict())
     db.add(db_locale)

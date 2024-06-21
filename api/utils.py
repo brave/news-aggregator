@@ -13,17 +13,35 @@ ep_input_miss_err_msg = "The server could not understand the request due to synt
 
 
 async def request_auth(request: Request):
-    details = f"Unauthorized access attempt detected: Bearer token invalid or missing. Access denied."
     try:
-        if (
-            request.headers.get("authorization")
-            != f"Bearer {config.news_data_api_token}"
-        ):
+        auth_header = request.headers.get("authorization")
+        if auth_header is None:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=details
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization header missing.",
             )
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=details)
+
+        if auth_header != f"Bearer {config.news_data_api_token}":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Bearer token invalid."
+            )
+
+    except KeyError as ke:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Header key error: {str(ke)}",
+        )
+    except TypeError as te:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Type error: {str(te)}"
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}",
+        )
 
 
 def get_db():
