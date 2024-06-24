@@ -5,11 +5,7 @@ from google.cloud import language_v1
 
 from aggregator.parser import get_with_max_size
 from config import get_config
-from ext_article_categorization.taxonomy_mapping import (
-    EXTERNAL_AUGMENT_CHANNELS,
-    EXTERNAL_DEFAULT_CHANNELS,
-    get_channels_for_classification,
-)
+from ext_article_categorization.taxonomy_mapping import get_channels_for_classification
 
 config = get_config()
 logger = structlog.getLogger(__name__)
@@ -154,6 +150,47 @@ def get_external_predicted_channels(text_content, language="en"):
     return response.categories
 
 
+EXTERNAL_AUGMENT_CHANNELS = [
+    "Culture",
+    "Brave",
+    "Top News",
+    "Top Sources",
+    "World News",
+]
+EXTERNAL_DEFAULT_CHANNELS = ["Crypto", "Fun"]
+FLAT_ACTIVE_TAXONOMY = [
+    # Business
+    "Business",
+    # Entertainment
+    "Entertainment",
+    "Gaming",
+    "Film and TV",
+    "Music",
+    # Lifestyle
+    "Lifestyle",
+    "Food & Drink",
+    "Travel",
+    "Fashion",
+    "Home & Garden",
+    "Health & Fitness"
+    # Science
+    "Science",
+    "Space",
+    # Sports
+    "Sports",
+    # Technology
+    "Technology",
+    # Others
+    "Celebrities",
+    "Cars",
+    "Politics",
+    "Weather",
+    "World News",
+    "Fun",
+    "Culture",
+]
+
+
 def get_external_channels_for_article(article):
     # Skip article if in default channels or if description + title is less than 20 characters
     if (
@@ -162,19 +199,24 @@ def get_external_channels_for_article(article):
     ):
         return article, "", ""
 
-    raw_data = get_external_predicted_channels(
-        article["description"] + " " + article["title"]
+    external_categories = get_external_predicted_channels(
+        article["title"] + " " + article["description"]
     )
 
-    if raw_data:
-        channels = get_channels_for_classification(raw_data)
+    if external_categories:
+        tiered_channels = get_channels_for_classification(external_categories)
     else:
-        channels = []
+        tiered_channels = []
+
+    active_channels = set()
+    for channel in tiered_channels["tier_1"] + tiered_channels["tier_2"]:
+        if channel in FLAT_ACTIVE_TAXONOMY:
+            active_channels.add(channel)
 
     # If article in augmented channels, only replace non-augmented channels with predicted channel
-    to_augment = list(set(article["channels"]).intersection(EXTERNAL_AUGMENT_CHANNELS))
+    to_augment = set(article["channels"]).intersection(EXTERNAL_AUGMENT_CHANNELS)
     if to_augment:
-        return article, channels + to_augment, raw_data
+        return article, list(active_channels.union(to_augment)), external_categories
 
     # otherwise return the predicted channel
-    return article, channels, raw_data
+    return article, list(active_channels), external_categories

@@ -144,14 +144,13 @@ TIER_1_TO_TIER_2_MAPPING = {
         "Real Estate",
         "/News/Business News*",
     ],
-    "Arts & Entertainment": [
+    "Entertainment": [
         "Art & Design",
         "Books",
         "Comics",
         "Film and TV",
         "Music",
         "Architecture",
-        "Humor",
         "Performing Arts",
     ],
     "Gaming": ["Gaming"],
@@ -197,15 +196,13 @@ TIER_1_TO_TIER_2_MAPPING = {
     "Politics": ["Elections", "/News/Politics*"],
     "Weather": ["/News/Weather"],
     "World News": ["/News/World News"],
+    "Fun": ["Fun & Trivia", "Humor"],
     "*Reviews": ["/Shopping/Consumer Resources/Product Reviews & Price Comparisons"],
     "*Offers": ["/Shopping/Consumer Resources/Coupons & Discount Offers"],
     "*Adult": ["/Adult"],
     "*Sensitive": ["War", "Drugs", "/Sensitive Subjects*"],
     "*Belief": ["/People & Society/Religion & Belief"],
 }
-
-EXTERNAL_AUGMENT_CHANNELS = ["Crypto", "Culture", "Brave", "Top News", "Top Sources"]
-EXTERNAL_DEFAULT_CHANNELS = ["Fun"]
 
 with open("data/gcloud_taxonomy.txt", "r") as f:
     gcloud_taxonomy = f.readlines()
