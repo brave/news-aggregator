@@ -12,9 +12,11 @@ router = APIRouter(
 
 
 @router.get("/api/articles", response_model=List[dict])
-async def get_articles_with_locale(
-    start_date: datetime = Query(..., description="Start date for the articles"),
-    end_date: Optional[datetime] = Query(None, description="End date for the articles"),
+async def get_articles(
+    start_datetime: datetime = Query(..., description="Start date for the articles"),
+    end_datetime: Optional[datetime] = Query(
+        None, description="End date for the articles"
+    ),
     locale: Optional[str] = Query(None, description="Locale for the articles"),
     cache_hits: Optional[bool] = Query(
         None, description="Filter articles based on cache hits"
@@ -22,6 +24,18 @@ async def get_articles_with_locale(
     external_channels: Optional[bool] = Query(
         None, description="Filter articles from external channels"
     ),
+):
+    articles = None
+    return articles
+
+
+@router.get("/api/articles_with_locale", response_model=List[dict])
+async def get_articles_with_locale(
+    start_datetime: datetime = Query(..., description="Start date for the articles"),
+    end_datetime: Optional[datetime] = Query(
+        None, description="End date for the articles"
+    ),
+    locale: Optional[str] = Query(None, description="Locale for the articles"),
 ):
     articles = None
     return articles

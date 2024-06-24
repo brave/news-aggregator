@@ -852,6 +852,10 @@ def get_locales():
         return []
 
 
+def get_article_with_locale(locale):
+    pass
+
+
 if __name__ == "__main__":
     insert_or_update_all_publishers()
     # get_locale_average_cache_hits("en_GB_2")
