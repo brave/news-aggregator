@@ -67,8 +67,9 @@ class Configuration(BaseSettings):
     cover_info_cache_dir: Path = Field(default="cover_info_cache")
     tests_dir: Path = Field(default=Path(__file__).parent / "tests")
     tests_data_dir: Path = Field(default=Path(__file__).parent / "tests/tests_data")
-    taxonomy_v1_file: Path = Field(
-        default=Path(__file__).parent / "src/ext_article_categorization/taxonomy_v1.txt"
+    external_taxonomy_file: Path = Field(
+        default=Path(__file__).parent
+        / "src/ext_article_categorization/external_taxonomy.txt"
     )
     channel_file: Path = Field(default="channels.global.json")
 
