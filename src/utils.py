@@ -221,3 +221,10 @@ def push_metrics_to_pushgateway(metric, metric_value, label_value, registry):
 
     except Exception as e:
         logger.error(f"Failed to push metrics: {e}")
+
+
+def dict_in_list(target_dict, dict_list):
+    for d in dict_list:
+        if d == target_dict:
+            return True
+    return False

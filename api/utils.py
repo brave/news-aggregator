@@ -42,11 +42,3 @@ async def request_auth(request: Request):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error: {str(e)}",
         )
-
-
-def get_db():
-    try:
-        with config.get_db_session() as session:
-            yield session
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

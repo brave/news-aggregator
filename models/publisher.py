@@ -7,7 +7,7 @@ import hashlib
 from typing import Any, Dict, List, Optional
 
 import bleach
-from pydantic import Field, HttpUrl, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_core.core_schema import ValidationInfo
 
 from models.base import Model
@@ -17,10 +17,10 @@ class PublisherBase(Model):
     enabled: bool = Field(alias="Status")
     publisher_name: str = Field(alias="Title")
     category: str = Field(alias="Category")
-    site_url: HttpUrl = Field(alias="Domain")
-    feed_url: HttpUrl = Field(alias="Feed")
-    favicon_url: Optional[HttpUrl] = Field(default=None)
-    cover_url: Optional[HttpUrl] = Field(default=None)
+    site_url: str = Field(alias="Domain")
+    feed_url: str = Field(alias="Feed")
+    favicon_url: Optional[str] = Field(default=None)
+    cover_url: Optional[str] = Field(default=None)
     background_color: Optional[str] = Field(default=None)
     score: float = Field(default=0, alias="Score")
     destination_domains: list[str] = Field(alias="Destination Domains")

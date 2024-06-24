@@ -1,11 +1,9 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Query, status
 
-from api.utils import ep_err_msg, get_db, request_auth
-from db.tables.publsiher_entity import PublisherEntity
+from api.utils import ep_err_msg, request_auth
+from db_crud import get_feeds_based_on_locale, get_publisher_with_locale
 
 router = APIRouter(
     responses={status.HTTP_404_NOT_FOUND: {"Description": ep_err_msg}},
@@ -13,54 +11,30 @@ router = APIRouter(
 )
 
 
-class PublisherBase(BaseModel):
-    name: str
-    url: str
-    favicon_url: Optional[str] = None
-    cover_url: Optional[str] = None
-    background_color: Optional[str] = None
-    enabled: bool
-    score: float
-
-
-class PublisherCreate(PublisherBase):
-    pass
-
-
-class Publisher(PublisherBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
-@router.get("/api/publisher", response_model=List[Publisher])
-async def read_publishers(
-    skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+@router.get("/api/publisher", response_model=List[dict])
+async def read_publisher(
+    publisher_url: str = Query(..., description="Publisher URL"),
+    locale: Optional[str] = Query(
+        default=None,
+        max_length=5,
+        min_length=5,
+        description="Locale information",
+        regex="[a-z]{2}_[A-Z]{2}",
+    ),
 ):
-    publishers = db.query(PublisherEntity).offset(skip).limit(limit).all()
+    publishers = get_publisher_with_locale(publisher_url, locale)
     return publishers
 
 
-@router.get("/api/publisher/{id}", response_model=Publisher)
-async def read_publisher(id: int, db: Session = Depends(get_db)):
-    publisher = db.query(PublisherEntity).filter(PublisherEntity.id == id).first()
-    if publisher is None:
-        raise HTTPException(status_code=404, detail="Publisher not found")
-    return publisher
-
-
-@router.post("/api/publisher/{id}", response_model=Publisher)
-async def create_or_update_publisher(
-    id: int, publisher: PublisherCreate, db: Session = Depends(get_db)
+@router.get("/api/publisher_with_locale", response_model=List[dict])
+async def read_publisher_with_locale(
+    locale: str = Query(
+        ...,
+        max_length=5,
+        min_length=5,
+        description="Locale information",
+        regex="[a-z]{2}_[A-Z]{2}",
+    )
 ):
-    db_publisher = db.query(PublisherEntity).filter(PublisherEntity.id == id).first()
-    if db_publisher is None:
-        db_publisher = PublisherEntity(id=id, **publisher.dict())
-    else:
-        for key, value in publisher.dict().items():
-            setattr(db_publisher, key, value)
-    db.add(db_publisher)
-    db.commit()
-    db.refresh(db_publisher)
-    return db_publisher
+    publishers = get_feeds_based_on_locale(locale)
+    return publishers

@@ -115,7 +115,7 @@ class Configuration(BaseSettings):
 
     google_api_key: Optional[str] = ""
 
-    news_data_api_token: Optional[str] = ""
+    news_data_api_token: Optional[str] = "ABC"
 
     video_extensions: tuple = (
         ".mp4",
@@ -136,6 +136,9 @@ class Configuration(BaseSettings):
     )
 
     database_url: Optional[str] = "postgresql://localhost:5432/news"
+    # database_url: Optional[str] = (
+    #     "postgres://news:UHdBXpDz4wRK3wXK4tXqyhq!4oTi@news-aurora-db-cluster.cluster-cozler7sx4he.us-west-2.rds.amazonaws.com/news"
+    # )
     schema_name: Optional[str] = "news"
 
     def gcp_client(self):
