@@ -135,10 +135,8 @@ class Configuration(BaseSettings):
         ".vob",
     )
 
-    database_url: Optional[str] = "postgresql://localhost:5432/news"
-    # database_url: Optional[str] = (
-    #     "postgres://news:UHdBXpDz4wRK3wXK4tXqyhq!4oTi@news-aurora-db-cluster.cluster-cozler7sx4he.us-west-2.rds.amazonaws.com/news"
-    # )
+    database_url: Optional[str] = None
+
     schema_name: Optional[str] = "news"
 
     def gcp_client(self):
