@@ -1,6 +1,6 @@
 Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative Instance ID,Destination Domains,Channels,Rank,Original_Feed
 https://www.brave.com,https://brave.com/blog/index.xml,Brave Blog,Brave,Enabled,,,article,,brave.com,Brave,,
-https://www.timesofindia.indiatimes.com,https://timesofindia.indiatimes.com/rssfeedstopstories.cms,The Times of India,Top News,Enabled,291684,,article,,indiatimes.com,Top Sources; Top News,1,
+https://www.timesofindia.indiatimes.com,https://timesofindia.indiatimes.com/rssfeedstopstories.cms,The Times of India,Top News,Enabled,,,article,,indiatimes.com,Top Sources; Top News,1,
 https://www.geeksforgeeks.org,https://www.geeksforgeeks.org/feed/,GeeksforGeeks,Technology,Enabled,,,article,,geeksforgeeks.org,Top Sources; Technology,2,
 https://www.fandom.com,https://www.fandom.com/feed,Fandom,Entertainment,Enabled,,,article,,fandom.com,Top Sources; Entertainment,3,
 https://www.hindustantimes.com,https://www.hindustantimes.com/feeds/rss/latest/rssfeed.xml,Hindustan Times,Top News,Enabled,,,article,,hindustantimes.com,Top Sources; Top News,4,
