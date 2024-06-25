@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from api import article, channel, feed, locale, publisher
+from api import article, channel, locale, publisher
 from api.utils import ep_err_msg
 from config import get_config
 
@@ -31,7 +31,6 @@ metric_collector = (
 
 app.include_router(article.router, tags=["article"])
 app.include_router(channel.router, tags=["channel"])
-app.include_router(feed.router, tags=["feed"])
 app.include_router(locale.router, tags=["locale"])
 app.include_router(publisher.router, tags=["publisher"])
 

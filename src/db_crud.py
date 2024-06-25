@@ -338,17 +338,8 @@ def get_feeds_based_on_locale(locale):
                     "background_color": feed.publisher.background_color,
                     "score": feed.publisher.score,
                     "publisher_id": feed.url_hash,
-                    "locales": [],
-                }
-
-                locale_data = {
-                    "locale": locale.locale,
                     "channels": list(set([channel.name for channel in channels])),
-                    "rank": feed_locale.rank,
                 }
-
-                if not dict_in_list(locale_data, publisher_data["locales"]):
-                    publisher_data["locales"].append(locale_data)
 
                 data.append(publisher_data)
 
@@ -852,8 +843,51 @@ def get_locales():
         return []
 
 
-def get_article_with_locale(locale):
-    pass
+def get_articles_with_locale(locale, start_datetime):
+    try:
+        with config.get_db_session() as session:
+            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
+            articles = (
+                session.query(ArticleEntity)
+                .join(FeedEntity)
+                .join(FeedLocaleEntity)
+                .filter(
+                    FeedLocaleEntity.locale_id == locale.id,
+                    ArticleEntity.created >= start_datetime,
+                )
+                .distinct()
+                .order_by(ArticleEntity.created.desc())
+                .limit(100)
+                .all()
+            )
+
+            data = []
+            for article in articles:
+                article_data = {
+                    "title": article.title,
+                    "publish_time": article.publish_time.astimezone(pytz.utc).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "img": article.img,
+                    "category": article.category,
+                    "description": article.description,
+                    "content_type": article.content_type,
+                    "publisher_id": article.feed.url_hash,
+                    "publisher_name": article.feed.publisher.name,
+                    "creative_instance_id": article.creative_instance_id,
+                    "url": article.url,
+                    "url_hash": article.url_hash,
+                    "pop_score": article.pop_score,
+                    "padded_img": article.padded_img,
+                    "score": article.score,
+                }
+
+                data.append(article_data)
+
+            return data
+    except Exception as e:
+        logger.error(f"Error Connecting to database: {e}")
+        return []
 
 
 if __name__ == "__main__":
