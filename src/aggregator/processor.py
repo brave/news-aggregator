@@ -94,7 +94,7 @@ def process_articles(article, _publisher, feed_info):  # noqa: C901
 
     out_article["publish_time"] = out_article["publish_time"].astimezone(pytz.utc)
 
-    now_utc = datetime.now().replace(tzinfo=pytz.utc)
+    now_utc = datetime.now().replace(tzinfo=pytz.utc) + timedelta(hours=1)
     if _publisher["content_type"] != "product":
         if out_article["publish_time"] > now_utc or out_article["publish_time"] < (
             now_utc - timedelta(days=60)
