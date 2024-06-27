@@ -25,31 +25,46 @@ config = get_config()
 logger = structlog.getLogger(__name__)
 
 
-def insert_or_get_publisher(session, publisher):
+def insert_or_update_publisher(session, publisher):
     """
-    Insert a new publisher into the database
+    Insert a new publisher into the database or update an existing one
     """
     try:
-        # Create a new publisher entity
-        new_publisher = PublisherEntity(
-            name=publisher["publisher_name"],
-            url=publisher["site_url"],
-            favicon_url=publisher["favicon_url"],
-            cover_url=publisher["cover_url"],
-            background_color=publisher["background_color"],
-            enabled=publisher["enabled"],
-            score=publisher["score"],
+        existing_publisher = (
+            session.query(PublisherEntity).filter_by(url=publisher["site_url"]).first()
         )
-        session.add(new_publisher)
-        session.commit()
-        session.refresh(new_publisher)
-        return new_publisher
+
+        if existing_publisher:
+            # Update the existing publisher
+            existing_publisher.name = publisher["publisher_name"]
+            existing_publisher.favicon_url = publisher["favicon_url"]
+            existing_publisher.cover_url = publisher["cover_url"]
+            existing_publisher.background_color = publisher["background_color"]
+            existing_publisher.enabled = publisher["enabled"]
+            existing_publisher.score = publisher["score"]
+            session.commit()
+            session.refresh(existing_publisher)
+            return existing_publisher
+        else:
+            # Create a new publisher entity
+            new_publisher = PublisherEntity(
+                name=publisher["publisher_name"],
+                url=publisher["site_url"],
+                favicon_url=publisher["favicon_url"],
+                cover_url=publisher["cover_url"],
+                background_color=publisher["background_color"],
+                enabled=publisher["enabled"],
+                score=publisher["score"],
+            )
+            session.add(new_publisher)
+            session.commit()
+            session.refresh(new_publisher)
+            return new_publisher
+
     except Exception as e:
         logger.error(e)
         session.rollback()
-        return (
-            session.query(PublisherEntity).filter_by(url=publisher["site_url"]).first()
-        )
+        return None
 
 
 def insert_or_get_locale(session, locale):
@@ -92,32 +107,47 @@ def insert_or_get_channel(session, channel):
         return session.query(ChannelEntity).filter_by(name=channel).first()
 
 
-def insert_or_get_feed(session, feed_data, publisher_id):
+def insert_or_update_feed(session, feed_data, publisher_id):
     """
-    Insert a new feed into the database
+    Insert a new feed into the database or update the existing one.
     """
     try:
-        new_feed = FeedEntity(
-            url=feed_data["feed_url"],
-            url_hash=feed_data["publisher_id"],
-            publisher_id=publisher_id,
-            category=feed_data["category"],
-            enabled=feed_data["enabled"],
-            og_images=False,
-            max_entries=20,
+        # Check if the feed already exists
+        existing_feed = (
+            session.query(FeedEntity).filter_by(url=feed_data["feed_url"]).first()
         )
-        session.add(new_feed)
-        session.commit()
-        session.refresh(new_feed)
-        return new_feed
+
+        if existing_feed:
+            # Update the existing feed
+            existing_feed.url_hash = feed_data["publisher_id"]
+            existing_feed.publisher_id = publisher_id
+            existing_feed.category = feed_data["category"]
+            existing_feed.enabled = feed_data["enabled"]
+            existing_feed.og_images = False
+            existing_feed.max_entries = 20
+            session.commit()
+            session.refresh(existing_feed)
+            return existing_feed
+        else:
+            # Insert a new feed
+            new_feed = FeedEntity(
+                url=feed_data["feed_url"],
+                url_hash=feed_data["publisher_id"],
+                publisher_id=publisher_id,
+                category=feed_data["category"],
+                enabled=feed_data["enabled"],
+                og_images=False,
+                max_entries=20,
+            )
+            session.add(new_feed)
+            session.commit()
+            session.refresh(new_feed)
+            return new_feed
+
     except Exception as e:
         logger.error(e)
         session.rollback()
-        return (
-            session.query(FeedEntity)
-            .filter_by(url_hash=feed_data["publisher_id"])
-            .first()
-        )
+        return session.query(FeedEntity).filter_by(url=feed_data["feed_url"]).first()
 
 
 def insert_feed_locale(session, feed_id, locale_id, rank):
@@ -152,14 +182,15 @@ def insert_or_update_all_publishers():
                     publishers_data_as_list = orjson.loads(f.read())
                     publishers_data_as_list = publishers_data_as_list
                     for publisher_data in publishers_data_as_list:
-                        publisher = insert_or_get_publisher(db_session, publisher_data)
+                        publisher = insert_or_update_publisher(
+                            db_session, publisher_data
+                        )
 
-                        feed = insert_or_get_feed(
+                        feed = insert_or_update_feed(
                             db_session,
                             publisher_data,
                             publisher_id=publisher.id,
                         )
-
                         for locale_item in publisher_data["locales"]:
                             locale = insert_or_get_locale(
                                 db_session, locale_item["locale"]
