@@ -3,10 +3,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-from typing import Any, Callable, Optional
-
 from orjson import orjson
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 def orjson_dumps(v, *, default):
@@ -20,24 +18,11 @@ class Model(BaseModel):
     https://pydantic-docs.helpmanual.io/usage/model_config/
     """
 
-    class Config:
-        # To activate an ORM service for our models
-        orm_mode = False
-        # Allows us to rename the field-names to conform to a defined standard
-        alias_generator: Optional[Callable]
-        # To strip a leading or trailing whitespace
-        anystr_strip_whitespace = True
-        # Whether to use the enum key or value
-        use_enum_values = False
-        # Perform validation on assignment
-        validate_assignment = True
-        allow_population_by_field_name = True
-        # Checks if the value is an instance of the type
-        arbitrary_types_allowed = True
-
-        json_loads: Callable[[str], Any] = orjson.loads
-        json_dumps: Callable[..., str] = orjson_dumps
-
-    # @overload
-    # @classmethod
-    # def parse_file(cls, ):
+    model_config = ConfigDict(
+        from_attributes=False,
+        str_strip_whitespace=True,
+        use_enum_values=False,
+        validate_assignment=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+    )

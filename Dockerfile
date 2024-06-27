@@ -14,3 +14,5 @@ RUN HTTP_PROXY= HTTPS_PROXY= pip install -r requirements.txt
 COPY . /workspace/
 
 ENV PYTHONPATH $PYTHONPATH:/workspace:/workspace/src
+
+EXPOSE 8000

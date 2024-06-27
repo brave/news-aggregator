@@ -7,6 +7,7 @@ import csv
 
 import orjson
 import structlog
+from fastapi.encoders import jsonable_encoder
 
 from config import get_config
 from models.publisher import PublisherModel
@@ -110,10 +111,10 @@ def main():
     )
 
     with open(feed_sources_output_path, "wb") as f:
-        f.write(orjson.dumps(publishers_data_by_url))
+        f.write(orjson.dumps(jsonable_encoder(publishers_data_by_url)))
 
     with open(sources_output_path, "wb") as f:
-        f.write(orjson.dumps(publishers_data_as_list))
+        f.write(orjson.dumps(jsonable_encoder(publishers_data_as_list)))
 
     if not config.no_upload:
         upload_file(
