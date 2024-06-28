@@ -35,7 +35,6 @@ def insert_or_update_publisher(session, publisher):
         )
 
         if existing_publisher:
-            # Update the existing publisher
             existing_publisher.favicon_url = publisher["favicon_url"]
             existing_publisher.cover_url = publisher["cover_url"]
             existing_publisher.background_color = publisher["background_color"]
@@ -45,7 +44,6 @@ def insert_or_update_publisher(session, publisher):
             session.refresh(existing_publisher)
             return existing_publisher
         else:
-            # Create a new publisher entity
             new_publisher = PublisherEntity(
                 url=publisher["site_url"],
                 favicon_url=publisher["favicon_url"],
@@ -110,25 +108,15 @@ def insert_or_update_feed(session, feed_data, publisher_id):
     Insert a new feed into the database or update the existing one.
     """
     try:
-        # Check if the feed already exists
         existing_feed = (
-            session.query(FeedEntity).filter_by(url=feed_data["feed_url"]).first()
+            session.query(FeedEntity)
+            .filter_by(url_hash=feed_data["publisher_id"])
+            .first()
         )
 
         if existing_feed:
-            # Update the existing feed
-            existing_feed.name = feed_data["publisher_name"]
-            existing_feed.url_hash = feed_data["publisher_id"]
-            existing_feed.publisher_id = publisher_id
-            existing_feed.category = feed_data["category"]
-            existing_feed.enabled = feed_data["enabled"]
-            existing_feed.og_images = False
-            existing_feed.max_entries = 20
-            session.commit()
-            session.refresh(existing_feed)
             return existing_feed
         else:
-            # Insert a new feed
             new_feed = FeedEntity(
                 name=feed_data["publisher_name"],
                 url=feed_data["feed_url"],
@@ -221,7 +209,7 @@ def insert_or_update_all_publishers():
         logger.error(f"Error Connecting to database: {e}")
 
 
-def get_publisher_with_locale(publisher_url, locale):
+def get_publisher_with_locale(publisher_url):
     """
     Get a publisher from the database
     """
@@ -231,7 +219,6 @@ def get_publisher_with_locale(publisher_url, locale):
             publisher = (
                 session.query(PublisherEntity).filter_by(url=publisher_url).first()
             )
-            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
             if publisher:
                 publisher_data = {
                     "enabled": publisher.enabled,
@@ -257,21 +244,12 @@ def get_publisher_with_locale(publisher_url, locale):
                     feed_publisher_data["enabled"] = feed.enabled
                     feed_publisher_data["publisher_id"] = feed.url_hash
 
-                    feed_locales = (
-                        session.query(FeedLocaleEntity)
-                        .filter_by(feed_id=feed.id, locale_id=locale.id)
-                        .all()
-                    )
-                    for feed_locale in feed_locales:
-                        channels = (
-                            session.query(ChannelEntity)
-                            .join(feed_locale_channel)
-                            .filter_by(feed_locale_id=feed_locale.id)
-                            .all()
-                        )
+                    for feed_locale in feed.locales:
                         locale_data = {
-                            "locale": locale.locale,
-                            "channels": [channel.name for channel in channels],
+                            "locale": feed_locale.locale.locale,
+                            "channels": [
+                                channel.name for channel in feed_locale.channels
+                            ],
                             "rank": feed_locale.rank,
                         }
                         feed_publisher_data["locales"].append(locale_data)
@@ -313,7 +291,7 @@ def get_feeds_based_on_locale(locale):
                     )
 
                 data[feed.url] = {
-                    "publisher_name": feed.publisher.name,
+                    "publisher_name": feed.name,
                     "category": feed.category,
                     "site_url": feed.publisher.url,
                     "feed_url": feed.url,
