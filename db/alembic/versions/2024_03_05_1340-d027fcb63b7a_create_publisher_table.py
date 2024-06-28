@@ -26,7 +26,6 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("id_gen()"),
         ),
-        sa.Column("name", sa.VARCHAR, nullable=False),
         sa.Column("url", sa.VARCHAR, nullable=False),
         sa.Column("favicon_url", sa.VARCHAR, default=None, nullable=True),
         sa.Column("cover_url", sa.VARCHAR, server_default=None, nullable=True),

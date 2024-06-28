@@ -28,6 +28,7 @@ def upgrade() -> None:
         ),
         sa.Column("url", sa.VARCHAR, nullable=False),
         sa.Column("url_hash", sa.VARCHAR, nullable=False),
+        sa.Column("name", sa.VARCHAR, nullable=False),
         sa.Column(
             "publisher_id",
             sa.BigInteger,

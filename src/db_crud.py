@@ -36,7 +36,6 @@ def insert_or_update_publisher(session, publisher):
 
         if existing_publisher:
             # Update the existing publisher
-            existing_publisher.name = publisher["publisher_name"]
             existing_publisher.favicon_url = publisher["favicon_url"]
             existing_publisher.cover_url = publisher["cover_url"]
             existing_publisher.background_color = publisher["background_color"]
@@ -48,7 +47,6 @@ def insert_or_update_publisher(session, publisher):
         else:
             # Create a new publisher entity
             new_publisher = PublisherEntity(
-                name=publisher["publisher_name"],
                 url=publisher["site_url"],
                 favicon_url=publisher["favicon_url"],
                 cover_url=publisher["cover_url"],
@@ -119,6 +117,7 @@ def insert_or_update_feed(session, feed_data, publisher_id):
 
         if existing_feed:
             # Update the existing feed
+            existing_feed.name = feed_data["publisher_name"]
             existing_feed.url_hash = feed_data["publisher_id"]
             existing_feed.publisher_id = publisher_id
             existing_feed.category = feed_data["category"]
@@ -131,6 +130,7 @@ def insert_or_update_feed(session, feed_data, publisher_id):
         else:
             # Insert a new feed
             new_feed = FeedEntity(
+                name=feed_data["publisher_name"],
                 url=feed_data["feed_url"],
                 url_hash=feed_data["publisher_id"],
                 publisher_id=publisher_id,
@@ -235,7 +235,6 @@ def get_publisher_with_locale(publisher_url, locale):
             if publisher:
                 publisher_data = {
                     "enabled": publisher.enabled,
-                    "publisher_name": publisher.name,
                     "site_url": publisher.url,
                     "feed_url": "",
                     "category": "",
@@ -252,6 +251,7 @@ def get_publisher_with_locale(publisher_url, locale):
                 )
                 for feed in feeds:
                     feed_publisher_data = deepcopy(publisher_data)
+                    feed_publisher_data["publisher_name"] = feed.name
                     feed_publisher_data["feed_url"] = feed.url
                     feed_publisher_data["category"] = feed.category
                     feed_publisher_data["enabled"] = feed.enabled
