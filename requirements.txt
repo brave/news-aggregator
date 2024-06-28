@@ -10,7 +10,7 @@ feedparser==6.0.11
 google-api-core==2.19.0
 google-auth==2.29.0
 google-cloud-language==2.13.3
-googleapis-common-protos==1.63.0
+googleapis-common-protos==1.63.2
 html2text==2024.2.26
 metadata-parser==0.12.1
 numpy==1.22.2
