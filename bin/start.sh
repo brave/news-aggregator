@@ -38,6 +38,7 @@ if [[ "$task" = "run-all" ]]; then
     echo "Generating sources.global.json"
     python -u src/csv_to_global_json.py
   fi
+
   echo "Apply DB migrations"
   alembic upgrade head
   echo "Inserting publisher in DB"
@@ -74,6 +75,10 @@ elif [[ "$task" = "shell" ]]; then
 
 elif [[ "$task" = "help" || "$task" = "-h" || "$task" = "--help" ]]; then
   die_usage
+
+elif [ "$task" = "purgeall" ]; then
+    echo "Down Migration"
+    alembic downgrade base
 
 else
   echo "unknown cmd: $task"

@@ -2,7 +2,7 @@ Domain,Feed,Title,Category,Status,Score,OG-Images,Content Type,Creative Instance
 https://www.brave.com,https://brave.com/blog/index.xml,Brave Blog,Brave,Enabled,,,article,,brave.com,Brave; Technology; Top Sources,,
 https://www.bbc.co.uk,https://feeds.bbci.co.uk/news/rss.xml?edition=uk,BBC,Top News,Enabled,,,article,,www.bbc.co.uk,Top News; Top Sources,1,
 https://www.theguardian.com,https://www.theguardian.com/uk/rss,The Guardian,Top News,Enabled,,On,article,,www.theguardian.com,Top News; Top Sources,2,
-https://www.dailymail.co.uk/home/index.html,https://www.dailymail.co.uk/news/index.rss,Daily Mail,Top News,Enabled,,,article,,www.dailymail.co.uk,Top News; Top Sources,3,https://www.dailymail.co.uk/home/index.rss
+https://www.dailymail.co.uk,https://www.dailymail.co.uk/news/index.rss,Daily Mail,Top News,Enabled,,,article,,www.dailymail.co.uk,Top News; Top Sources,3,https://www.dailymail.co.uk/home/index.rss
 https://www.independent.co.uk,https://www.independent.co.uk/rss,The Independent,Top News,Enabled,,,article,,www.independent.co.uk,Top News; Top Sources,4,https://www.independent.co.uk/rss
 https://www.healthline.com,https://www.healthline.com/rss/health-news,Healthline,Health,Enabled,,,article,,www.healthline.com/,Health; Top Sources,5,
 https://www.telegraph.co.uk,https://www.telegraph.co.uk/rss.xml,The Telegraph,Top News,Enabled,,,article,,www.telegraph.co.uk,Top News; Top Sources,6,https://www.telegraph.co.uk/news/rss.xml
