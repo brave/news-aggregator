@@ -21,7 +21,7 @@ psycopg2==2.9.9
 pydantic==1.10.15
 pytz==2024.1
 regex==2022.3.2
-requests==2.32.1
+requests==2.32.3
 requests-cache==1.2.0
 sentry-sdk==1.45.0
 sqlalchemy==2.0.30
