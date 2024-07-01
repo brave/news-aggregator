@@ -273,21 +273,12 @@ def get_feeds_based_on_locale(locale):
                 )
                 .all()
             )
-            locale = session.query(LocaleEntity).filter_by(locale=locale).first()
 
             for feed in feeds:
                 channels = []
-                feed_locales = (
-                    session.query(FeedLocaleEntity)
-                    .filter_by(feed_id=feed.id, locale_id=locale.id)
-                    .all()
-                )
-                for feed_locale in feed_locales:
-                    channels.extend(
-                        session.query(ChannelEntity)
-                        .join(feed_locale_channel)
-                        .filter_by(feed_locale_id=feed_locale.id)
-                        .all()
+                for feed_locale in feed.locales:
+                    channels = list(
+                        set([channel.name for channel in feed_locale.channels])
                     )
 
                 data[feed.url] = {
@@ -300,7 +291,7 @@ def get_feeds_based_on_locale(locale):
                     "creative_instance_id": "",
                     "content_type": "article",
                     "publisher_id": feed.url_hash,
-                    "channels": [channel.name for channel in set(channels)],
+                    "channels": channels,
                 }
 
             return data
@@ -407,7 +398,7 @@ def get_article(url_hash, locale):
                         "description": article.description,
                         "content_type": article.content_type,
                         "publisher_id": article.feed.url_hash,
-                        "publisher_name": article.feed.publisher.name,
+                        "publisher_name": article.feed.name,
                         "channels": [channel.name for channel in set(channels)],
                         "creative_instance_id": article.creative_instance_id,
                         "url": article.url,
